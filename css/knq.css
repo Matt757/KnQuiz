@@ -1,0 +1,407 @@
+ul.knq_list {
+    padding: 10px 0 !important;
+    list-style: none !important;
+    margin: 0px !important;
+}
+
+#knqList {
+    height: fit-content;
+}
+
+.ui-state-highlight {
+    border: 1px solid #5e85da;
+    background: #90c4ff;
+    color: #204977;
+}
+
+.draggable {
+    border: 2px dotted #C2BD8C;
+    background: #FFF9B9;
+    color: black;
+    width: fit-content;
+    height: fit-content;
+    cursor: move;
+    user-select: none;
+    margin-left: 0.2vw;
+    margin-right: 0.2vw;
+    display: inline-block;
+    text-align: center;
+    -moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+    margin-bottom: 1vh;
+}
+
+.drERR {
+    border: 2px solid #9B3A3A !important;
+    background: #FAB6B6 !important;
+}
+
+.drOK {
+    border: 2px solid #36824B !important;
+    background: #B1D9BC !important;
+}
+
+.droppable {
+    border: 2px solid #C9C9C9;
+    background: #F4F4F4;
+    color: #204977;
+    vertical-align: middle;
+    margin-left: 0.2vw;
+    margin-right: 0.2vw;
+    display: inline-block;
+    text-align: center;
+    -moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+}
+
+.knq_unselected:hover {
+    background-color: #FFF9B9;
+	-moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+}
+
+.knq_feedback {
+    background-color: #FFF9B9;
+    padding: 20px 20px !important;
+    margin: 10px 0px !important;
+}
+
+.knq_unselected {
+    background-color: #F4F4F4;
+    color: rgba(0, 0, 0, 1);
+    margin: 3px;
+    -webkit-transition: background-color 800ms linear;
+    -ms-transition: background-color 800ms linear;
+    transition: background-color 800ms linear;
+    cursor: pointer;
+	-moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+}
+
+.knq_selected {
+    background-color: #CFE3FF;
+    color: rgba(0, 0, 0, 1);
+    margin: 3px;
+    cursor: pointer;
+    -webkit-transition: background-color 500ms linear;
+    -ms-transition: background-color 500ms linear;
+    transition: background-color 500ms linear;
+	-moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#select_question_container {
+    max-width: 200px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1.125em;
+}
+
+.knq_image {
+    text-align: center;
+    float: left;
+}
+
+label {
+    display: inline-block;
+    width: 5em;
+}
+
+.ui-tooltip {
+    background: #F4F4F4;
+    border: 1px solid white;
+    position: relative;
+    padding: 10px 20px;
+    color: black;
+    border-radius: 3px;
+    font: bold 14px "Helvetica Neue", Sans-Serif;
+    box-shadow: 0 0 7px #F4F4F4;
+    max-width: 200px;
+}
+
+
+#quiz {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.blue-background-class {
+    background-color: #fff9dd;
+}
+
+
+.knq_container li {
+    font-size: 1.2em;
+    line-height: 1.5em;
+    font-weight: 400;
+    /*font-style: ;*/
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.ui-state-highlight {
+    height: 1.5em;
+    line-height: 1.2em;
+    color: #FFF9B9;
+    background: #C2BD8C;
+}
+
+#sentence {
+    line-height: 2.2em;
+}
+
+.knq_matching_answer:hover {
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background: #FFF9B9;
+
+    margin: 0.2vw;
+    border-radius: 5px 120px 120px 5px;
+    -webkit-border-radius: 5px 120px 120px 5px;
+    display: flex;
+    align-items: center;
+}
+
+.knq_matching_answer {
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background: #F4F4F4;
+
+    margin: 0.2vw;
+    border-radius: 5px 120px 120px 5px;
+    -webkit-border-radius: 5px 120px 120px 5px;
+    display: flex;
+    align-items: center;
+}
+
+.knq_matching_answer p {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.knq_right_one p {
+    padding: 0;
+    margin: 0 0 0 auto;
+}
+
+.knq_right_one:hover {
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background: #FFF9B9;
+    margin: 0.2vw;
+    -webkit-border-radius: 120px 5px 5px 120px;
+    border-radius: 120px 5px 5px 120px;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.knq_right_one {
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background: #F4F4F4;
+    margin: 0.2vw;
+    -webkit-border-radius: 120px 5px 5px 120px;
+    border-radius: 120px 5px 5px 120px;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.celula {
+    width: 10px;
+    height: 10px;
+    border: 1px #CACACA solid;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: middle;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: Georgia;
+    font-size: 24px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.celula2 {
+    width: 10px;
+    height: 10px;
+    border: 1px #CACACA dotted;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: middle;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: Georgia;
+    font-size: 24px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.celula3 {
+	width: 10px;
+    height: 10px;
+    border: 1px #2e6eaf solid;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: middle;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: Georgia;
+    font-size: 24px;
+    background-color: #2e6eaf;
+    color: white;
+    cursor: pointer;
+}
+
+.celula4 {
+    width: 10px;
+    height: 10px;
+    border: 1px #b4d7f2 solid;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: middle;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: Georgia;
+    font-size: 24px;
+    background-color: #b4d7f2;
+    color: #245078;
+    cursor: pointer;
+}
+
+#tabelcentrat {
+	bborder: 1px solid black;
+}
+
+
+td {
+    border: 0px solid #fbec88;
+    background-color: #FFF;
+    padding: 3px;
+}
+
+/*.td2 {
+    border: 0px;
+    bbackground-color: #eaf4fd;
+    padding: 3px;
+}
+
+.td3 {
+    border: 0px;
+    background-color: #fbec88;
+    padding: 0px;
+    margin: 0px;
+}
+
+.td4 {
+    border: 0px;
+    padding: 3px;
+    margin: 0px 0px 0px 5px;
+    background-color: #FCFDFD;
+}*/
+
+.tdcelulaa {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    background-color: #cc0000;
+    vertical-align: center;
+}
+
+.tdcelula {
+    border: 0px solid black;
+    padding: 0px;
+    margin: 0px;
+    background-color: #white;
+    text-align: center;
+    vertical-align: center;
+    font-size: 14px;
+}
+.tdcelulaf {
+    border: 1px dotted black;
+    padding: 0px;
+    margin: 0px;
+    background-color: #white;
+    text-align: center;
+    vertical-align: center;
+    font-size: 14px;
+}
+
+.forminside {
+    border: 0px solid #9EC7E4;
+    padding: 0px;
+    margin: 0px;
+    height: 20px;
+    width: 160px;
+    text-align: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #6A9CC0;
+    font-size: 16px;
+}
+
+.inputcelula {
+    border: 0px solid #9EC7E4;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: black;
+    font-size: 16px;
+}
+
+.inputcelula2 {
+    border: 0px solid #9EC7E4;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 18px;
+    color: #6A9CC0;
+    hheight: 35px;
+    hwidth: 35px;
+}
+
+.knq_wsarea {
+	-moz-border-radius: 0.5vw;
+    -webkit-border-radius: 0.5vw;
+    border-radius: 0.5vw;
+    margin-bottom: 1vh;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}

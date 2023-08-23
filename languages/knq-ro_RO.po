@@ -1,0 +1,524 @@
+# Translation of new 1.txt
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: 1\n"
+"Report-Msgid-Bugs-To: radu@capan.ro\n"
+"POT-Creation-Date: 2023-08-12 00:25+0300\n"
+"PO-Revision-Date: 2023-08-12 00:25+0300\n"
+"Last-Translator: \n"
+"Language-Team: Matei & Radu Capan\n"
+"Language: ro_RO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n==0 || (n!=1 && n%100>=1 && "
+"n%100<=19) ? 1 : 2);\n"
+"X-Generator: Poedit 3.3.2\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+
+#: knq.php:140 knq.php:142
+msgid "Current score"
+msgstr "Nota actuală"
+
+#: knq.php:142
+msgid "Previous score"
+msgstr "Nota anterioară"
+
+#: knq.php:184
+msgid "Redo quiz"
+msgstr "Refaceți chestionarul"
+
+#: knq.php:191 knq.php:307
+msgid "Done!"
+msgstr "Am răspuns!"
+
+#: knq.php:203 knq.php:322
+msgid "Next!"
+msgstr "Următoarea!"
+
+#: knq.php:215 knq.php:337
+msgid "Finish!"
+msgstr "Am terminat!"
+
+#: knq.php:227 knq.php:352
+msgid "Correct!"
+msgstr "Corect!"
+
+#: knq.php:239 knq.php:367
+msgid "Wrong!"
+msgstr "Greșit!"
+
+#: knq.php:247
+msgid "Find above the following words"
+msgstr "Găsiți mai sus cuvintele următoare"
+
+#: knq.php:280 knq.php:282
+msgid "Quizzes"
+msgstr "Chestionare"
+
+#: knq.php:281
+msgid "Settings"
+msgstr "Setări"
+
+#: knq.php:282 knq.php:473
+msgid "Quizzes management"
+msgstr "Administrare chestionare"
+
+#: knq.php:283 knq.php:1001
+msgid "Questions management"
+msgstr "Administrare întrebări"
+
+#: knq.php:283
+msgid "Questions"
+msgstr "Întrebări"
+
+#: knq.php:284 knq.php:1329
+msgid "Statistics"
+msgstr "Statistici"
+
+#: knq.php:294
+msgid "General options"
+msgstr "Opțiuni generale"
+
+#: knq.php:298 knq.php:313 knq.php:328 knq.php:343 knq.php:358 knq.php:428
+#: knq.php:430 knq.php:432 knq.php:434 knq.php:436 knq.php:441 knq.php:450
+#: knq.php:459
+msgid "Default value"
+msgstr "Valoare implicită"
+
+#: knq.php:419
+msgid "Settings updated succesfully!"
+msgstr "Setările actualizate cu succes!"
+
+#: knq.php:421
+msgid "Error updating the settings!"
+msgstr "Eroare la actualizarea setărilor!"
+
+#: knq.php:428 knq.php:882
+msgid "Text button for answering a question"
+msgstr "Text buton când s-a răspuns la întrebare"
+
+#: knq.php:430
+msgid "Text button for next question"
+msgstr "Text buton pentru următoarea întrebare"
+
+#: knq.php:432
+msgid "Text button for finishing quiz"
+msgstr "Text buton pentru final chestionar"
+
+#: knq.php:434 knq.php:909
+msgid "Message when answered correctly"
+msgstr "Mesaj când s-a răspuns corect"
+
+#: knq.php:436 knq.php:918
+msgid "Message when answered wrongly"
+msgstr "Mesaj când s-a răspuns greșit"
+
+#: knq.php:439 knq.php:853
+msgid "Difficulty level"
+msgstr "Nivel de dificultate"
+
+#: knq.php:448 knq.php:862
+msgid "Shuffle questions"
+msgstr "Ordine aleatorie a întrebărilor"
+
+#: knq.php:450 knq.php:452 knq.php:459 knq.php:461 knq.php:862 knq.php:871
+msgid "No"
+msgstr "Nu"
+
+#: knq.php:450 knq.php:452 knq.php:459 knq.php:461 knq.php:862 knq.php:871
+msgid "Yes"
+msgstr "Da"
+
+#: knq.php:457 knq.php:871
+msgid "Shuffle answers"
+msgstr "Ordine aleatorie a răspunsurilor"
+
+#: knq.php:464
+msgid "Update options"
+msgstr "Actualizare setări"
+
+#: knq.php:495
+msgid "Quiz deleted succesfully"
+msgstr "Chestionarul a fost șters"
+
+#: knq.php:497
+msgid "Error on deleting the quiz"
+msgstr "Eroare la ștergerea chestionarului"
+
+#: knq.php:777
+msgid "Quiz updated"
+msgstr "Chestionar actualizat"
+
+#: knq.php:779
+msgid "Error updating quiz"
+msgstr "Eroare la actualizarea chestionarului"
+
+#: knq.php:795
+msgid "Demo quiz (please configure)"
+msgstr "Chestionar demo (configurați vă rugăm)"
+
+#: knq.php:798
+msgid "Demo description (please configure)"
+msgstr "Descriere demo (configurați vă rugăm)"
+
+#: knq.php:816
+msgid "Add new quiz"
+msgstr "Adăugare chestionar nou"
+
+#: knq.php:831 knq.php:1144
+msgid "Selected quiz"
+msgstr "Chestionar selectat"
+
+#: knq.php:832
+msgid "Title"
+msgstr "Titlu"
+
+#: knq.php:844
+msgid "Description"
+msgstr "Descriere"
+
+#: knq.php:853 knq.php:862 knq.php:871 knq.php:882 knq.php:891 knq.php:900
+#: knq.php:909 knq.php:918
+msgid "Global value"
+msgstr "Valoarea globală"
+
+#: knq.php:873
+msgid "Leave following inputs empty if you wish to use the global value"
+msgstr "Lăsați goale câmpurile dacă doriți să fie folosită valoarea globală"
+
+#: knq.php:891
+msgid "Text button next question"
+msgstr "Text buton pt următoarea întrebare"
+
+#: knq.php:900
+msgid "Text button finish quiz"
+msgstr "Text buton la terminare chestionar"
+
+#: knq.php:928
+msgid "Reorder questions"
+msgstr "Reordonare întrebări"
+
+#: knq.php:933
+msgid "Update order of questions"
+msgstr "Actualizare ordine întrebări"
+
+#: knq.php:937 knq.php:1311
+msgid "Shortcode - just the quiz"
+msgstr "Inserare simplă"
+
+#: knq.php:938 knq.php:1312
+msgid "Shortcode - the quiz with title"
+msgstr "Inserare cu titlu"
+
+#: knq.php:939 knq.php:1313
+msgid "Shortcode - the quiz with title and the description"
+msgstr "Inserare cu titlu și descriere"
+
+#: knq.php:943
+msgid "Be careful! When you delete a quizz, there is no undo!"
+msgstr "Atenție! Ștergerea chestionarului este ireversibilă!"
+
+#: knq.php:943
+msgid "Delete quizz"
+msgstr "Ștergere chestionar"
+
+#: knq.php:943 knq.php:1005 knq.php:1304 knq.php:1317
+msgid "Are you sure? There is no undo to that!"
+msgstr "Sunteți sigur? Operațiunea este ireversibilă!"
+
+#: knq.php:960 knq.php:991 knq.php:1204 knq.php:1290
+msgid "To add a new answer, click here"
+msgstr "Pentru a adăuga un răspuns, click aici"
+
+#: knq.php:966 knq.php:1221 knq.php:1223
+msgid ""
+"Extra words that are not found in the text above (leave empty if you do not "
+"wish to have such words)"
+msgstr ""
+"Cuvinte suplimentare ce nu se găsesc mai sus în text (lăsați gol dacă nu "
+"doriți să fie incluse astfel de cuvinte)"
+
+#: knq.php:966 knq.php:1214
+msgid ""
+"Include between double square brackets, separated by a vertical bar (pipe), "
+"the alternative words.<br>Put the correct one to be the first in list. The "
+"list of options will be shuffled.<br>Example: <strong>We live on [[Earth|"
+"Jupiter|Saturn|Moon]].</strong>"
+msgstr ""
+"Includeți între paranteze drepte, separate de bară verticală (|), cuvintele "
+"alternative.<br>Puneți răspunsul corect să fie primul în listă. Lista "
+"opțiunilor va fi amestecată.<br>Exemplu: <strong>Trăim pe [[Pământ|Jupiter|"
+"Saturn|Lună]].</strong>"
+
+#: knq.php:966 knq.php:1219
+msgid ""
+"The word bank will collect all the words between double square brackets."
+"<br>Example: <strong>This is an [[example]] of such a [[question]].</strong>"
+msgstr ""
+"Bancul de cuvinte va colecta toate cuvintele aflate între paranteze drepte "
+"duble.<br>Exemplu: <strong>Acesta este un [[exemplu]] de o astfel de "
+"[[întrebare]].</strong>"
+
+#: knq.php:971 knq.php:1238
+msgid "Image width"
+msgstr "Lățime imagini"
+
+#: knq.php:978 knq.php:1269
+msgid "To add a new word search area, click here"
+msgstr "Pentru a adăuga un nou careu de cuvinte, click aici"
+
+#: knq.php:979 knq.php:1270
+msgid "Words to be searched, separated by one space"
+msgstr "Cuvintele ce trebuie căutate, separate de un spațiu"
+
+#: knq.php:980
+msgid "If unused letters forms a message, please write it below"
+msgstr "Dacă literele nefolosite formează un mesaj, scrieți-l mai jos"
+
+#: knq.php:1007
+msgid "Choose a quiz"
+msgstr "Alegeți un chestionar"
+
+#: knq.php:1026
+msgid "Question deleted succesfully"
+msgstr "Întrebarea a fost ștearsă"
+
+#: knq.php:1028
+msgid "Error on deleting the question"
+msgstr "Eroare la ștergerea întrebării"
+
+#: knq.php:1137
+msgid "Question updated"
+msgstr "Întrebare actualizată"
+
+#: knq.php:1139
+msgid "Error updating question"
+msgstr "Eroare la actualizarea întrebării"
+
+#: knq.php:1149 knq.php:1157
+msgid "Demo question (please configure)."
+msgstr "Întrebare demo (configurați vă rugăm)."
+
+#: knq.php:1149 knq.php:1157
+msgid "option 1|option 2"
+msgstr "opțiunea 1|opțiunea 2"
+
+#: knq.php:1159
+msgid "A new question was added. Do not forget to configure the question!"
+msgstr "A fost adăugată o nouă întrebare. Nu uitați să configurați întrebarea!"
+
+#: knq.php:1165
+msgid "ADD NEW QUESTION"
+msgstr "ADĂUGARE ÎNTREBARE NOUĂ"
+
+#: knq.php:1171 knq.php:1182
+msgid "Question"
+msgstr "Întrebare"
+
+#: knq.php:1183
+msgid "Question type"
+msgstr "Tip întrebare"
+
+#: knq.php:1183
+msgid "Multiple choice (check box)"
+msgstr "Răspunsuri multiple (check box)"
+
+#: knq.php:1183
+msgid "Single choice (radio box)"
+msgstr "Doar un răspuns (radio box)"
+
+#: knq.php:1183
+msgid "Multiple choice with images (check box)"
+msgstr "Răspunsuri multiple cu imagini (check box)"
+
+#: knq.php:1183
+msgid "Single choice with images (radio box)"
+msgstr "Doar un răspuns cu imagini (radio box)"
+
+#: knq.php:1183
+msgid "Sort the answers (sorting)"
+msgstr "Ordonarea răspunsurilor (sorting)"
+
+#: knq.php:1183
+msgid "Choose the words from lists (select box)"
+msgstr "Alegere cuvinte din liste (select box)"
+
+#: knq.php:1183
+msgid "Word bank (drag & drop)"
+msgstr "Banc de cuvinte (drag & drop)"
+
+#: knq.php:1183
+msgid "Word search"
+msgstr "Căutare de cuvinte (word search)"
+
+#: knq.php:1183
+msgid "Text matching"
+msgstr "Potrivire texte"
+
+#: knq.php:1184
+msgid "Answer(s)"
+msgstr "Răspuns(uri)"
+
+#: knq.php:1193 knq.php:1200
+msgid "Correct"
+msgstr "Corect"
+
+#: knq.php:1238
+msgid "Select images"
+msgstr "Selectare imagini"
+
+#: knq.php:1271
+msgid "If unused letters forms a message, please write it below."
+msgstr "Dacă literele nefolosite formează un mesaj, scrieți-l mai jos."
+
+#: knq.php:1296
+msgid "Positive feedback"
+msgstr "Feedback pozitiv"
+
+#: knq.php:1297
+msgid "Negative feedback"
+msgstr "Feedback negativ"
+
+#: knq.php:1302
+msgid "Associated image"
+msgstr "Imagine asociată"
+
+#: knq.php:1304
+msgid "Load image"
+msgstr "Încărcare imagine"
+
+#: knq.php:1304
+msgid "Delete image"
+msgstr "Ștergere imagine"
+
+#: knq.php:1305
+msgid "Image position related to question text"
+msgstr "Poziția imaginii pe lângă textul întrebării"
+
+#: knq.php:1305
+msgid "Above"
+msgstr "Deasupra"
+
+#: knq.php:1305
+msgid "Below"
+msgstr "Dedesubt"
+
+#: knq.php:1305
+msgid "Left"
+msgstr "Stânga"
+
+#: knq.php:1305
+msgid "Right"
+msgstr "Dreapta"
+
+#: knq.php:1306
+msgid "Update question"
+msgstr "Actualizare întrebare"
+
+#: knq.php:1317
+msgid "Be careful! When you delete a question, there is no undo!"
+msgstr "Atenție! Ștergerea întrebării este ireversibilă!"
+
+#: knq.php:1317
+msgid "Delete question"
+msgstr "Ștergere întrebare"
+
+#: knq.php:1318
+msgid "Empty question"
+msgstr "Întrebare nedefinită"
+
+#: knq.php:1318
+msgid "At least 2 answers needed"
+msgstr "Sunt necesare cel puțin două răspunsuri"
+
+#: knq.php:1318
+msgid "Empty answer"
+msgstr "Răspuns nedefinit"
+
+#: knq.php:1318
+msgid "No right answer selected"
+msgstr "Nu s-a indicat răspunsul corect"
+
+#: knq.php:1318
+msgid "Too many right answers selected"
+msgstr "Prea multe răspunsuri corecte selectate"
+
+#: knq.php:1318
+msgid "Incorrect formatting"
+msgstr "Formatare incorectă"
+
+#: knq.php:1318
+msgid "Must be between 1 and 100"
+msgstr "Trebuie să fie între 1 și 100"
+
+#: knq.php:1318
+msgid "Empty word search"
+msgstr "Careu de cuvinte nedefinit"
+
+#: knq.php:1318
+msgid "No search words provided"
+msgstr "Cuvintele de căutat lipsesc"
+
+#: knq.php:1318
+msgid "Provide at least 3 search words"
+msgstr "Trebuie minim trei cuvinte de căutat"
+
+#: knq.php:1332
+msgid "Last played quizzes"
+msgstr "Ultimele chestionare jucate"
+
+#: knq.php:1334
+msgid "User"
+msgstr "Utilizator"
+
+#: knq.php:1334
+msgid "Score"
+msgstr "Notă"
+
+#: knq.php:1334
+msgid "Attempts"
+msgstr "Încercări"
+
+#: knq.php:1334
+msgid "Quiz"
+msgstr "Chestionar"
+
+#: knq.php:1334
+msgid "When"
+msgstr "Când"
+
+#~ msgid ""
+#~ "Include between square brackets, separated by a vertical bar (pipe), the "
+#~ "alternative words.<br>Put the correct one to be the first in list. The "
+#~ "list of options will be shuffled.<br>Example: <strong>We live on [[Earth|"
+#~ "Jupiter|Saturn|Moon]]."
+#~ msgstr ""
+#~ "Includeți între paranteze drepte, separate de bară verticală (|), "
+#~ "cuvintele alternative.<br>Puneți răspunsul corect să fie primul în listă. "
+#~ "Lista opțiunilor va fi amestecată.<br>Exemplu: <strong>Trăim pe [[Pământ|"
+#~ "Jupiter|Saturn|Lună]].</strong>"
+
+#, fuzzy
+#~| msgid "Text button next question"
+#~ msgid "Button\\'s text button for answering a question"
+#~ msgstr "Text buton pt următoarea întrebare"
+
+#~ msgid "When answered correctly"
+#~ msgstr "Când s-a răspuns corect"
+
+#~ msgid "When answered wrongly"
+#~ msgstr "Când s-a răspuns greșit"
+
+#~ msgid "Matching answers"
+#~ msgstr "Potrivire coloane"
+
+#~ msgid "Chestionar"
+#~ msgstr "Chestionar"
+
+#~ msgid "Select"
+#~ msgstr "Selectează"
