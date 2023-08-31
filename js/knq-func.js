@@ -1,7 +1,29 @@
 //=========================BEGIN - FUNCTII BUILD ANSWERS==================================
 
+function newShade (hexColor, magnitude) {
+    hexColor = hexColor.replace(`#`, ``);
+    if (hexColor.length === 6) {
+        const decimalColor = parseInt(hexColor, 16);
+        let r = (decimalColor >> 16) + magnitude;
+        r > 255 && (r = 255);
+        r < 0 && (r = 0);
+        let g = (decimalColor & 0x0000ff) + magnitude;
+        g > 255 && (g = 255);
+        g < 0 && (g = 0);
+        let b = ((decimalColor >> 8) & 0x00ff) + magnitude;
+        b > 255 && (b = 255);
+        b < 0 && (b = 0);
+        return `#${(g | (b << 8) | (r << 16)).toString(16)}`;
+    } else {
+        return hexColor;
+    }
+}
+
+
 function buildAnswerSelectBox(answers){
     let answer = answers.split(/\[\[|]]/);
+    answer[0] = answer[0].replace(/(?:\r\n|\r|\n)/g, '<br>')
+    console.log(answer[0])
     let extra = 0;
     if (answer[0] === '[') {
         extra = 1;
@@ -13,8 +35,7 @@ function buildAnswerSelectBox(answers){
         } else {
             let options = answer[j].split("|");
             let optionsBuilder = [];
-            // TODO: language options here
-            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "'><option value='0'>Choose the right answer</option>"
+            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "'><option value='0'>" + choose_answer_msg + "</option>"
             options.forEach((element, index) => {
                 optionsBuilder.push("<option value='" + parseInt(index + 1) + "'>" + element + "</option>")
             })
@@ -23,7 +44,7 @@ function buildAnswerSelectBox(answers){
             htmlBuilder += "<select>"
         }
     }
-    jQuery("#knq_answer").append("<div id='1'><p style='user-select: none'>&nbsp;" + htmlBuilder + "</p></div>");
+    jQuery("#knq_answer").append("<div id='1'><p style='user-select: none'>" + htmlBuilder + "</p></div>");
 }
 
 function buildAnswerDragDrop(answers){
@@ -36,6 +57,7 @@ function buildAnswerDragDrop(answers){
         extraWords = ['']
     }
     let answer = answers[0].split(/\[\[|]]/);
+    answer[0] = answer[0].replace(/(?:\r\n|\r|\n)/g, '<br>')
     let extra = 0;
     if (answer[0] === '[') {
         extra = 1
@@ -83,6 +105,10 @@ function buildAnswerDragDrop(answers){
             jQuery(this).height(height)
         })
     });
+    let magnitude = -70
+    jQuery('.draggable').each(function () {
+        jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
+    })
     jQuery('.droppable').each(function () {
         jQuery(this).droppable({
             drop: function( event, ui ) {
@@ -120,7 +146,7 @@ function buildAnswerDragDrop(answers){
                     }
                 }
                 jQuery(ui.draggable).offset({top: top,left: left});
-                jQuery(ui.draggable).css('border', '2px solid #'+color_bhover);
+                jQuery(ui.draggable).css('border', '2px solid ' + newShade(color_hover, magnitude));
                 if (jQuery(ui.draggable).attr('id').split("-")[1] === jQuery(this).attr('id').split("-")[1]) {
                     jQuery(this).attr('data-correct', '1')
                 }
@@ -135,7 +161,7 @@ function buildAnswerDragDrop(answers){
         jQuery(this).draggable({
             start: function () {
                 let draggable = jQuery(this);
-                draggable.css('border', '2px dotted #'+color_bhover);
+                draggable.css('border', '2px dotted ' + newShade(color_hover, magnitude));
                 jQuery(".droppable").each(function () {
                     if (jQuery(this).attr('data-dropped-element') === draggable.attr('id').split("-")[1]) {
                         jQuery(this).attr('data-dropped-element', '0')
@@ -161,7 +187,9 @@ function buildAnswerDragDrop(answers){
             }
         })
     })
-
+    jQuery('.droppable').css('background', color_neutral)
+    jQuery('.droppable').css('border', '2px solid ' + newShade(color_neutral, -70))
+    jQuery('.draggable').css('background', color_hover)
 }
 
 function buildAnswerCheckRadioImage(answers, tip) {
@@ -181,27 +209,42 @@ function buildAnswerCheckRadioImage(answers, tip) {
     jQuery('#knqList').append(htmlBuilder)
     jQuery('.imageClass').each(function () {
         jQuery(this).on('load', function () {
-            console.log(jQuery(this).height()+" "+maxHeight)
             jQuery('.imageClass').each(function () {
                 if (maxHeight < jQuery(this).height()) {
                     maxHeight = jQuery(this).height();
                 }
             })
-            jQuery('.imageClass').each(function (index, element) {
+            jQuery('.imageClass').each(function () {
                 jQuery(this).parent().height(maxHeight)
+                jQuery('<div style=\"clear:both\"></div><br>').insertAfter(jQuery(this).parent());
             })
         })
         return false
     })
-    Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
-        console.log('images finished loading');
-    });
-    jQuery(window).bind('load', function(){console.log("La final2uuuuuuuuuuuuuuu: "+maxHeight);})
     jQuery("#knqList").css('height', 'fit-content')
+    jQuery('.knq_unselected').css('background-color', color_neutral)
+    jQuery('.knq_unselected').each(function() {
+        jQuery(this).on('mouseenter', function() {
+            jQuery(this).css('background-color', color_hover)
+        })
+        jQuery(this).on('mouseleave', function() {
+            jQuery(this).css('background-color', color_neutral)
+        })
+    })
 }
 
-function buildAnswerCheckRadioSort(answers, tip){
+function selectRadio(object) {
+    jQuery('.' + object.attr('class')).each(function() {
+        jQuery(this).children("i").attr("class", "fa fa-circle-o");
+    })
+    object.children("i").attr("class", "fa-regular fa-circle-check");
+}
+
+function buildAnswerCheckRadioSortTrueFalse(answers, tip){
     answers = answers.split("|");
+    if (tip === qTRUEFALSE) {
+        jQuery('#knqList').append('<li style="margin: 3px;"><div style="float:right;"><div style="display: inline-block; margin-right: 1vw; text-align: center" id="trueColumn">' + text_true + '</div><div style="display: inline-block; text-align: center" id="falseColumn">' + text_false + '</div></div><br></li>')
+    }
     for (i = 0; i < answers.length; i++) {
         // în funcție de tipul de întrebare, iconița din stânga diferă
         if (tip === qCHECKBOXTEXT) {
@@ -210,8 +253,34 @@ function buildAnswerCheckRadioSort(answers, tip){
             jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-circle-o' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
         } else if (tip === qSORTING) {
             jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-arrows-up-down' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
+        } else if (tip === qTRUEFALSE) {
+            jQuery("#knqList").append("<li class='knq_unselected' style='cursor: auto !important' id='" + (i + 1) + "'><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p><label style='float: right; width: fit-content;' class='radioLabel" + (i+1) + "' onclick='selectRadio(jQuery(this))' for='true_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='trueRadio' style='float: right; display: none;' type='radio' id='true_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'><label style='float: right; width: fit-content; margin-right: 1vw' onclick='selectRadio(jQuery(this))' class='radioLabel" + (i+1) + "' for='false_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='falseRadio' style='float: right; display: none' type='radio' id='false_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'></li>")
         }
     }
+    if (tip === qTRUEFALSE) {
+        jQuery('.radioLabel1').eq(0).find('i').ready(function () {
+            console.log(jQuery('.radioLabel1').eq(0).find('i').width())
+            console.log(jQuery('.radioLabel1').eq(0).find('i')[0])
+            console.log(jQuery('.radioLabel1').eq(0).width())
+            console.log(jQuery('.radioLabel1').eq(0).innerWidth())
+            console.log(jQuery('.radioLabel1').eq(0).outerWidth())
+            console.log(jQuery('.radioLabel1').eq(0).outerWidth(true))
+            console.log(jQuery('.radioLabel1').eq(0).css('width'))
+            jQuery('#trueColumn').css('width', '20px')
+        })
+        jQuery('.radioLabel1').eq(1).find('i').ready(function () {
+            jQuery('#falseColumn').css('width', '20px')
+        })
+    }
+    jQuery('.knq_unselected').css('background-color', color_neutral)
+    jQuery('.knq_unselected').each(function() {
+        jQuery(this).on('mouseenter', function() {
+            jQuery(this).css('background-color', color_hover)
+        })
+        jQuery(this).on('mouseleave', function() {
+            jQuery(this).css('background-color', color_neutral)
+        })
+    })
 }
 
 function buildMatching(answers, rightOnes) {
@@ -259,6 +328,16 @@ function buildMatching(answers, rightOnes) {
         swap: true
     });
     jQuery("#matchingAnswers").addClass("ui-sortable")
+    jQuery('.knq_matching_answer').css('background', color_neutral)
+    jQuery('.knq_matching_answer').each(function() {
+        jQuery(this).on('mouseenter', function() {
+            jQuery(this).css('background-color', color_hover)
+        })
+        jQuery(this).on('mouseleave', function() {
+            jQuery(this).css('background-color', color_neutral)
+        })
+    })
+    jQuery("#matchingAnswers:hover").css('background', color_hover)
     elemSortableRightOnes = new Sortable(jQuery("#matchingRightOnes")[0], {
         animation: 150,
         ghostClass: 'blue-background-class',
@@ -266,6 +345,15 @@ function buildMatching(answers, rightOnes) {
         swap: true
     });
     jQuery("#matchingRightOnes").addClass("ui-sortable")
+    jQuery('.knq_right_one').css('background', color_neutral);
+    jQuery('.knq_right_one').each(function() {
+        jQuery(this).on('mouseenter', function() {
+            jQuery(this).css('background-color', color_hover)
+        })
+        jQuery(this).on('mouseleave', function() {
+            jQuery(this).css('background-color', color_neutral)
+        })
+    })
 }
 
 function destroySortable() {
@@ -285,19 +373,22 @@ function destroySortable() {
 function funcFullScreen(){
     jQuery("#fullscreen-link").click(function(e) {
         //dacă s-a apăsat butonul de full-screen
+        // jQuery('#trueColumn').hide()
+        // jQuery('#falseColumn').hide()
         if(jQuery.fullscreen.isFullScreen()){
             //ieșire din full screen
             jQuery.fullscreen.exit();
             relocateDraggablesNotFullscreen();
+            // relocateTrueFalseNotFullscreen()
         }
         else {
             //intrare în full screen
             jQuery('#quiz').fullscreen();
             relocateDraggablesFullscreen();
+            // relocateTrueFalseFullscreen()
         }
         return false;
     });
-// TODO: backend checkbox radio box
     jQuery(document).bind('fscreenchange', function(e, state, elem) {
         if (jQuery.fullscreen.isFullScreen()) {
             jQuery('#quiz').css("padding","50px");
@@ -321,6 +412,42 @@ function funcFullScreen(){
             scrollToAnchor('knq_question');
         }
     });
+}
+
+function relocateTrueFalseFullscreen() {
+    if (!jQuery.fullscreen.isFullScreen()) {
+        setTimeout(relocateTrueFalseFullscreen, 100)
+    }
+    else {
+        if (jQuery('.radioLabel1').eq(0).length) {
+            jQuery('.radioLabel1').eq(0).ready(function () {
+                jQuery('#trueColumn').css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width()/2 - jQuery('#trueColumn').width()/2)
+            })
+            jQuery('.radioLabel1').eq(1).ready(function () {
+                jQuery('#falseColumn').css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width()/2 - jQuery('#falseColumn').width()/2)
+            })
+            jQuery('#trueColumn').show()
+            jQuery('#falseColumn').show()
+        }
+    }
+}
+
+function relocateTrueFalseNotFullscreen() {
+    if (jQuery.fullscreen.isFullScreen()) {
+        setTimeout(relocateTrueFalseNotFullscreen, 100)
+    }
+    else {
+        if (jQuery('.radioLabel1').eq(0).length) {
+            jQuery('.radioLabel1').eq(0).ready(function () {
+                jQuery('#trueColumn').css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width()/2 - jQuery('#trueColumn').width()/2)
+            })
+            jQuery('.radioLabel1').eq(1).ready(function () {
+                jQuery('#falseColumn').css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width()/2 - jQuery('#falseColumn').width()/2)
+            })
+            jQuery('#trueColumn').show()
+            jQuery('#falseColumn').show()
+        }
+    }
 }
 
 function relocateDraggablesFullscreen() {

@@ -52,10 +52,13 @@ function knqb_scripts($hook)
 {
     wp_enqueue_script('knqb-js', plugin_dir_url(__FILE__) . '/js/knqb.js', array(), '1.3.0', true);
     wp_register_style('chosencss', plugins_url('css/chosen.min.css', __FILE__), true, '', 'all');
+    wp_register_style('farbtastic', plugins_url('css/farbtastic.css', __FILE__), true, '', 'all');
     wp_register_script('chosenjs', plugins_url('js/chosen.jquery.min.js', __FILE__), array('jquery'), '', true);
     wp_enqueue_style('chosencss');
+    wp_enqueue_style('farbtastic');
     wp_enqueue_script('chosenjs');
     wp_enqueue_script('sortable-js', plugins_url('knq/js/Sortable.min.js'), array(), '1.14.0', true);
+    wp_enqueue_script('farbtastic', plugins_url('knq/js/farbtastic.js'), array(), '1.15.0', true);
     //wp_enqueue_script('SortableJS', 'https://SortableJS.github.io/Sortable/Sortable.min.js');
     wp_enqueue_script('jquery-ui-core');
     wp_enqueue_script('jquery-ui-sortable');
@@ -155,7 +158,7 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     }
 
 
-    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_answers'"));
+    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_answers'"));
     if (count($globalShuffleAnswers) == 0) {
         $globalShuffleAnswers = '3';
     } else {
@@ -168,7 +171,7 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     $cate = $cate->cate - 0;
 
     $iduri = $wpdb->get_col($wpdb->prepare("SELECT knq_id FROM " . $wpdb->prefix . "knq WHERE quiz_id=$crtid AND order_id>0 ORDER BY order_id"));
-    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_questions'"));
+    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_questions'"));
     if (count($globalShuffleQuestions) == 0) {
         $globalShuffleQuestions = '3';
     } else {
@@ -184,67 +187,18 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     $o .= "<button id='redoQuiz' style='display: none' class='button button-primary'>" . __("Redo quiz", "knq") . "</button>";
     $o .= '<script type="text/javascript">iduri="' . $iduri . '";';
     $o .= 'cate=' . $cate . ';crti=1;';
-    $answerQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='answer_question'"));
-    if (count($answerQuestion) == 0) {
-        $answerQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='answer_question'"));
-        if (count($answerQuestion) == 0) {
-            $answerQuestion = __('Done!', 'knq');
-        } else {
-            $answerQuestion = $answerQuestion[0]->option_value;
-        }
-    } else {
-        $answerQuestion = $answerQuestion[0]->option_value;
-    }
 
-    $nextQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='next_question'"));
-    if (count($nextQuestion) == 0) {
-        $nextQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='next_question'"));
-        if (count($nextQuestion) == 0) {
-            $nextQuestion = __('Next!', 'knq');
-        } else {
-            $nextQuestion = $nextQuestion[0]->option_value;
-        }
-    } else {
-        $nextQuestion = $nextQuestion[0]->option_value;
-    }
+    $answerQuestion = get_option_value($crtid, 'answer_question', __('Done!', 'knq'));
+    $nextQuestion = get_option_value($crtid, 'next_question', __('Next!', 'knq'));
+    $finishQuiz = get_option_value($crtid, 'finish_quiz', __('Finish!', 'knq'));
+    $correctAnswerMessage = get_option_value($crtid, 'correct_answer_message', __('Correct!', 'knq'));
+    $wrongAnswerMessage = get_option_value($crtid, 'wrong_answer_message', __('Wrong!', 'knq'));
+    $correctColor = get_option_value($crtid, 'correct_color', '#B1D9BC');
+    $wrongColor = get_option_value($crtid, 'wrong_color', '#FAB6B6');
+    $neutralColor = get_option_value($crtid, 'neutral_color', '#F4F4F4');
+    $mainColor = get_option_value($crtid, 'main_color', '#FFF9B9');
 
-    $finishQuiz = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='finish_quiz'"));
-    if (count($finishQuiz) == 0) {
-        $finishQuiz = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='finish_quiz'"));
-        if (count($finishQuiz) == 0) {
-            $finishQuiz = __('Finish!', 'knq');
-        } else {
-            $finishQuiz = $finishQuiz[0]->option_value;
-        }
-    } else {
-        $finishQuiz = $finishQuiz[0]->option_value;
-    }
-
-    $correctAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='correct_answer_message'"));
-    if (count($correctAnswerMessage) == 0) {
-        $correctAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='correct_answer_message'"));
-        if (count($correctAnswerMessage) == 0) {
-            $correctAnswerMessage = __('Correct!', 'knq');
-        } else {
-            $correctAnswerMessage = $correctAnswerMessage[0]->option_value;
-        }
-    } else {
-        $correctAnswerMessage = $correctAnswerMessage[0]->option_value;
-    }
-
-    $wrongAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='wrong_answer_message'"));
-    if (count($wrongAnswerMessage) == 0) {
-        $wrongAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='wrong_answer_message'"));
-        if (count($wrongAnswerMessage) == 0) {
-            $wrongAnswerMessage = __('Wrong!', 'knq');
-        } else {
-            $wrongAnswerMessage = $wrongAnswerMessage[0]->option_value;
-        }
-    } else {
-        $wrongAnswerMessage = $wrongAnswerMessage[0]->option_value;
-    }
-
-    $o .= 'msg_done="' . $answerQuestion . '";msg_next="' . $nextQuestion . '";msg_finish="' . $finishQuiz . '";msg_correct="' . $correctAnswerMessage . '";msg_wrong="' . $wrongAnswerMessage . '"; find_words="' . __('Find above the following words', 'knq') . '"';
+    $o .= 'text_true="' . __('T', 'knq') . '"; text_false="' . __('F', 'knq') . '"; color_hover="' . $mainColor . '"; color_neutral="' . $neutralColor . '";color_nok="' . $wrongColor . '"; color_ok ="' . $correctColor . '" ;msg_done="' . $answerQuestion . '";msg_next="' . $nextQuestion . '";msg_finish="' . $finishQuiz . '";msg_correct="' . $correctAnswerMessage . '";msg_wrong="' . $wrongAnswerMessage . '"; find_words="' . __('Find above the following words', 'knq') . '"; choose_answer_msg="' . __('Choose the right answer', 'knq') . '"';
     $o .= '</script>';
 
 
@@ -262,6 +216,23 @@ function funcKNQ($atts = [], $content = null, $tag = '')
 
     // return output
     return $o;
+}
+
+function get_option_value($crtid, $option_name, $default_value)
+{
+    global $wpdb;
+    $option = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='" . $option_name . "'"));
+    if (count($option) == 0) {
+        $option = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='" . $option_name . "'"));
+        if (count($option) == 0) {
+            $option = $default_value;
+        } else {
+            $option = $option[0]->option_value;
+        }
+    } else {
+        $option = $option[0]->option_value;
+    }
+    return $option;
 }
 
 /**
@@ -295,126 +266,19 @@ function knq_options()
     echo '<form method="post"><input type="hidden" value="1" name="valid1">';
     $check = true;
     if (isset($_POST['valid1'])) {
-        if ($_POST['answerQuestion'] != __('Default value', 'knq')) {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["answerQuestion"] . "' WHERE quiz_id=0 AND option_name='answer_question'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'answer_question', '" . __('Done!', 'knq') . "')")
-            );
-            if (!$result || !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['nextQuestion'] != __('Default value', 'knq')) {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["nextQuestion"] . "' WHERE quiz_id=0 AND option_name='next_question'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'next_question', '" . __('Next!', 'knq') . "')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['finishQuiz'] != __('Default value', 'knq')) {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["finishQuiz"] . "' WHERE quiz_id=0 AND option_name='finish_quiz'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'finish_quiz', '" . __('Finish!', 'knq') . "')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['correctAnswerMessage'] != __('Default value', 'knq')) {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["correctAnswerMessage"] . "' WHERE quiz_id=0 AND option_name='correct_answer_message'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'correct_answer_message', '" . __('Correct!', 'knq') . "')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['wrongAnswerMessage'] != __('Default value', 'knq')) {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["wrongAnswerMessage"] . "' WHERE quiz_id=0 AND option_name='wrong_answer_message'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'wrong_answer_message', '" . __('Wrong!', 'knq') . "')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['globalDifficulty'] != '0') {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["globalDifficulty"] . "' WHERE quiz_id=0 AND option_name='global_difficulty'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'global_difficulty', '3')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['globalShuffleQuestions'] != '-1') {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["globalShuffleQuestions"] . "' WHERE quiz_id=0 AND option_name='global_shuffle_questions'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'global_shuffle_questions', '0')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
-        if ($_POST['globalShuffleAnswers'] != '-1') {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["globalShuffleAnswers"] . "' WHERE quiz_id=0 AND option_name='global_shuffle_answers'")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, 'global_shuffle_answers', '0')")
-            );
-            if (!$result && !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        }
+        $check &= modify_global_option('answerQuestion', __('Default value', 'knq'), __('Done!', 'knq'), 'answer_question');
+        $check &= modify_global_option('nextQuestion', __('Default value', 'knq'), __('Next!', 'knq'), 'next_question');
+        $check &= modify_global_option('finishQuiz', __('Default value', 'knq'), __('Finish!', 'knq'), 'finish_quiz');
+        $check &= modify_global_option('correctAnswerMessage', __('Default value', 'knq'), __('Correct!', 'knq'), 'correct_answer_message');
+        $check &= modify_global_option('wrongAnswerMessage', __('Default value', 'knq'), __('Wrong!', 'knq'), 'wrong_answer_message');
+        $check &= modify_global_option('globalDifficulty', '0', '3', 'difficulty');
+        $check &= modify_global_option('globalShuffleQuestions', '-1', '0', 'shuffle_questions');
+        $check &= modify_global_option('globalShuffleAnswers', '-1', '0', 'shuffle_answers');
+        $check &= modify_global_option('correctColor', __('Default value', 'knq'), '#B1D9BC', 'correct_color');
+        $check &= modify_global_option('wrongColor', __('Default value', 'knq'), '#FAB6B6', 'wrong_color');
+        $check &= modify_global_option('neutralColor', __('Default value', 'knq'), '#F4F4F4', 'neutral_color');
+        $check &= modify_global_option('mainColor', __('Default value', 'knq'), '#FFF9B9', 'main_color');
+
         if ($check) {
             echo '<div class="notice notice-success is-dismissible"><p><strong>' . __("Settings updated succesfully!", "knq") . '</strong></p></div>';
         } else {
@@ -435,7 +299,7 @@ function knq_options()
     $wrongAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='wrong_answer_message'"));
     $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="wrongAnswerMessage">' . __('Message when answered wrongly','knq') . ':</label></td><td><input style="width: 100%" type="text" id="wrongAnswerMessage" name="wrongAnswerMessage" value="' . (count($wrongAnswerMessage) == 0 ? __('Default value', 'knq') : $wrongAnswerMessage[0]->option_value) . '"></td></tr>';
 
-    $globalDifficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_difficulty'"));
+    $globalDifficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='difficulty'"));
     $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="globalDifficulty">' . __('Difficulty level', 'knq') . ':</label></td><td><select id="globalDifficulty" name="globalDifficulty">';
     if (count($globalDifficulty) == 0) {
         $o .= '<option selected value="0">' . __('Default value', 'knq') . '</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>';
@@ -444,7 +308,7 @@ function knq_options()
     }
     $o .= '</select></td></tr>';
 
-    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_questions'"));
+    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_questions'"));
     $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="globalShuffleQuestions">' . __('Shuffle questions', 'knq') . ': </label></td><td><select id="globalShuffleQuestions" name="globalShuffleQuestions">';
     if (count($globalShuffleQuestions) == 0) {
         $o .= '<option selected value="-1">' . __('Default value', 'knq') . '</option><option value="0">' . __("No", "knq") . '</option><option value="1">' . __("Yes", "knq") . '</option></td></tr>';
@@ -453,7 +317,7 @@ function knq_options()
     }
     $o .= '</select></td></tr>';
 
-    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_answers'"));
+    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_answers'"));
     $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="globalShuffleAnswers">' . __('Shuffle answers', 'knq') . ': </label></td><td><select id="globalShuffleAnswers" name="globalShuffleAnswers">';
     if (count($globalShuffleAnswers) == 0) {
         $o .= '<option selected value="-1">' . __('Default value', 'knq') . '</option><option value="0">' . __("No", "knq") . '</option>value="1">' . __("Yes", "knq") . '</option>';
@@ -461,8 +325,43 @@ function knq_options()
         $o .= '<option ' . ($globalShuffleAnswers[0]->option_value == 0 ? 'selected' : '') . ' value="0">' . __("No", "knq") . '</option><option ' . ($globalShuffleAnswers[0]->option_value == 1 ? 'selected' : '') . ' value="1">' . __("Yes", "knq") . '</option>';
     }
     $o .= '</select></td></tr>';
+    
+    $globalCorrectColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='correct_color'"));
+    $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="correctColor">' . __('Correct color', 'knq') . ':</label></td><td style="display: flex; margin: auto;"><input style="height: fit-content" id="correctColor" name="correctColor" value="' . (count($globalCorrectColor) == 0 ? __('Default value', 'knq') : $globalCorrectColor[0]->option_value) . '"/><div id="correctColorPicker"></div></td></tr>';
+
+    $globalWrongColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='wrong_color'"));
+    $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="wrongColor">' . __('Wrong color', 'knq') . ':</label></td><td style="display: flex; margin: auto;"><input style="height: fit-content" id="wrongColor" name="wrongColor" value="' . (count($globalWrongColor) == 0 ? __('Default value', 'knq') : $globalWrongColor[0]->option_value) . '"/><div id="wrongColorPicker"></div></td></tr>';
+
+    $globalNeutralColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='neutral_color'"));
+    $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="neutralColor">' . __('Neutral color', 'knq') . ':</label></td><td style="display: flex; margin: auto;"><input style="height: fit-content" id="neutralColor" name="neutralColor" value="' . (count($globalNeutralColor) == 0 ? __('Default value', 'knq') : $globalNeutralColor[0]->option_value) . '"/><div id="neutralColorPicker"></div></td></tr>';
+
+    $globalMainColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='main_color'"));
+    $o .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . '<td style="width: 30%"><label for="mainColor">' . __('Main color', 'knq') . ':</label></td><td style="display: flex; margin: auto;"><input style="height: fit-content" id="mainColor" name="mainColor" value="' . (count($globalMainColor) == 0 ? __('Default value', 'knq') : $globalMainColor[0]->option_value) . '"/><div id="mainColorPicker"></div></td></tr>';
+    
     $o .= '<tr><td><input type="submit" class="button button-primary" value="' . __('Update options', 'knq') . '"></td></tr></table>';
     echo $o;
+}
+
+function modify_global_option($object_name, $missing_value, $default_value, $option_name)
+{
+    $check = true;
+    global $wpdb;
+    if ($_POST[$object_name] != $missing_value) {
+        $result = $wpdb->query(
+            $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST[$object_name] . "' WHERE quiz_id=0 AND option_name='" . $option_name ."'")
+        );
+        if (!$result && !(gettype($result) == 'integer')) {
+            $check = false;
+        }
+    } else {
+        $result = $wpdb->query(
+            $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (0, '" . $option_name . "', '" . $default_value . "')")
+        );
+        if (!$result && !(gettype($result) == 'integer')) {
+            $check = false;
+        }
+    }
+    return $check;
 }
 
 function knq_quizuri()
@@ -508,271 +407,20 @@ function knq_quizuri()
     $check = true;
     if (isset($_POST["valid1"])) {
         $idu = $_POST["quizId1"] - 0;
-        $title = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='title'"));
-        if (count($title) == 0) {
-            $result = $wpdb->query(
-                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'title', '" . $_POST["titleArea"] . "')")
-            );
-            if (!$result || !(gettype($result) == 'integer')) {
-                $check = false;
-            }
-        } else {
-            $result = $wpdb->query(
-                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["titleArea"] . "' WHERE quiz_id=" . $idu . " AND option_name='title'")
-            );
-            if ($result == false && $result != 0) {
-                $check = false;
-            }
-        }
-        $description = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='description'"));
-        if ($_POST["descriptionArea"] == "") {
-            if (count($description) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='description'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($description) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'description', '" . $_POST["descriptionArea"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["descriptionArea"] . "' WHERE quiz_id=" . $idu . " AND option_name='description'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $difficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='difficulty'"));
-        if ($_POST["difficulty"] == "0") {
-            if (count($difficulty) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='difficulty'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($difficulty) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'difficulty', '" . $_POST["difficulty"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["difficulty"] . "' WHERE quiz_id=" . $idu . " AND option_name='difficulty'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $randomQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='random_questions'"));
-        if ($_POST["randomQuestions"] == "-1") {
-            if (count($randomQuestions) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='random_questions'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($randomQuestions) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'random_questions', '" . $_POST["randomQuestions"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["randomQuestions"] . "' WHERE quiz_id=" . $idu . " AND option_name='random_questions'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $randomAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='random_answers'"));
-        if ($_POST["randomAnswers"] == "-1") {
-            if (count($randomAnswers) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='random_answers'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($randomAnswers) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'random_answers', '" . $_POST["randomAnswers"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["randomAnswers"] . "' WHERE quiz_id=" . $idu . " AND option_name='random_answers'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $answerQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='answer_question'"));
-        if ($_POST["answerQuestion"] == "") {
-            if (count($answerQuestion) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='answer_question'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($answerQuestion) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'answer_question', '" . $_POST["answerQuestion"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["answerQuestion"] . "' WHERE quiz_id=" . $idu . " AND option_name='answer_question'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $nextQuestion = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='next_question'"));
-        if ($_POST["nextQuestion"] == "") {
-            if (count($nextQuestion) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='next_question'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($nextQuestion) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'next_question', '" . $_POST["nextQuestion"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["nextQuestion"] . "' WHERE quiz_id=" . $idu . " AND option_name='next_question'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $finishQuiz = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='finish_quiz'"));
-        if ($_POST["finishQuiz"] == "") {
-            if (count($finishQuiz) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='finish_quiz'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($finishQuiz) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'finish_quiz', '" . $_POST["finishQuiz"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["finishQuiz"] . "' WHERE quiz_id=" . $idu . " AND option_name='finish_quiz'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $correctAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='correct_answer_message'"));
-        if ($_POST["correctAnswerMessage"] == "") {
-            if (count($correctAnswerMessage) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='correct_answer_message'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($correctAnswerMessage) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'correct_answer_message', '" . $_POST["correctAnswerMessage"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["correctAnswerMessage"] . "' WHERE quiz_id=" . $idu . " AND option_name='correct_answer_message'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
-        $wrongAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='wrong_answer_message'"));
-        if ($_POST["wrongAnswerMessage"] == "") {
-            if (count($wrongAnswerMessage) != 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='wrong_answer_message'")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-            }
-        } else {
-            if (count($wrongAnswerMessage) == 0) {
-                $result = $wpdb->query(
-                    $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", 'wrong_answer_message', '" . $_POST["wrongAnswerMessage"] . "')")
-                );
-                if (!$result || !(gettype($result) == 'integer')) {
-                    $check = false;
-                }
-
-            } else {
-                $result = $wpdb->query(
-                    $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST["wrongAnswerMessage"] . "' WHERE quiz_id=" . $idu . " AND option_name='wrong_answer_message'")
-                );
-                if ($result == false && $result != 0) {
-                    $check = false;
-                }
-            }
-        }
+        $check &= modify_option($idu, 'title', 'titleArea');
+        $check &= modify_option($idu, 'description', 'descriptionArea');
+        $check &= modify_option($idu, 'difficulty', 'difficulty');
+        $check &= modify_option($idu, 'random_questions', 'randomQuestions');
+        $check &= modify_option($idu, 'random_answers', 'randomAnswers');
+        $check &= modify_option($idu, 'answer_question', 'answerQuestion');
+        $check &= modify_option($idu, 'next_question', 'nextQuestion');
+        $check &= modify_option($idu, 'finish_quiz', 'finishQuiz');
+        $check &= modify_option($idu, 'correct_answer_message', 'correctAnswerMessage');
+        $check &= modify_option($idu, 'wrong_answer_message', 'wrongAnswerMessage');
+        $check &= modify_option($idu, 'correct_color', 'correctColor');
+        $check &= modify_option($idu, 'wrong_color', 'wrongColor');
+        $check &= modify_option($idu, 'neutral_color', 'neutralColor');
+        $check &= modify_option($idu, 'main_color', 'mainColor');
         if ($check) {
             echo '<div class="notice notice-success is-dismissible"><p><strong>' . __('Quiz updated', 'knq') . '</strong></p></div>';
         } else {
@@ -843,7 +491,7 @@ function knq_quizuri()
     $description = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='description'"));
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='descriptionArea'>" . __('Description', 'knq') . ":</label></td><td><label><textarea rows='5' cols='100' name='descriptionArea' id='descriptionArea'>" . (count($description) == 0 ? "" : $description[0]->option_value) . "</textarea></td></tr>";
 
-    $globalDifficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_difficulty'"));
+    $globalDifficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='difficulty'"));
     if (count($globalDifficulty) == 0) {
         $globalDifficulty = '3';
     } else {
@@ -852,7 +500,7 @@ function knq_quizuri()
     $difficulty = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='difficulty'"));
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='difficulty'>" . __("Difficulty level", "knq") . ":</label></td><td><select id='difficulty' name='difficulty'><option " . (count($difficulty) == 0 ? "selected" : "") . " value='0'>" . __('Global value', 'knq') . " (" . $globalDifficulty . ")</option><option value='1'" . (count($difficulty) != 0 && $difficulty[0]->option_value == 1 ? 'selected' : '') . ">1</option><option value='2'" . (count($difficulty) != 0 && $difficulty[0]->option_value == 2 ? 'selected' : '') . ">2</option><option value='3'" . (count($difficulty) != 0 && $difficulty[0]->option_value == 3 ? 'selected' : '') . ">3</option><option value='4'" . (count($difficulty) != 0 && $difficulty[0]->option_value == 4 ? 'selected' : '') . ">4</option><option value='5'" . (count($difficulty) != 0 && $difficulty[0]->option_value == 5 ? 'selected' : '') . ">5</option></select></td></tr>";
 
-    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_questions'"));
+    $globalShuffleQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_questions'"));
     if (count($globalShuffleQuestions) == 0) {
         $globalShuffleQuestions = '0';
     } else {
@@ -861,7 +509,7 @@ function knq_quizuri()
     $randomQuestions = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='random_questions'"));
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='randomQuestions'>" . __("Shuffle questions", "knq") . ":</label></td><td><select id='randomQuestions' name='randomQuestions'><option " . (count($randomQuestions) == 0 ? "selected" : "") . " value='-1'>" . __('Global value', 'knq') . " (" . ($globalShuffleQuestions == '0' ? __("No", "knq") : __("Yes", "knq")) . ")</option><option value='1'" . (count($randomQuestions) != 0 && $randomQuestions[0]->option_value == 1 ? 'selected' : '') . ">" . __("Yes", "knq") . "</option><option value='0'" . (count($randomQuestions) != 0 && $randomQuestions[0]->option_value == 0 ? 'selected' : '') . ">" . __("No", "knq") . "</option></select></td></tr>";
 
-    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='global_shuffle_answers'"));
+    $globalShuffleAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='shuffle_answers'"));
     if (count($globalShuffleAnswers) == 0) {
         $globalShuffleAnswers = '0';
     } else {
@@ -917,11 +565,48 @@ function knq_quizuri()
     $wrongAnswerMessage = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='wrong_answer_message'"));
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='wrongAnswerMessage'>" . __("Message when answered wrongly", "knq") . ":</label></td><td><input id='wrongAnswerMessage' name='wrongAnswerMessage' value='" . (count($wrongAnswerMessage) == 0 ? '' : $wrongAnswerMessage[0]->option_value) . "'/><label style='margin-left: 0.5vw' for='wrongAnswerMessage'>" . __('Global value', 'knq') . ": " . $globalWrongAnswerMessage . "</label></td></tr>";
 
-    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%></td><td><input type='submit' style='margin-top: 0.5vw' class='button button-primary' value='" . __('Update Quiz', 'knq') . "' id='updateQuiz'></td></tr></table>";
-    $codform .= "</form><br>";
+    $globalCorrectColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='correct_color'"));
+    if (count($globalCorrectColor) == 0) {
+        $globalCorrectColor = '#B1D9BC';
+    } else {
+        $globalCorrectColor = $globalCorrectColor[0]->option_value;
+    }
+    $correctColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='correct_color'"));
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='correctColor'>" . __("Correct color", "knq") . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='correctColor' name='correctColor' value='" . (count($correctColor) == 0 ? $globalCorrectColor : $correctColor[0]->option_value) . "'/><div id='correctColorPicker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalCorrectColor . "' value='" . __('Global value', 'knq') . ": " . $globalCorrectColor . "'></td></tr>";
 
-    // TODO: first time saving question of type word search does not save the word search area
-    // TODO: first time saving question of type matching there is an error with the column width
+    $globalWrongColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='wrong_color'"));
+    if (count($globalWrongColor) == 0) {
+        $globalWrongColor = '#FAB6B6';
+    } else {
+        $globalWrongColor = $globalWrongColor[0]->option_value;
+    }
+    $wrongColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='wrong_color'"));
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='wrongColor'>" . __("Wrong color", "knq") . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='wrongColor' name='wrongColor' value='" . (count($wrongColor) == 0 ? $globalWrongColor : $wrongColor[0]->option_value) . "'/><div id='wrongColorPicker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalWrongColor . "' value='" . __('Global value', 'knq') . ": " . $globalWrongColor . "'></td></tr>";
+
+    $globalNeutralColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='neutral_color'"));
+    if (count($globalNeutralColor) == 0) {
+        $globalNeutralColor = '#F4F4F4';
+    } else {
+        $globalNeutralColor = $globalNeutralColor[0]->option_value;
+    }
+    $neutralColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='neutral_color'"));
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='neutralColor'>" . __("Neutral color", "knq") . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='neutralColor' name='neutralColor' value='" . (count($neutralColor) == 0 ? $globalNeutralColor : $neutralColor[0]->option_value) . "'/><div id='neutralColorPicker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalNeutralColor . "' value='" . __('Global value', 'knq') . ": " . $globalNeutralColor . "'></td></tr>";
+    
+    // #FFF9B9
+    
+    $globalMainColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='main_color'"));
+    if (count($globalMainColor) == 0) {
+        $globalMainColor = '#FFF9B9';
+    } else {
+        $globalMainColor = $globalMainColor[0]->option_value;
+    }
+    $mainColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='main_color'"));
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='mainColor'>" . __("Main color", "knq") . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='mainColor' name='mainColor' value='" . (count($mainColor) == 0 ? $globalMainColor : $mainColor[0]->option_value) . "'/><div id='mainColorPicker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalMainColor . "' value='" . __('Global value', 'knq') . ": " . $globalMainColor . "'></td></tr>";
+    
+//    $codform .= add_option();
+
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%></td><td><input type='submit' style='margin-top: 0.5vw' class='button button-primary' value='" . __('Update Quiz', 'knq') . "' id='updateQuiz'></td></tr>";
+    $codform .= "</table></form><br>";
 
     $intrebari = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT knq_id, question, order_id FROM " . $wpdb->prefix . "knq WHERE quiz_id=" . $quizId . "  ORDER BY order_id"));
     $codform .= '<form method="post" action="" onsubmit="return reorderQuestions();" novalidate="novalidate"><input type="hidden" name="questions_counter" value="' . count($intrebari) . '"><input type="hidden" name="valid3" value="1" /><input type="hidden" name="quizId3" value="' . $quizId . '" />';
@@ -948,6 +633,54 @@ function knq_quizuri()
     echo '</div>';
 }
 
+//function add_option($option_name, $i, $quizId, $default_value, $object_name, $object_text)
+//{
+//    global $wpdb;
+//    $globalOption = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=0 AND option_name='" . $option_name . "'"));
+//    if (count($globalOption) == 0) {
+//        $globalOption = $default_value;
+//    } else {
+//        $globalOption = $globalOption[0]->option_value;
+//    }
+//    $option = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='" . $option_name . "'"));
+//    return '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='" . $object_name . "'>" . $object_text . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='" . $object_name . "' name='" . $object_name . "' value='" . (count($option) == 0 ? $globalOption : $option[0]->option_value) . "'/><div id='" . $object_name . "Picker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalOption . "' value='" . __('Global value', 'knq') . ": " . $globalOption . "'></td></tr>";
+//}
+
+function modify_option($idu, $option_name, $object_name)
+{
+    $check = true;
+    global $wpdb;
+    $option = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='" . $option_name . "'"));
+    if ($_POST[$object_name] == "") {
+        if (count($option) != 0) {
+            $result = $wpdb->query(
+                $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $idu . " AND option_name='" . $option_name . "'")
+            );
+            if ($result == false || !(gettype($result) == 'integer')) {
+                $check = false;
+            }
+        }
+    } else {
+        if (count($option) == 0) {
+            $result = $wpdb->query(
+                $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $idu . ", '" . $option_name . "', '" . $_POST[$object_name] . "')")
+            );
+            if ($result == false || !(gettype($result) == 'integer')) {
+                $check = false;
+            }
+
+        } else {
+            $result = $wpdb->query(
+                $wpdb->prepare("UPDATE " . $wpdb->prefix . "knq_details SET option_value='" . $_POST[$object_name] . "' WHERE quiz_id=" . $idu . " AND option_name='" . $option_name . "'")
+            );
+            if ($result == false && $result != 0) {
+                $check = false;
+            }
+        }
+    }
+    return $check;
+}
+
 
 function insertDefaultAnswerList()
 {
@@ -955,11 +688,11 @@ function insertDefaultAnswerList()
     $codform .= "<li id='answerLi1' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer1' id='answerContainer1'><i style='margin-right: 1vw' class='fa-solid fa-arrows-up-down'></i><input autocomplete='off' size='80' class='answer' name='answer1' value=''>";
     $codform .= "<button type=button style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(1, 1)' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button>";
     $codform .= "<input type='checkbox' onclick='uncheckAnswers(1)' class='correct' id='correct1' name='correct1' value='correct'>";
-    $codform .= "<label class='correct_label' for='correct1'>Corect</label></div></li>";
+    $codform .= "<label class='correct_label' for='correct1'>Correct</label></div></li>";
     $codform .= "<li id='answerLi2' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer2' id='answerContainer2'><i style='margin-right: 1vw' class='fa-solid fa-arrows-up-down'></i><input autocomplete='off' size='80' class='answer' name='answer2' value=''>";
     $codform .= "<button type=button style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(1, 1)' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button>";
     $codform .= "<input type='checkbox' onclick='uncheckAnswers(2)' class='correct' id='correct2' name='correct2' value='correct'>";
-    $codform .= "<label class='correct_label' for='correct2'>Corect</label></div></li></ul>";
+    $codform .= "<label class='correct_label' for='correct2'>Correct</label></div></li></ul>";
     $codform .= "<div style='display: none' id='addNewAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(1); return false' counter='2' name='addNewAnswer' id='addNewAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
     return $codform;
 }
@@ -988,8 +721,9 @@ function insertDefaultWordSearch()
 function insertDefaultMatching()
 {
     $codform = '<div style="display: none" id="matching">';
-    $codform .= '<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer1" id="matchingContainer1"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer1" value=""><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect1" value=""><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(1,11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
-    $codform .= '<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer2" id="matchingContainer2"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer2" value=""><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect2" value=""><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(2,11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
+    $codform .= '<div style="width: 50%" id="answerColumnWidthContainer"><label for="answerColumnWidth">' . __('First column width:', 'knq') . ': </label><input id="answerColumnWidth" name="answerColumnWidth" min="1" max="100" type="number" value="50"><label for="answerColumnWidth">%</label></div>';
+    $codform .= '<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer1" id="matchingContainer1"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer1" value="option1"><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect1" value="option1"><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(1,11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
+    $codform .= '<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer2" id="matchingContainer2"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer2" value="option2"><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect2" value="option2"><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(2,11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
     $codform .= '</div>';
     $codform .= "<div style='display: none' id='addNewMatchingAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(11); return false' counter='2' name='addNewAnswer' id='addNewMatchingAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
     return $codform;
@@ -1005,7 +739,7 @@ function knq_questions()
 
     // definire formular alegere quiz
     $codform = "";
-    $codform .= '<script type="text/javascript">msg_delq="' . __("Are you sure? There is no undo to that!", "knq") . '";</script>';
+    $codform .= '<script type="text/javascript">correctText="' . __('Correct', 'knq') . '"; trueText="' . __('True', 'knq') . '"; msg_delq="' . __("Are you sure? There is no undo to that!", "knq") . '";</script>';
     $codform .= '<form method="post" action="" novalidate="novalidate"><input type="hidden" name="option_page" value="general" /><input type="hidden" name="valid" value="1" />';
     $codform .= "<select onchange='this.form.submit()' data-placeholder='" . __('Choose a quiz', 'knq') . "' class='chosen-select' size=1 name='quizId' id='quizId'>";
     $quizzes = $wpdb->get_results($wpdb->prepare("SELECT MAX(quiz_id) AS maxqid FROM " . $wpdb->prefix . "knq_details ORDER BY quiz_id"));
@@ -1064,7 +798,7 @@ function knq_questions()
         $answerCounter = $_POST["answerCounter"];
         $answerBuilder = "";
         $correctAnswerBuilder = "";
-        if ($_POST["typeSelect"] == '1' || $_POST["typeSelect"] == '2' || $_POST["typeSelect"] == '3') {
+        if ($_POST["typeSelect"] == '1' || $_POST["typeSelect"] == '2' || $_POST["typeSelect"] == '3' || $_POST["typeSelect"] == '12') {
             for ($i = 1; $i < $answerCounter; $i++) {
                 if (isset($_POST["answer" . $i]) && $_POST["answer" . $i] != "") {
                     $answerBuilder .= $_POST["answer" . $i] . "|";
@@ -1119,7 +853,7 @@ function knq_questions()
             $answerBuilder .= "|" . $wordsSearch . "|" . $_POST["restLit"];
         } else if ($_POST["typeSelect"] == '11') {
             $answerBuilder .= $_POST['answerColumnWidth'] . '[[';
-            for ($i = 0; $i < $answerCounter; $i++) {
+            for ($i = 1; $i < $answerCounter; $i++) {
                 if (isset($_POST["matchingAnswer" . $i]) && $_POST["matchingAnswer" . $i] != "") {
                     $answerBuilder .= $_POST["matchingAnswer" . $i] . "|";
                     if (isset($_POST["matchingCorrect" . $i]) && $_POST["matchingCorrect" . $i] != "") {
@@ -1183,9 +917,9 @@ function knq_questions()
     $counter = 1;
     $i = 1;
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='questionArea'>" . __("Question", "knq") . ":</label></td><td><textarea rows='5' cols='100' name='questionArea' id='questionArea'>" . $detaliiIntrebari[0]->question . "</textarea></td></tr>";
-    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option></select></td></tr>";
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option><option value='12'" . ($detaliiIntrebari[0]->type == 12 ? "selected" : "") . ">" . __("True or False", "knq") . "</option></select></td></tr>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label>" . __("Answer(s)", "knq") . ":</label></td><td>";
-    if ($detaliiIntrebari[0]->type == 1 || $detaliiIntrebari[0]->type == 2 || $detaliiIntrebari[0]->type == 3) {
+    if ($detaliiIntrebari[0]->type == 1 || $detaliiIntrebari[0]->type == 2 || $detaliiIntrebari[0]->type == 3 || $detaliiIntrebari[0]->type == 12) {
         $codform .= "<ul id='answers'>";
         $answersArray = explode("|", $detaliiIntrebari[0]->answers);
         foreach ($answersArray as $answer) {
@@ -1196,11 +930,11 @@ function knq_questions()
                 $codform .= "<label class='correct_label' style='display: none' for='correct" . $counter . "'>" . __("Correct", "knq") . "</label></div></li>";
             } else {
                 if (strpos($detaliiIntrebari[0]->right_one, "" . $counter) !== false) {
-                    $codform .= "<input type='" . ($detaliiIntrebari[0]->type==1?'checkbox':'radio') . "' onclick='uncheckAnswers(" . $counter . ")' class='correct' checked id='correct" . $counter . "' name='correct" . $counter . "' value='correct'>";
+                    $codform .= "<input type='" . ($detaliiIntrebari[0]->type!=2?'checkbox':'radio') . "' onclick='uncheckAnswers(" . $counter . ")' class='correct' checked id='correct" . $counter . "' name='correct" . $counter . "' value='correct'>";
                 } else {
-                    $codform .= "<input type='" . ($detaliiIntrebari[0]->type==1?'checkbox':'radio') . "' onclick='uncheckAnswers(" . $counter . ")' class='correct' id='correct" . $counter . "' name='correct" . $counter . "' value='correct'>";
+                    $codform .= "<input type='" . ($detaliiIntrebari[0]->type!=2?'checkbox':'radio') . "' onclick='uncheckAnswers(" . $counter . ")' class='correct' id='correct" . $counter . "' name='correct" . $counter . "' value='correct'>";
                 }
-                $codform .= "<label class='correct_label' for='correct" . $counter . "'>" . __("Correct", "knq") . "</label></div></li>";
+                $codform .= "<label class='correct_label' for='correct" . $counter . "'>" . ($detaliiIntrebari[0]->type==12?__("True", "knq"):__("Correct", "knq")) . "</label></div></li>";
             }
             $counter++;
         }
@@ -1242,7 +976,7 @@ function knq_questions()
         for ($i = 1; $i < count($answersArray); $i++) {
             $answer = $answersArray[$i];
             $imageInfo = explode('[]', $answer);
-            $codform .= '<div class="imageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" data-id="' . $imageInfo[1] . '" class="imageUrl" id="imageUrl' . $counter . '" name="imageUrl' . $counter . '" value="' . $answer . '"><img src="' . $imageInfo[0] . '" style="max-height: 100px; width: auto;"><br><input type="' . ($detaliiIntrebari[0]->type==6?"checkbox":"radio") . '" onclick="uncheckImages(' . $counter . ')" class="correctImage" id="correctImage' . $counter . '" name="correctImage' . $counter . '" ' . (strpos($detaliiIntrebari[0]->right_one, "" . $counter) !== false ? 'checked' : '') . ' value="correct"><label for="correctImage' . $counter . '">Corect</label></div>';
+            $codform .= '<div class="imageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" data-id="' . $imageInfo[1] . '" class="imageUrl" id="imageUrl' . $counter . '" name="imageUrl' . $counter . '" value="' . $answer . '"><img src="' . $imageInfo[0] . '" style="max-height: 100px; width: auto;"><br><input type="' . ($detaliiIntrebari[0]->type==6?"checkbox":"radio") . '" onclick="uncheckImages(' . $counter . ')" class="correctImage" id="correctImage' . $counter . '" name="correctImage' . $counter . '" ' . (strpos($detaliiIntrebari[0]->right_one, "" . $counter) !== false ? 'checked' : '') . ' value="correct"><label for="correctImage' . $counter . '">Correct</label></div>';
             $counter++;
         }
         $codform .= "</div>";
@@ -1282,7 +1016,7 @@ function knq_questions()
         $codform .= insertDefaultWordSearch();
         $codform .= '<div id="matching">';
         $firstColumnWidth = explode('[[', $detaliiIntrebari[0]->answers);
-        $codform .= '<div style="width: 50%" id="answerColumnWidthContainer"><label for="answerColumnWidth">First column width: </label><input id="answerColumnWidth" name="answerColumnWidth" min="1" max="100" type="number" value="' . $firstColumnWidth[0] . '"><label for="answerColumnWidth">%</label></div>';
+        $codform .= '<div style="width: 50%" id="answerColumnWidthContainer"><label for="answerColumnWidth">' . __('First column width:', 'knq') . ': </label><input id="answerColumnWidth" name="answerColumnWidth" min="1" max="100" type="number" value="' . $firstColumnWidth[0] . '"><label for="answerColumnWidth">%</label></div>';
         $answersArray = explode("|", $firstColumnWidth[1]);
         $rightOnesArray = explode("|", $detaliiIntrebari[0]->right_one);
         for ($i = 1; $i <= count($answersArray); $i++) {
@@ -1291,9 +1025,6 @@ function knq_questions()
         }
         $codform .= '</div>';
         $codform .= "<div id='addNewMatchingAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(11); return false' counter='2' name='addNewAnswer' id='addNewMatchingAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
-//        $codform .= '<div style="display: flex"><div class="answerContainer" name="answerContainer' . $counter . '" id="answerContainer' . $counter . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="answer" name="answer' . $counter . '" value="' . $answer . '"></div><div class="correctContainer" name="correctContainer' . $counter . '" id="correctContainer' . $counter . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="correct" name="correct' . $counter . '" value="' . $rightOne . '"></div><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer($counter)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
-//        $counter++;
-//        $codform .= '<div style="display: flex"><div class="answerContainer" name="answerContainer' . $counter . '" id="answerContainer' . $counter . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="answer" name="answer' . $counter . '" value="' . $answer . '"></div><div class="correctContainer" name="correctContainer' . $counter . '" id="correctContainer' . $counter . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="correct" name="correct' . $counter . '" value="' . $rightOne . '"></div><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer($counter)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>';
     }
     $codform .= "<input id='answerCounter' name='answerCounter' style='display: none' value='" . $counter . "'>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='positiveArea'>" . __("Positive feedback", "knq") . ":</label></td><td><textarea rows='5' cols='100' name='positiveArea' id='positiveArea'>" . $detaliiIntrebari[0]->feedbackp . "</textarea></td></tr>";
@@ -1318,7 +1049,7 @@ function knq_questions()
     wp_enqueue_media();
     $codform .= '<table role="presentation" class="wp-list-table widefat plugins"><tbody id="the-list">';
     $codform .= "<tr class=inactive><td width=20% style='vertical-align:middle;'>" . __("Be careful! When you delete a question, there is no undo!", "knq") . "</td><td style='vertical-align:middle;'><form method='post' action='' novalidate='novalidate'><input type='submit' class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white;' id='removeQuiz' value='" . __("Delete question", "knq") . "' onclick='return confirm(\"" . __('Are you sure? There is no undo to that!', 'knq') . "\");'><input type='hidden' name='valid4' value='1'><input type='hidden' name='quizId4' value='" . $quizId . "' /><input type='hidden' name='questionId4' value='" . $qid . "'></form></td></tr></table>";
-    $codform .= '<script type="text/javascript">empty_question="' . __('Empty question', 'knq') .'"; min_2_answers="' . __('At least 2 answers needed', 'knq') . '"; empty_anwer="' . __('Empty answer', 'knq') . '"; no_right_answer="' . __('No right answer selected', 'knq') . '"; too_many_right_answers="' . __('Too many right answers selected', 'knq') .  '"; incorrect_formating = "' . __('Incorrect formatting', 'knq') .'"; width_limit="' . __('Must be between 1 and 100', 'knq') .'"; empty_word_search="' . __('Empty word search', 'knq') . '"; no_search_words="' . __('No search words provided', 'knq') . '"; min_3_search_words="' . __('Provide at least 3 search words', 'knq') . '"</script>';
+    $codform .= '<script type="text/javascript">empty_question="' . __('Empty question', 'knq') .'"; min_2_answers="' . __('At least 2 answers needed', 'knq') . '"; empty_answer="' . __('Empty answer', 'knq') . '"; no_right_answer="' . __('No right answer selected', 'knq') . '"; too_many_right_answers="' . __('Too many right answers selected', 'knq') .  '"; incorrect_formating = "' . __('Incorrect formatting', 'knq') .'"; width_limit="' . __('Must be between 1 and 100', 'knq') .'"; empty_word_search="' . __('Empty word search', 'knq') . '"; no_search_words="' . __('No search words provided', 'knq') . '"; min_3_search_words="' . __('Provide at least 3 search words', 'knq') . '"</script>';
     //"<form method='post' action='' novalidate='novalidate'><input type='submit' class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white;' id='removeQuestion' value='" . __("Delete question", "knq") . "'><input type='hidden' name='valid4' value='1'><input type='hidden' name='quizId4' value='" . $quizId . "' /><input type='hidden' name='questionId4' value='" . $qid . "'></form>";
     echo $codform;
     echo '</div>';

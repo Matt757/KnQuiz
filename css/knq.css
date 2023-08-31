@@ -8,15 +8,7 @@ ul.knq_list {
     height: fit-content;
 }
 
-.ui-state-highlight {
-    border: 1px solid #5e85da;
-    background: #90c4ff;
-    color: #204977;
-}
-
 .draggable {
-    border: 2px dotted #C2BD8C;
-    background: #FFF9B9;
     color: black;
     width: fit-content;
     height: fit-content;
@@ -43,9 +35,7 @@ ul.knq_list {
 }
 
 .droppable {
-    border: 2px solid #C9C9C9;
-    background: #F4F4F4;
-    color: #204977;
+    /*border: 2px solid #C9C9C9;*/
     vertical-align: middle;
     margin-left: 0.2vw;
     margin-right: 0.2vw;
@@ -57,20 +47,17 @@ ul.knq_list {
 }
 
 .knq_unselected:hover {
-    background-color: #FFF9B9;
 	-moz-border-radius: 0.5vw;
     -webkit-border-radius: 0.5vw;
     border-radius: 0.5vw;
 }
 
 .knq_feedback {
-    background-color: #FFF9B9;
     padding: 20px 20px !important;
     margin: 10px 0px !important;
 }
 
 .knq_unselected {
-    background-color: #F4F4F4;
     color: rgba(0, 0, 0, 1);
     margin: 3px;
     -webkit-transition: background-color 800ms linear;
@@ -167,13 +154,6 @@ label {
     padding-left: 10px;
 }
 
-.ui-state-highlight {
-    height: 1.5em;
-    line-height: 1.2em;
-    color: #FFF9B9;
-    background: #C2BD8C;
-}
-
 #sentence {
     line-height: 2.2em;
 }
@@ -181,7 +161,6 @@ label {
 .knq_matching_answer:hover {
     padding-left: 1vw;
     padding-right: 1vw;
-    background: #FFF9B9;
 
     margin: 0.2vw;
     border-radius: 5px 120px 120px 5px;
@@ -193,7 +172,6 @@ label {
 .knq_matching_answer {
     padding-left: 1vw;
     padding-right: 1vw;
-    background: #F4F4F4;
 
     margin: 0.2vw;
     border-radius: 5px 120px 120px 5px;
@@ -216,7 +194,6 @@ label {
 .knq_right_one:hover {
     padding-left: 1vw;
     padding-right: 1vw;
-    background: #FFF9B9;
     margin: 0.2vw;
     -webkit-border-radius: 120px 5px 5px 120px;
     border-radius: 120px 5px 5px 120px;
@@ -228,7 +205,6 @@ label {
 .knq_right_one {
     padding-left: 1vw;
     padding-right: 1vw;
-    background: #F4F4F4;
     margin: 0.2vw;
     -webkit-border-radius: 120px 5px 5px 120px;
     border-radius: 120px 5px 5px 120px;

@@ -2,11 +2,13 @@ function newAnswer(type) {
     let answerCounter = jQuery("#answerCounter")
     let counter = parseInt(answerCounter.val())
     if (type == qRADIOBOXTEXT) {
-        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='radio' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>Corect</label></div></li>");
+        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='radio' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>Correct</label></div></li>");
     } else if (type == qCHECKBOXTEXT) {
-        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>Corect</label></div></li>");
+        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>Correct</label></div></li>");
+    } else if (type == qTRUEFALSE) {
+        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>True</label></div></li>");
     } else if (type == qSORTING) {
-        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input style='display: none' type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' style='display: none' for='correct" + counter + "'>Corect</label></div></li>");
+        jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input style='display: none' type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' style='display: none' for='correct" + counter + "'>Correct</label></div></li>");
     } else if (type == qMATCHING) {
         jQuery('#matching').append('<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer' + counter + '" id="matchingContainer' + counter + '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer' + counter + '" value=""><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect' + counter + '" value=""><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(' + counter + ',11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>')
     } else if (type == qWORDSEARCH) {
@@ -88,7 +90,7 @@ function checkQuestionFormData() {
         jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_question + "</strong></p></div>").insertAfter("#questionArea")
         return false;
     }
-    if (parseInt(jQuery("#typeSelect").find(":selected").val()) === 1 || parseInt(jQuery("#typeSelect").find(":selected").val()) === 2 || parseInt(jQuery("#typeSelect").find(":selected").val()) === 3) {
+    if (parseInt(jQuery("#typeSelect").find(":selected").val()) === 1 || parseInt(jQuery("#typeSelect").find(":selected").val()) === 2 || parseInt(jQuery("#typeSelect").find(":selected").val()) === 3 || parseInt(jQuery("#typeSelect").find(":selected").val()) === 12) {
         let answers = jQuery(".answerContainer")
         // at least two answers
         if (answers.length < 2) {
@@ -242,7 +244,7 @@ function checkQuestionFormData() {
             }
         })
         if (empty) {
-            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_answer + "</strong></p></div>").insertAfter("#addNewMatchingAnswer")
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_answer + "</strong></p></div>").insertAfter("#addNewMatchingAnswerContainer")
             return false;
         }
     }
@@ -281,6 +283,23 @@ jQuery(document).ready(function () {
     qCROSSWORDEASY = '9';
     qCROSSWORD = '10';
     qMATCHING = '11';
+    qTRUEFALSE = '12';
+
+    if (jQuery('#correctColorPicker').length) {
+        jQuery('#correctColorPicker').farbtastic('#correctColor');
+    }
+
+    if (jQuery('#wrongColorPicker').length) {
+        jQuery('#wrongColorPicker').farbtastic('#wrongColor');
+    }
+
+    if (jQuery('#neutralColorPicker').length) {
+        jQuery('#neutralColorPicker').farbtastic('#neutralColor');
+    }
+
+    if (jQuery('#mainColorPicker').length) {
+        jQuery('#mainColorPicker').farbtastic('#mainColor');
+    }
 
     jQuery('.chosen-select').chosen()
 
@@ -366,15 +385,28 @@ jQuery(document).ready(function () {
             jQuery("#matching").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
-        } else if (this.value === qCHECKBOXTEXT || this.value === qRADIOBOXTEXT) {
+        } else if (this.value === qCHECKBOXTEXT || this.value === qRADIOBOXTEXT || this.value === qTRUEFALSE) {
             if (this.value === qCHECKBOXTEXT) {
                 jQuery('.correct').each(function () {
                     this.type = 'checkbox'
+                })
+                jQuery('.correct_label').each(function () {
+                    jQuery(this).text('Correct');
+                })
+            } else if (this.value === qTRUEFALSE) {
+                jQuery('.correct').each(function () {
+                    this.type = 'checkbox'
+                })
+                jQuery('.correct_label').each(function () {
+                    jQuery(this).text('True');
                 })
             }
             else {
                 jQuery('.correct').each(function () {
                     this.type = 'radio'
+                })
+                jQuery('.correct_label').each(function () {
+                    jQuery(this).text('Correct');
                 })
             }
             jQuery("#addNewAnswerContainer").show();
@@ -383,6 +415,7 @@ jQuery(document).ready(function () {
             jQuery("#answers").show();
             jQuery("#imagesContainer").hide();
             jQuery("#wordSearch").hide();
+            jQuery('#addNewAnswer').attr('onclick', 'newAnswer(' + this.value + '); return false');
             jQuery('.correct').each(function () {
                 jQuery(this).show()
             })
@@ -441,7 +474,7 @@ jQuery(document).ready(function () {
             jQuery("#addNewWordSearchAnswerContainer").show();
             jQuery("#matching").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#answerCounter").val(jQuery(".spaceSearch").length);
+            jQuery("#answerCounter").val(jQuery(".spaceSearch").length + 1);
         } else if (this.value === qMATCHING) {
             jQuery("#answers").hide()
             jQuery("#singleAnswerContainer").hide();
@@ -453,7 +486,7 @@ jQuery(document).ready(function () {
             jQuery("#addNewAnswerContainer").hide();
             jQuery("#matching").show();
             jQuery("#addNewMatchingAnswerContainer").show();
-            jQuery("#answerCounter").val(jQuery(".answer").length);
+            jQuery("#answerCounter").val(jQuery(".answer").length + 1);
         }
     })
 
@@ -506,7 +539,7 @@ jQuery(document).ready(function () {
                     }
                 })
                 if (!found) {
-                    jQuery("#imagesContainer").append("<div class='imageUrlContainer' style='margin: 0.5vw; float: left; text-align: center'><input style='display: none' data-id='" + val.id + "' class='imageUrl' id='imageUrl" + (index - 0 + 1) + "' name='imageUrl" + (index - 0 + 1) + "' value='" + val.url + "[]" + val.id + "'><img src='" + val.url + "' width='100' height='100' style='max-height: 100px; width: auto;'><br><input type='" + (jQuery('#typeSelect').val()===qCHECKBOXIMG?'checkbox':'radio') + "' onclick='uncheckImages(" + (index - 0 + 1) + ")' class='correctImage' id='correctImage" + (index - 0 + 1) + "' name='correctImage" + (index - 0 + 1) + "' value='correct'><label for='correctImage" + (index - 0 + 1) + "'>Corect</label></div>")
+                    jQuery("#imagesContainer").append("<div class='imageUrlContainer' style='margin: 0.5vw; float: left; text-align: center'><input style='display: none' data-id='" + val.id + "' class='imageUrl' id='imageUrl" + (index - 0 + 1) + "' name='imageUrl" + (index - 0 + 1) + "' value='" + val.url + "[]" + val.id + "'><img src='" + val.url + "' width='100' height='100' style='max-height: 100px; width: auto;'><br><input type='" + (jQuery('#typeSelect').val()===qCHECKBOXIMG?'checkbox':'radio') + "' onclick='uncheckImages(" + (index - 0 + 1) + ")' class='correctImage' id='correctImage" + (index - 0 + 1) + "' name='correctImage" + (index - 0 + 1) + "' value='correct'><label for='correctImage" + (index - 0 + 1) + "'>Correct</label></div>")
                 }
             })
             let counter = 1;

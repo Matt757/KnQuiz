@@ -10,22 +10,22 @@ jQuery(document).ready(function () {
     qCROSSWORDEASY = '9';
     qCROSSWORD = '10';
     qMATCHING = '11';
-	color_ok="B1D9BC";
-	color_nok="FAB6B6";
-	color_neutral="F4F4F4";
-	color_hover="FFF9B9";
-	color_bhover="C2BD8C";
+    qTRUEFALSE = '12';
+	// color_ok="B1D9BC";
+	// color_nok="FAB6B6";
+	// color_neutral="F4F4F4";
+	// color_hover="FFF9B9";
+	// color_bhover="C2BD8C";
     rcorecte = 0; // număr de răspunsuri corecte
     rtext = ""; // textul cu rezultatul după rezolvarea chestionarul
     startOffsetLeft = 0;
     startOffsetTop = 0;
 	jQuery( document ).tooltip({track: true});
+
     loadQuestion();
     funcFullScreen();
 	Mousetrap.bind('f', function() { jQuery("#fullscreen-link").trigger('click'); });
 	Mousetrap.bind('enter', function() { jQuery("#knq_main_button").trigger('click'); });
-	//TODO când adaug radio nou e checkbox de fapt
-	//TODO în feedback poate și în întrebare (?) replace enter cu br
 })
 
 // TODO: show feedback only at the end
@@ -80,6 +80,7 @@ function loadQuestion() {
                 questionContainer.append("<p id='type' style='display: none'>" + tip + "</p>")
                 questionContainer.append("<div style='display: none' class='loader'></div>")
                 questionContainer.append('<div class="knq_container"><ul class="knq_list" id="knqList"></ul><div id="knqImages"></div><div id="knq_answer" class="knq_answer"></div><div style="clear:both"></div><div id="knq_feedback" class="knq_feedback"></div><p center><input id="knq_main_button" class="knq_main_button" type=button value="' + msg_done + '"!></p>');
+                jQuery('.knq_feedback').css('background-color', color_hover);
                 jQuery("#knqList").hide();
                 jQuery("#knqImages").hide();
                 jQuery("#knq_answer").hide();
@@ -94,36 +95,36 @@ function loadQuestion() {
             if (response[0].image !== "" && response[0].image !== null) {
                 //întrebarea are imagine, sus, jos, dreapta sau stanga
                 if (response[0].image_position === 'above') {
-                    knq_question.html("<img style='height: auto; width: 100%' src='" + response[0].image + "'><p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question + "</p>")
+                    knq_question.html("<img style='height: auto; width: 100%' src='" + response[0].image + "'><p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "</p>")
                     knq_question.css('display', '')
                     knq_question.css('align-items', '')
                     knq_question.css('justify-content', '')
                 } else if (response[0].image_position === 'below') {
-                    knq_question.html("<p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question + "</p><img style='height: auto; width: 100%' src='" + response[0].image + "'>")
+                    knq_question.html("<p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "</p><img style='height: auto; width: 100%' src='" + response[0].image + "'>")
                     knq_question.css('display', '')
                     knq_question.css('align-items', '')
                     knq_question.css('justify-content', '')
                 } else if (response[0].image_position === 'right') {
-                    knq_question.html("<p style='margin-right: 1vw'>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question + "</p><img style='height: 100px; width: auto' src='" + response[0].image + "'>")
+                    knq_question.html("<p style='margin-right: 1vw'>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "</p><img style='height: 100px; width: auto' src='" + response[0].image + "'>")
                     knq_question.css('display', 'flex')
                     knq_question.css('align-items', 'center')
                     knq_question.css('justify-content', 'center')
                 } else if (response[0].image_position === 'left') {
-                    knq_question.html("<img height=100 style='max-height: 100px; width: auto' src='" + response[0].image + "'><p style='margin-left: 1vw'>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question + "</p>")
+                    knq_question.html("<img height=100 style='max-height: 100px; width: auto' src='" + response[0].image + "'><p style='margin-left: 1vw'>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "</p>")
                     knq_question.css('display', 'flex')
                     knq_question.css('align-items', 'center')
                     knq_question.css('justify-content', 'center')
                 }
             } else {
                 //fără imagine
-                knq_question.html("<p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question + "</p>")
+                knq_question.html("<p>" + (showNumberOfQ ? (crti + "/" + iduri.split("|").length + ". ") : "") + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "</p>")
             }
 
             //pregătim răspunsurile pentru afișare
             let answers = response[0].answers;
             let rightOnes = response[0].right_one;
-            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING) {
-                buildAnswerCheckRadioSort(answers, tip);
+            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qTRUEFALSE) {
+                buildAnswerCheckRadioSortTrueFalse(answers, tip);
             } else if (tip === qSELECTBOX) {
                 buildAnswerSelectBox(answers);
             } else if (tip === qDRAGDROP) {
@@ -145,7 +146,7 @@ function loadQuestion() {
                 }
             }
             jQuery('.loader').hide();
-            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG) {
+            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE) {
                 jQuery("#knqList").show()
             } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING) {
                 jQuery("#knq_answer").show();
@@ -241,7 +242,6 @@ function funcClickAmRaspuns(butonul) {
         cate = iduri.split("|").length;
         rtext = "<br>" + rtext;
         let score = jQuery("#score")
-        //console.log(jQuery("#quizCompletion").html())
         if (jQuery("#quizCompletion").attr('completed_before') === '0') {
             jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. Nota anterioară: ' + parseFloat(score.text().split(": ")[1]) + ' obținută acum.')
         }
@@ -331,10 +331,25 @@ function evalAnwers(corecteUser) {
                 let points = jQuery("#points")
                 if (jQuery("#knq_main_button").val() === msg_done) {
                     //este răspunsul la o întrebare
+                    jQuery('.knq_unselected').each(function() {
+                        jQuery(this).on('mouseenter', function() {
+                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        })
+                        jQuery(this).on('mouseleave', function() {
+                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        })
+                    })
+                    jQuery('.knq_selected').each(function() {
+                        jQuery(this).on('mouseenter', function() {
+                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        })
+                        jQuery(this).on('mouseleave', function() {
+                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        })
+                    })
                     if (jQuery("#type").text() === qCHECKBOXTEXT || jQuery('#type').text() === qCHECKBOXIMG) {
                         // Handle first, second, sixth and seventh types of questions
                         let answersList = jQuery(".knq_unselected");
-                        let answersList2 = jQuery(".knq_selected");
                         answersList.each(function (index) {
                             jQuery(this).unbind('click');
                         })
@@ -342,8 +357,8 @@ function evalAnwers(corecteUser) {
                             jQuery(this).unbind('click');
                         })
                         ro = response[0].right_one;
-                        fd = ((response[0].feedbackp !== null) && (response[0].feedbackp + "").length > 0 ? "<br>" + response[0].feedbackp : "");
-                        fdn = ((response[0].feedbackn !== null) && (response[0].feedbackn + "").length > 0 ? "<br>" + response[0].feedbackn : "");
+                        fd = ((response[0].feedbackp !== null) && (response[0].feedbackp + "").length > 0 ? "<br>" + response[0].feedbackp.replace(/(?:\r\n|\r|\n)/g, '<br>') : "");
+                        fdn = ((response[0].feedbackn !== null) && (response[0].feedbackn + "").length > 0 ? "<br>" + response[0].feedbackn.replace(/(?:\r\n|\r|\n)/g, '<br>') : "");
                         corecte = ro.split("|");
                         if (corecte.sort().join(',') === corecteUser.sort().join(',')) {
                             // correct answers
@@ -356,7 +371,7 @@ function evalAnwers(corecteUser) {
                             score.text(score.text().split(": ")[0] + ": " + partialScore)
                             jQuery("#knq_feedback").html(msg_correct + fd).show();
                             rcorecte++;
-                            rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question + "<br>";
+                            rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "<br>";
                         } else {
                             // partially correct answers
                             let partialScore;
@@ -384,13 +399,42 @@ function evalAnwers(corecteUser) {
                             partialScore = parseFloat(partialScore)
                             score.text(score.text().split(": ")[0] + ": " + partialScore)
                             jQuery("#knq_feedback").html(msg_wrong + (fdn == "" ? fd : fdn)).show();
-                            rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question + "<br>";
+                            rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "<br>";
                         }
                         jQuery(".knq_list").children().each(function () {
                             if ((corecte.indexOf(jQuery(this).attr("id")) === -1) && (jQuery(this).hasClass("knq_selected")))
-                                jQuery(this).css("background-color", "#"+color_nok);
+                                jQuery(this).css("background-color", color_nok);
                             if (corecte.indexOf(jQuery(this).attr("id")) !== -1)
-                                jQuery(this).css("background-color", "#"+color_ok);
+                                jQuery(this).css("background-color", color_ok);
+                        });
+                        nextOrFinish()
+                    } else if (jQuery("#type").text() === qTRUEFALSE) {
+                        let answersList = jQuery(".knq_unselected");
+                        ro = response[0].right_one;
+                        corecte = ro.split("|");
+                        let correctAnswersCounter = 0;
+                        answersList.each(function () {
+                            jQuery(this).find('.trueRadio').attr('disabled', true);
+                            jQuery(this).find('.falseRadio').attr('disabled', true);
+                            if (jQuery(this).find('.trueRadio').is(':checked')) {
+                                if (corecte.includes(jQuery(this).find('.trueRadio').attr('name').split('_')[2])) {
+                                    correctAnswersCounter++;
+                                }
+                            } else if (jQuery(this).find('.falseRadio').is(':checked')) {
+                                if (!corecte.includes(jQuery(this).find('.trueRadio').attr('name').split('_')[2])) {
+                                    correctAnswersCounter++;
+                                }
+                            }
+                        })
+                        computeScore(correctAnswersCounter, answersList, response)
+                        answersList.each(function () {
+                            if ((corecte.indexOf(jQuery(this).find('.trueRadio').attr('name').split('_')[2]) === -1) && jQuery(this).find('.falseRadio').is(':checked')) {
+                                jQuery(this).css("background-color", color_ok);
+                            } else if ((corecte.indexOf(jQuery(this).find('.trueRadio').attr('name').split('_')[2]) !== -1) && jQuery(this).find('.trueRadio').is(':checked')) {
+                                jQuery(this).css("background-color", color_ok);
+                            } else {
+                                jQuery(this).css("background-color", color_nok);
+                            }
                         });
                         nextOrFinish()
                     } else if (jQuery("#type").text() === qRADIOBOXTEXT || jQuery('#type').text() === qRADIOBOXIMG) {
@@ -413,9 +457,9 @@ function evalAnwers(corecteUser) {
                         computeScore(correctAnswersCounter, corecte, response)
                         jQuery(".knq_list").children().each(function () {
                             if ((corecte.indexOf(jQuery(this).attr("id")) === -1) && (jQuery(this).hasClass("knq_selected")))
-                                jQuery(this).css("background-color", "#"+color_nok);
+                                jQuery(this).css("background-color", color_nok);
                             if (corecte.indexOf(jQuery(this).attr("id")) !== -1)
-                                jQuery(this).css("background-color", "#"+color_ok);
+                                jQuery(this).css("background-color", color_ok);
                         });
                         nextOrFinish()
                     } else if (jQuery("#type").text() === qSORTING) {
@@ -429,23 +473,23 @@ function evalAnwers(corecteUser) {
                             jQuery(this).find('p').text(jQuery(this).text() + " (" + jQuery(this).attr('id') + ")")
                             if (index === 0) {
                                 if (String(parseInt(jQuery(this).attr('id')) + 1) === answersList.eq(index + 1).attr('id') || (parseInt(jQuery(this).attr('id'))) === index + 1) {
-                                    jQuery(this).css("background-color", "#"+color_ok);
+                                    jQuery(this).css("background-color", color_ok);
                                     correctAnswersCounter++;
                                 } else {
-                                    jQuery(this).css("background-color", "#"+color_nok);
+                                    jQuery(this).css("background-color", color_nok);
                                 }
                             } else if (index === answersList.length - 1) {
                                 if (String(jQuery(this).attr('id') - 1) === answersList.eq(index - 1).attr('id') || (parseInt(jQuery(this).attr('id'))) === index + 1) {
-                                    jQuery(this).css("background-color", "#"+color_ok);
+                                    jQuery(this).css("background-color", color_ok);
                                     correctAnswersCounter++;
                                 } else {
-                                    jQuery(this).css("background-color", "#"+color_nok);
+                                    jQuery(this).css("background-color", color_nok);
                                 }
                             } else if (String(index + 1) === jQuery(this).attr('id') || String(jQuery(this).attr('id') - 1) === answersList.eq(index - 1).attr('id') || String(parseInt(jQuery(this).attr('id')) + 1) === answersList.eq(index + 1).attr('id')) {
-                                jQuery(this).css("background-color", "#"+color_ok);
+                                jQuery(this).css("background-color", color_ok);
                                 correctAnswersCounter++;
                             } else {
-                                jQuery(this).css("background-color", "#"+color_nok);
+                                jQuery(this).css("background-color", color_nok);
                             }
                             previous = this;
                         })
@@ -460,10 +504,10 @@ function evalAnwers(corecteUser) {
                                 jQuery(this).attr('disabled', 'disabled')
                             })
                             if (jQuery(this).find(':selected').val() === '1') {
-                                jQuery(this).css("background-color", "#"+color_ok);
+                                jQuery(this).css("background-color", color_ok);
                                 correctAnswersCounter++;
                             } else {
-                                jQuery(this).css("background-color", "#"+color_nok);
+                                jQuery(this).css("background-color", color_nok);
                             }
                         })
                         computeScore(correctAnswersCounter, answersList, response)
@@ -481,19 +525,21 @@ function evalAnwers(corecteUser) {
                             let droppedElement = jQuery("#draggableAnswer-" + jQuery(this).attr('data-dropped-element'))
                             jQuery(this).droppable('destroy');
                             if (jQuery(this).attr('data-correct') === '1') {
-								jQuery(this).addClass("drOK");
-                                droppedElement.addClass("drOK");
+                                jQuery(this).css('background', color_ok)
+                                jQuery(this).css('border', '2px solid ' + newShade(color_ok, -70))
+                                droppedElement.css('background', color_ok)
+                                droppedElement.css('border', '2px solid ' + newShade(color_ok, -70))
                                 correctAnswersCounter++;
                             } else {
-								droppedElement.removeClass("drOK");
-								droppedElement.addClass("drERR");
-								jQuery(this).addClass("drERR");
+                                droppedElement.css('background', color_nok)
+                                droppedElement.css('border', '2px solid ' + newShade(color_nok, -70))
+                                jQuery(this).css('background', color_nok)
+                                jQuery(this).css('border', '2px solid ' + newShade(color_nok, -70))
                             }
                         })
                         draggableList.each(function () {
                             jQuery(this).draggable('destroy');
                         })
-						// console.log(droppedElements +" "+ answersList.length +" "+ droppedElements +" "+ draggableList.length)
                         if (droppedElements === answersList.length && droppedElements === draggableList.length) {
                             jQuery('#answerBlocks').css('height', 0)
                         }
@@ -521,12 +567,12 @@ function evalAnwers(corecteUser) {
                         for (i = 1; i <= answersList.length; i++) {
                             if (jQuery(answersList[i - 1]).attr('id').split('_').at(-1) === jQuery(rightOnes[i - 1]).attr('id').split('_').at(-1)) {
                                 correctAnswersCounter++
-                                jQuery(answersList[i - 1]).css("background-color", "#"+color_ok);
-                                jQuery(rightOnes[i - 1]).css("background-color", "#"+color_ok);
+                                jQuery(answersList[i - 1]).css("background-color", color_ok);
+                                jQuery(rightOnes[i - 1]).css("background-color", color_ok);
                             }
                             else {
-                                jQuery(answersList[i - 1]).css("background-color", "#"+color_nok);
-                                jQuery(rightOnes[i - 1]).css("background-color", "#"+color_nok);
+                                jQuery(answersList[i - 1]).css("background-color", color_nok);
+                                jQuery(rightOnes[i - 1]).css("background-color", color_nok);
                             }
                         }
                         computeScore(correctAnswersCounter, answersList, response)
@@ -576,7 +622,7 @@ function computeScore(correctAnswersCounter, answersList, response) {
         jQuery("#knq_feedback").html(msg_correct + fd).show();
         rcorecte++;
 
-        rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question + "<br>";
+        rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "<br>";
     } else {
         // partially correct answers
         let partialScore;
@@ -597,7 +643,7 @@ function computeScore(correctAnswersCounter, answersList, response) {
         partialScore = parseFloat(partialScore)
         score.text(score.text().split(": ")[0] + ": " + partialScore)
         jQuery("#knq_feedback").html(msg_wrong + (fdn == "" ? fd : fdn)).show();
-        rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question + "<br>";
+        rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "<br>";
     }
 }
 
