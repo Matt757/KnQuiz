@@ -18,6 +18,11 @@ The statistics submenu shows who played which quiz, what score they received, ho
 
 To display the quiz on the client side, the corresponding shortcode must be included. Here is an example of such a shortcode: [kqn id=17 title=1 description=1]. The id value is the id of the quiz, the title can be displayed with 1 or hidden with 0, as well as the description. The plugin offers the possibility to add pictures to the text of a question, and the picture can be displayed on top of the question, below, to the right, or to the left.
 
+The plugin offers customization options for colors. There is a main color, used for hovers and draggable objects, a neutral color, a color for right answers, and one for wrong answers. The colors can be set globally for all quizzes or particularly for a certain quiz:
+
+<img width="385" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/e835877d-399c-44e7-ac0c-385a68a3fb3f">
+
+
 Here are all of the types of questions implemented so far:
 Multiple correct answers: 
 
@@ -39,7 +44,7 @@ Sort the answers (image on top):
 
 <img width="249" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/6f499853-7307-4af0-9d29-fe6c30a0a22e">
 
-Selct box (image at the bottom): 
+Select box (image at the bottom): 
 
 <img width="250" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/a623f30d-9157-4c98-8745-b16fc1ecb8ec">
 
@@ -54,6 +59,11 @@ Word search:
 Match the answers: 
 
 <img width="489" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/1cb1231b-88d7-4df0-8ef0-98537a1b7025">
+
+True or false:
+
+<img width="494" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/40fa8965-f493-4f48-9652-46c02fac38ae">
+
 
 
 Contributors:
