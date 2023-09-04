@@ -271,6 +271,32 @@ function reorderQuestions() {
 }
 
 
+/* Randomize array in-place using Durstenfeld shuffle algorithm */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+
+function checkPuzzle() {
+    let complete = true;
+    jQuery('.piece').each(function(index) {
+        if (jQuery(this).attr('id').split('_')[1] - 0 !== index) {
+            complete = false;
+        }
+    })
+    if (complete) {
+        alert("Bravo!")
+    }
+    else {
+        alert('Serios?')
+    }
+}
+
+
 jQuery(document).ready(function () {
     qCHECKBOXTEXT = '1';
     qRADIOBOXTEXT = '2';
@@ -284,6 +310,111 @@ jQuery(document).ready(function () {
     qCROSSWORD = '10';
     qMATCHING = '11';
     qTRUEFALSE = '12';
+    qPUZZLE = '13'
+
+    // // Create a new Image object
+    // const img = new Image();
+    //
+    // // Set the source of the image
+    // img.src = 'http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg';
+    //
+    // // Wait for the image to load
+    // img.onload = () => {
+    //     // Get the width and height of the image
+    //     const width = img.width;
+    //     const height = img.height;
+    //
+    //     // Do something with the width and height (e.g., display them on the page)
+    //     console.log(`The image is ${width} pixels wide and ${height} pixels tall.`);
+    //     console.log('The real image is ' + jQuery('#sourceImage').width() + ' pixels wide and ' + jQuery('#sourceImage').height() + ' pixels tall.')
+    //     // console.log(img)
+    //     let index = 0;
+    //     for (let i = 0; i < 3; i++) {
+    //         for (let j = 0; j < 4; j++) {
+    //             jQuery('#imagePieces').append('<div id="piece_' + index + '" class="piece" style="float: left; width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + jQuery(img).attr('src') + '" style="margin: ' + height/3 * i * -1 + 'px 0 0 ' + width/4 * j * -1 + 'px"></div>')
+    //             index++;
+    //         }
+    //         jQuery('#imagePuzzle').append('<br>')
+    //     }
+    //     let myArray = [];
+    //     jQuery('.piece').each(function () {
+    //         // console.log(this.outerHTML)
+    //         myArray.push(this.outerHTML)
+    //     })
+    //     shuffle(myArray)
+    //     // console.log(myArray)
+    //     jQuery('#imagePieces').empty()
+    //     myArray.forEach(element => {
+    //         console.log(typeof element)
+    //         jQuery('#imagePieces').append(element)
+    //     })
+    //     elemSortablePieces = new Sortable(jQuery("#imagePieces")[0], {
+    //         animation: 150,
+    //         ghostClass: 'blue-background-class',
+    //         swapClass: 'highlight',
+    //         swap: true
+    //     });
+    // };
+    //
+    //
+    //
+    // // console.log(elemSortablePieces.el)
+    //
+    // jQuery('.piece').each(function () {
+    //     console.log('sa')
+    //     console.log(jQuery(this)[0])
+    // })
+
+//     // DOM manipulation
+//     /**
+//      * Move an item
+//      * @param {number} index
+//      * @param {number} toIndex
+//      */
+//     Sortable.prototype.moveItem = function (index, toIndex) {
+//         var itemEl = this.el.children[index],
+//             toEl = this.el.children[toIndex];
+//
+//         this.el.insertBefore(itemEl, toEl && (+toIndex ? toEl.nextElementSibling : toEl));
+//     };
+//
+//     var sortable = Sortable.create(simpleList);
+// // ...
+//     sortable.moveItem(0, 3);
+
+    // const getMeta = (url) =>
+    //     new Promise((resolve, reject) => {
+    //         const img = new Image();
+    //         img.onload = () => resolve(img);
+    //         img.onerror = (err) => reject(err);
+    //         img.src = url;
+    //     });
+    //
+    // // Usage example:
+    // ;(async() => {
+    //     const img = await getMeta("http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg");
+    //     console.log(img.naturalHeight + ' ' + img.naturalWidth);
+    //     console.log(img.url)
+    //     let height = img.naturalHeight;
+    //     let width = img.naturalWidth;
+    //     for (let i = 0; i < 3; i++) {
+    //         for (let j = 0; j < 4; j++) {
+    //             jQuery('#imagePuzzle').append('<div style="width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + img.url + '" style="width: 400px; margin: -' + width/4 * j + 'px 0 0 -' + height/3 * i + 'px"></div>')
+    //         }
+    //         jQuery('#imagePuzzle').append('<br>')
+    //     }
+    // })();
+
+    // jQuery('#sourceImage').attr('src', url).ready(function() {
+    //     let height = img.naturalHeight;
+    //     let width = img.naturalWidth;
+    //     for (let i = 0; i < 3; i++) {
+    //         for (let j = 0; j < 4; j++) {
+    //             jQuery('#imagePuzzle').append('<div style="width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + img.url + '" style="width: 400px; margin: -' + width/4 * j + 'px 0 0 -' + height/3 * i + 'px"></div>')
+    //         }
+    //         jQuery('#imagePuzzle').append('<br>')
+    //     }
+    // })
 
     if (jQuery('#correctColorPicker').length) {
         jQuery('#correctColorPicker').farbtastic('#correctColor');
@@ -370,6 +501,7 @@ jQuery(document).ready(function () {
             jQuery("#imagesContainer").hide();
             jQuery("#wordSearch").hide();
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qDRAGDROP) {
@@ -383,6 +515,7 @@ jQuery(document).ready(function () {
             jQuery("#imagesContainer").hide();
             jQuery("#wordSearch").hide();
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qCHECKBOXTEXT || this.value === qRADIOBOXTEXT || this.value === qTRUEFALSE) {
@@ -423,6 +556,7 @@ jQuery(document).ready(function () {
                 jQuery(this).show()
             })
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qSORTING) {
@@ -440,6 +574,7 @@ jQuery(document).ready(function () {
             jQuery("#wordSearch").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qCHECKBOXIMG || this.value === qRADIOBOXIMG) {
             if (this.value === qCHECKBOXIMG) {
@@ -462,6 +597,7 @@ jQuery(document).ready(function () {
             jQuery("#imagesContainer").show();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qWORDSEARCH) {
             jQuery("#answers").hide()
@@ -473,6 +609,7 @@ jQuery(document).ready(function () {
             jQuery("#wordSearch").show();
             jQuery("#addNewWordSearchAnswerContainer").show();
             jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
             jQuery("#answerCounter").val(jQuery(".spaceSearch").length + 1);
         } else if (this.value === qMATCHING) {
@@ -485,8 +622,22 @@ jQuery(document).ready(function () {
             jQuery("#wordSearch").hide();
             jQuery("#addNewAnswerContainer").hide();
             jQuery("#matching").show();
+            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").show();
             jQuery("#answerCounter").val(jQuery(".answer").length + 1);
+        } else if (this.value === qPUZZLE) {
+            jQuery("#answers").hide()
+            jQuery("#singleAnswerContainer").hide();
+            jQuery("#addNewWordSearchAnswerContainer").hide();
+            jQuery("#instructions4th").hide();
+            jQuery("#instructions5th").hide();
+            jQuery("#imagesContainer").hide();
+            jQuery("#wordSearch").hide();
+            jQuery("#addNewAnswerContainer").hide();
+            jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").show();
+            jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#answerCounter").val(1);
         }
     })
 
@@ -552,6 +703,34 @@ jQuery(document).ready(function () {
                 counter++;
             })
             jQuery("#answerCounter").val(counter);
+        });
+
+        mediaUploader.open();
+    });
+
+    jQuery('#selectImage').on('click', function (e) {
+        e.preventDefault();
+        if (mediaUploader) {
+            mediaUploader.open();
+            return;
+        }
+
+        mediaUploader = wp.media.frames.fle_frame = wp.media({
+            title: 'Select an image',
+            button: {
+                text: 'Select an image'
+            },
+            multiple: false
+        })
+
+        mediaUploader.on('select', function () {
+            let attachment;
+            attachment = mediaUploader.state().get('selection').first().toJSON();
+            jQuery('#puzzleImageUrl').val(attachment.url);
+            let image_preview = jQuery('#puzzleImage');
+            image_preview.show()
+            image_preview.attr('src', attachment.url).css('width', 'auto');
+            // jQuery('#image_attachment_id').val(attachment.id);
         });
 
         mediaUploader.open();

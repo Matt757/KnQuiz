@@ -259,13 +259,6 @@ function buildAnswerCheckRadioSortTrueFalse(answers, tip){
     }
     if (tip === qTRUEFALSE) {
         jQuery('.radioLabel1').eq(0).find('i').ready(function () {
-            console.log(jQuery('.radioLabel1').eq(0).find('i').width())
-            console.log(jQuery('.radioLabel1').eq(0).find('i')[0])
-            console.log(jQuery('.radioLabel1').eq(0).width())
-            console.log(jQuery('.radioLabel1').eq(0).innerWidth())
-            console.log(jQuery('.radioLabel1').eq(0).outerWidth())
-            console.log(jQuery('.radioLabel1').eq(0).outerWidth(true))
-            console.log(jQuery('.radioLabel1').eq(0).css('width'))
             jQuery('#trueColumn').css('width', '20px')
         })
         jQuery('.radioLabel1').eq(1).find('i').ready(function () {
@@ -354,6 +347,66 @@ function buildMatching(answers, rightOnes) {
             jQuery(this).css('background-color', color_neutral)
         })
     })
+}
+
+function buildPuzzle(answers) {
+    answers = answers.split('|')
+    // Create a new Image object
+    const img = new Image();
+
+    // Set the source of the image
+    img.src = answers[2];
+
+    // Wait for the image to load
+    img.onload = () => {
+        // Get the width and height of the image
+        let width = img.width;
+        let height = img.height;
+        const containerWidth = jQuery('#questionContainer').width();
+        if (containerWidth < width + 10) {
+            var ratio = containerWidth / width
+            img.width = width * ratio - Math.max(answers[0], answers[1]) * 6 - 20;
+            width = img.width;
+            img.height = height * ratio - Math.max(answers[0], answers[1]) * 6 - 20;
+            height = img.height
+        }
+        console.log(answers[0])
+        console.log(answers[1])
+
+        // Do something with the width and height (e.g., display them on the page)
+        // console.log(`The image is ${width} pixels wide and ${height} pixels tall.`);
+        // console.log('The real image is ' + jQuery('#sourceImage').width() + ' pixels wide and ' + jQuery('#sourceImage').height() + ' pixels tall.')
+        // console.log(img)
+        let index = 0;
+        // jQuery('#knq_answer').css('overflow', 'visible')
+        for (let i = 0; i < answers[0]; i++) {
+            for (let j = 0; j < answers[1]; j++) {
+                jQuery('#knq_answer').append('<div id="piece_' + index + '" class="piece" style="float: left; width: ' + width/answers[1] + 'px; height: ' + height/answers[0] + 'px; overflow: hidden; margin: 0px"><img width="' + width + '" height="' + height + '" src="' + jQuery(img).attr('src') + '" style="margin: ' + height/answers[0] * i * -1 + 'px 0 0 ' + width/answers[1] * j * -1 + 'px"></div>')
+                index++;
+            }
+            jQuery('#knq_answer').append('<br>')
+        }
+        let myArray = [];
+        jQuery('.piece').each(function () {
+            myArray.push(this.outerHTML)
+        })
+        shuffle(myArray)
+        jQuery('#knq_answer').empty()
+        let counter = 1
+        myArray.forEach(element => {
+            if (counter%answers[1] === 0) {
+                element += '<div style=\'clear:both\'></div>';
+            }
+            jQuery('#knq_answer').append(element)
+            counter++;
+        })
+        elemSortablePieces = new Sortable(jQuery("#knq_answer")[0], {
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            swapClass: 'highlight',
+            swap: true
+        });
+    };
 }
 
 function destroySortable() {

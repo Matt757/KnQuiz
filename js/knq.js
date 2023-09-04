@@ -11,6 +11,7 @@ jQuery(document).ready(function () {
     qCROSSWORD = '10';
     qMATCHING = '11';
     qTRUEFALSE = '12';
+    qPUZZLE = '13'
 	// color_ok="B1D9BC";
 	// color_nok="FAB6B6";
 	// color_neutral="F4F4F4";
@@ -137,6 +138,8 @@ function loadQuestion() {
                 buildCrossWord(answers);
             } else if (tip === qMATCHING) {
                 buildMatching(answers, rightOnes);
+            } else if (tip === qPUZZLE) {
+                buildPuzzle(answers);
             }
             if (tip === qSORTING || (jQuery("#shuffleAnswers").text() === '1' && (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG))) {
                 // dacă e un tip cu mai multe răspunsuri, are logică să fie amestecate, dacă s-a optat pentru așa ceva
@@ -148,7 +151,7 @@ function loadQuestion() {
             jQuery('.loader').hide();
             if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE) {
                 jQuery("#knqList").show()
-            } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING) {
+            } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING || tip === qPUZZLE) {
                 jQuery("#knq_answer").show();
             }
 
@@ -577,6 +580,19 @@ function evalAnwers(corecteUser) {
                         }
                         computeScore(correctAnswersCounter, answersList, response)
                         nextOrFinish()
+                    } else if (jQuery('#type').text() === qPUZZLE) {
+                        let correctAnswersCounter = 0;
+                        jQuery('.piece').each(function(index) {
+                            if (jQuery(this).attr('id').split('_')[1] - 0 !== index) {
+                                jQuery(this).css('border', '2px solid ' + color_nok);
+                            }
+                            else {
+                                correctAnswersCounter++;
+                                jQuery(this).css('border', '2px solid ' + color_ok);
+                            }
+                        })
+                        computeScore(correctAnswersCounter, jQuery('.piece').toArray(), response)
+                        nextOrFinish()
                     }
                 } else {
                     // s-a apasat butonul trec mai departe
@@ -641,6 +657,7 @@ function computeScore(correctAnswersCounter, answersList, response) {
             partialScore = Math.trunc(partialScore)
         }
         partialScore = parseFloat(partialScore)
+        console.log(partialScore)
         score.text(score.text().split(": ")[0] + ": " + partialScore)
         jQuery("#knq_feedback").html(msg_wrong + (fdn == "" ? fd : fdn)).show();
         rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>') + "<br>";

@@ -729,6 +729,12 @@ function insertDefaultMatching()
     return $codform;
 }
 
+function insertDefaultPuzzle() {
+    $codform = "<div style='display: none' id='puzzleImageContainer'><button class='button button-primary' id='selectImage' style='margin-bottom: 0.5vw' type='button'>".__("Select image","knq")."</button><br><div id='puzzleGridContainer'><label for='puzzleRows'>".__("Number of rows","knq").": </label><input style='margin-bottom: 0.5vw' min='2' id='puzzleRows' name='puzzleRows' type='number' value=''><label for='puzzleColumns'>".__("Number of columns","knq").": </label><input style='margin-bottom: 0.5vw' min='2' id='puzzleColumns' name='puzzleColumns' type='number' value=''></div>";
+    $codform .= '<div class="puzzleImageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" class="puzzleImageUrl" id="puzzleImageUrl" name="puzzleImageUrl" value=""><img id="puzzleImage" src="" style="max-height: 100px; width: auto;"></div></div>';
+    return $codform;
+}
+
 
 function knq_questions()
 {
@@ -863,6 +869,8 @@ function knq_questions()
             }
             $answerBuilder = rtrim($answerBuilder, "|");
             $correctAnswerBuilder = rtrim($correctAnswerBuilder, "|");
+        } else if ($_POST["typeSelect"] == '13') {
+            $answerBuilder .= $_POST['puzzleRows'] . '|' . $_POST['puzzleColumns'] . '|' . $_POST['puzzleImageUrl'];
         }
         $sql = "UPDATE " . $wpdb->prefix . "knq SET question='" . addslashes(stripslashes($_POST["questionArea"])) . "', type=" . $_POST["typeSelect"] . ", answers='" . addslashes(stripslashes($answerBuilder)) . "', right_one='" . $correctAnswerBuilder . "', feedbackp='" . addslashes(stripslashes($_POST["positiveArea"])) . "', feedbackn='" . addslashes(stripslashes($_POST["negativeArea"])) . "', image='" . $_POST["imageUrl"] . "', image_position='" . $_POST["image_position"] . "' WHERE quiz_id=" . $quizId . " AND order_id=" . $qid;
         // aici actualizez în baza de date întrebarea
@@ -917,7 +925,7 @@ function knq_questions()
     $counter = 1;
     $i = 1;
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='questionArea'>" . __("Question", "knq") . ":</label></td><td><textarea rows='5' cols='100' name='questionArea' id='questionArea'>" . $detaliiIntrebari[0]->question . "</textarea></td></tr>";
-    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option><option value='12'" . ($detaliiIntrebari[0]->type == 12 ? "selected" : "") . ">" . __("True or False", "knq") . "</option></select></td></tr>";
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option><option value='12'" . ($detaliiIntrebari[0]->type == 12 ? "selected" : "") . ">" . __("True or False", "knq") . "</option><option value='13'" . ($detaliiIntrebari[0]->type == 13 ? "selected" : "") . ">" . __("Puzzle", "knq") . "</option></select></td></tr>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label>" . __("Answer(s)", "knq") . ":</label></td><td>";
     if ($detaliiIntrebari[0]->type == 1 || $detaliiIntrebari[0]->type == 2 || $detaliiIntrebari[0]->type == 3 || $detaliiIntrebari[0]->type == 12) {
         $codform .= "<ul id='answers'>";
@@ -943,6 +951,7 @@ function knq_questions()
         $codform .= insertDefaultImageAnswers();
         $codform .= insertDefaultWordSearch();
         $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
         $codform .= "</td></tr>";
     } else if ($detaliiIntrebari[0]->type == 4 || $detaliiIntrebari[0]->type == 5) {
         $codform .= insertDefaultAnswerList();
@@ -967,6 +976,7 @@ function knq_questions()
         $codform .= insertDefaultImageAnswers();
         $codform .= insertDefaultWordSearch();
         $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
         $codform .= "</td></tr>";
     } else if ($detaliiIntrebari[0]->type == 6 || $detaliiIntrebari[0]->type == 7) {
         $codform .= insertDefaultAnswerList();
@@ -982,6 +992,7 @@ function knq_questions()
         $codform .= "</div>";
         $codform .= insertDefaultWordSearch();
         $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
         $codform .= "</td></tr>";
     } else if ($detaliiIntrebari[0]->type == 8) {
         $codform .= insertDefaultAnswerList();
@@ -1008,12 +1019,15 @@ function knq_questions()
         $codform .= '<p>' . __('If unused letters forms a message, please write it below.', 'knq') . '<br><input type="text" id="restLit" name="restLit" size="80" value="' . $answersArray[2] . '"></p>';
         $codform .= "</div>";
         $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
         $codform .= "</td></tr>";
     } else if ($detaliiIntrebari[0]->type == 11) {
         $codform .= insertDefaultAnswerList();
         $codform .= insertDefaultSingleAnswer();
         $codform .= insertDefaultImageAnswers();
         $codform .= insertDefaultWordSearch();
+//        $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
         $codform .= '<div id="matching">';
         $firstColumnWidth = explode('[[', $detaliiIntrebari[0]->answers);
         $codform .= '<div style="width: 50%" id="answerColumnWidthContainer"><label for="answerColumnWidth">' . __('First column width:', 'knq') . ': </label><input id="answerColumnWidth" name="answerColumnWidth" min="1" max="100" type="number" value="' . $firstColumnWidth[0] . '"><label for="answerColumnWidth">%</label></div>';
@@ -1025,6 +1039,15 @@ function knq_questions()
         }
         $codform .= '</div>';
         $codform .= "<div id='addNewMatchingAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(11); return false' counter='2' name='addNewAnswer' id='addNewMatchingAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
+    } else if ($detaliiIntrebari[0]->type == 13) {
+        $codform .= insertDefaultAnswerList();
+        $codform .= insertDefaultSingleAnswer();
+        $codform .= insertDefaultImageAnswers();
+        $codform .= insertDefaultWordSearch();
+        $codform .= insertDefaultMatching();
+        $answersArray = explode("|", $detaliiIntrebari[0]->answers);
+        $codform .= "<div id='puzzleImageContainer'><button class='button button-primary' id='selectImage' style='margin-bottom: 0.5vw' type='button'>".__("Select image","knq")."</button><br><div id='puzzleGridContainer'><label for='puzzleRows'>".__("Number of rows","knq").": </label><input style='margin-bottom: 0.5vw' min='2' id='puzzleRows' name='puzzleRows' type='number' value='" . $answersArray[0] . "'><label for='puzzleColumns'>".__("Number of columns","knq").": </label><input style='margin-bottom: 0.5vw' min='2' id='puzzleColumns' name='puzzleColumns' type='number' value='" . $answersArray[1] . "'></div>";
+        $codform .= '<div class="puzzleImageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" class="puzzleImageUrl" id="puzzleImageUrl" name="puzzleImageUrl" value="' . $answersArray[2] . '"><img id="puzzleImage" src="' . $answersArray[2] . '" style="max-height: 100px; width: auto;"></div></div>';
     }
     $codform .= "<input id='answerCounter' name='answerCounter' style='display: none' value='" . $counter . "'>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='positiveArea'>" . __("Positive feedback", "knq") . ":</label></td><td><textarea rows='5' cols='100' name='positiveArea' id='positiveArea'>" . $detaliiIntrebari[0]->feedbackp . "</textarea></td></tr>";
@@ -1071,6 +1094,11 @@ function knq_statistici()
         $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '"><td>' . $score->display_name . '</td><td>' . $score->score . '</td><td>' . ($score->attempts - 0) . '</td><td>' . $score->option_value . '</td><td>' . $score->timestamp . '</td></tr>';
     }
     $codform .= '</table>';
+//    $codform .= '<div style="width: 50px; height: 50px; overflow: hidden; margin: 0.1vw"><img src="http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg" style="width: 400px; margin: 0 0 0 0px"></div>';
+//    $codform .= '<div style="width: 50px; height: 50px; overflow: hidden; margin: 0.1vw"><img src="http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg" style="width: 400px; margin: 0 0 0 -50px"></div>';
+//    $codform .= '<div style="width: 50px; height: 50px; overflow: hidden; margin: 0.1vw"><img src="http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg" style="width: 400px; margin: 0 0 0 -100px"></div>';
+    $codform .= '<div id="imagePieces"></div>';
+    $codform .= '<button onclick="checkPuzzle()">Done!</button>';
     echo $codform;
     echo '</div>';
 }
