@@ -12,6 +12,7 @@ jQuery(document).ready(function () {
     qMATCHING = '11';
     qTRUEFALSE = '12';
     qPUZZLE = '13'
+    qMATCHIMAGE = '14';
 	// color_ok="B1D9BC";
 	// color_nok="FAB6B6";
 	// color_neutral="F4F4F4";
@@ -27,6 +28,11 @@ jQuery(document).ready(function () {
     funcFullScreen();
 	Mousetrap.bind('f', function() { jQuery("#fullscreen-link").trigger('click'); });
 	Mousetrap.bind('enter', function() { jQuery("#knq_main_button").trigger('click'); });
+})
+
+jQuery(window).resize(function () {
+    resizePuzzle(2)
+    console.log("mai mic")
 })
 
 // TODO: show feedback only at the end
@@ -87,7 +93,7 @@ function loadQuestion() {
                 jQuery("#knq_answer").hide();
 				jQuery("#knq_feedback").hide();
                 jQuery("#knq_main_button").on('click', function () {
-                    funcClickAmRaspuns(jQuery(this));
+                    funcClickAmRaspuns();
                 });
                 knq_question = jQuery("#knq_question")
             }
@@ -140,6 +146,8 @@ function loadQuestion() {
                 buildMatching(answers, rightOnes);
             } else if (tip === qPUZZLE) {
                 buildPuzzle(answers);
+            } else if (tip === qMATCHIMAGE) {
+                buildMatchImage(answers);
             }
             if (tip === qSORTING || (jQuery("#shuffleAnswers").text() === '1' && (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG))) {
                 // dacă e un tip cu mai multe răspunsuri, are logică să fie amestecate, dacă s-a optat pentru așa ceva
@@ -149,7 +157,7 @@ function loadQuestion() {
                 }
             }
             jQuery('.loader').hide();
-            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE) {
+            if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE || tip === qMATCHIMAGE) {
                 jQuery("#knqList").show()
             } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING || tip === qPUZZLE) {
                 jQuery("#knq_answer").show();
@@ -238,7 +246,7 @@ function scrollToAnchor(aid) {
     jQuery('html,body').animate({scrollTop: aTag.offset().top}, 'slow');
 }
 
-function funcClickAmRaspuns(butonul) {
+function funcClickAmRaspuns() {
     var ajax_url = knq_object.ajax_url;
     if (jQuery("#knq_main_button").val() == msg_finish) {
         //s-au terminat întrebările, evaluez notă
@@ -515,7 +523,7 @@ function evalAnwers(corecteUser) {
                         })
                         computeScore(correctAnswersCounter, answersList, response)
                         nextOrFinish()
-                    } else if (jQuery("#type").text() === qDRAGDROP) {
+                    } else if (jQuery("#type").text() === qDRAGDROP || jQuery("#type").text() === qMATCHIMAGE) {
                         // Handle the fifth type of question
                         let correctAnswersCounter = 0;
                         let answersList = jQuery(".droppable");
@@ -582,13 +590,15 @@ function evalAnwers(corecteUser) {
                         nextOrFinish()
                     } else if (jQuery('#type').text() === qPUZZLE) {
                         let correctAnswersCounter = 0;
+                        destroySortable()
                         jQuery('.piece').each(function(index) {
+                            jQuery(this).css('margin', '0')
+                            resizePuzzle(0)
                             if (jQuery(this).attr('id').split('_')[1] - 0 !== index) {
-                                jQuery(this).css('border', '2px solid ' + color_nok);
+                                jQuery(this).css('opacity', '0.5');
                             }
                             else {
                                 correctAnswersCounter++;
-                                jQuery(this).css('border', '2px solid ' + color_ok);
                             }
                         })
                         computeScore(correctAnswersCounter, jQuery('.piece').toArray(), response)

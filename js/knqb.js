@@ -247,6 +247,42 @@ function checkQuestionFormData() {
             jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_answer + "</strong></p></div>").insertAfter("#addNewMatchingAnswerContainer")
             return false;
         }
+    } else if (jQuery("#typeSelect").find(":selected").val() === qPUZZLE) {
+        // puzzle must have image selected. rows and columns must have valid numbers
+        if (jQuery('#puzzleImageUrl').val() === '') {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + no_image_selected + "</strong></p></div>").insertAfter("#puzzleImageUrl")
+            return false;
+        }
+        if (jQuery("#puzzleRows").val() - 0 < 1) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + invalid_rows + "</strong></p></div>").insertAfter("#puzzleImageUrl")
+            return false;
+        }
+        if (jQuery("#puzzleColumns").val() - 0 < 1) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + invalid_columns + "</strong></p></div>").insertAfter("#puzzleImageUrl")
+            return false;
+        }
+    } else if (jQuery("#typeSelect").find(":selected").val() === qMATCHIMAGE) {
+        // matching images must have at least 2 images selected, with corresponding text. image width must have valid percentage
+        if (jQuery('.matchImageUrlContainer').length < 2) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + min_2_images + "</strong></p></div>").insertAfter("#selectMatchImages")
+            return false
+        }
+        let empty = false;
+        jQuery('.imageTitle').each(function () {
+            if (jQuery(this).val() === '') {
+                empty = true;
+                return false;
+            }
+        })
+        if (empty) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_input + "</strong></p></div>").insertAfter("#selectMatchImages")
+            return false
+        }
+        let imageWidth = jQuery("#matchImageWidth")
+        if (imageWidth.val() - 0 < 1 || imageWidth.val() - 0 > 100) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + width_limit + "</strong></p></div>").insertAfter("#matchImageWidth")
+            return false;
+        }
     }
 }
 
@@ -311,110 +347,7 @@ jQuery(document).ready(function () {
     qMATCHING = '11';
     qTRUEFALSE = '12';
     qPUZZLE = '13'
-
-    // // Create a new Image object
-    // const img = new Image();
-    //
-    // // Set the source of the image
-    // img.src = 'http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg';
-    //
-    // // Wait for the image to load
-    // img.onload = () => {
-    //     // Get the width and height of the image
-    //     const width = img.width;
-    //     const height = img.height;
-    //
-    //     // Do something with the width and height (e.g., display them on the page)
-    //     console.log(`The image is ${width} pixels wide and ${height} pixels tall.`);
-    //     console.log('The real image is ' + jQuery('#sourceImage').width() + ' pixels wide and ' + jQuery('#sourceImage').height() + ' pixels tall.')
-    //     // console.log(img)
-    //     let index = 0;
-    //     for (let i = 0; i < 3; i++) {
-    //         for (let j = 0; j < 4; j++) {
-    //             jQuery('#imagePieces').append('<div id="piece_' + index + '" class="piece" style="float: left; width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + jQuery(img).attr('src') + '" style="margin: ' + height/3 * i * -1 + 'px 0 0 ' + width/4 * j * -1 + 'px"></div>')
-    //             index++;
-    //         }
-    //         jQuery('#imagePuzzle').append('<br>')
-    //     }
-    //     let myArray = [];
-    //     jQuery('.piece').each(function () {
-    //         // console.log(this.outerHTML)
-    //         myArray.push(this.outerHTML)
-    //     })
-    //     shuffle(myArray)
-    //     // console.log(myArray)
-    //     jQuery('#imagePieces').empty()
-    //     myArray.forEach(element => {
-    //         console.log(typeof element)
-    //         jQuery('#imagePieces').append(element)
-    //     })
-    //     elemSortablePieces = new Sortable(jQuery("#imagePieces")[0], {
-    //         animation: 150,
-    //         ghostClass: 'blue-background-class',
-    //         swapClass: 'highlight',
-    //         swap: true
-    //     });
-    // };
-    //
-    //
-    //
-    // // console.log(elemSortablePieces.el)
-    //
-    // jQuery('.piece').each(function () {
-    //     console.log('sa')
-    //     console.log(jQuery(this)[0])
-    // })
-
-//     // DOM manipulation
-//     /**
-//      * Move an item
-//      * @param {number} index
-//      * @param {number} toIndex
-//      */
-//     Sortable.prototype.moveItem = function (index, toIndex) {
-//         var itemEl = this.el.children[index],
-//             toEl = this.el.children[toIndex];
-//
-//         this.el.insertBefore(itemEl, toEl && (+toIndex ? toEl.nextElementSibling : toEl));
-//     };
-//
-//     var sortable = Sortable.create(simpleList);
-// // ...
-//     sortable.moveItem(0, 3);
-
-    // const getMeta = (url) =>
-    //     new Promise((resolve, reject) => {
-    //         const img = new Image();
-    //         img.onload = () => resolve(img);
-    //         img.onerror = (err) => reject(err);
-    //         img.src = url;
-    //     });
-    //
-    // // Usage example:
-    // ;(async() => {
-    //     const img = await getMeta("http://localhost/wptest/wp-content/uploads/2023/09/tour_img-312981-148-1.jpg");
-    //     console.log(img.naturalHeight + ' ' + img.naturalWidth);
-    //     console.log(img.url)
-    //     let height = img.naturalHeight;
-    //     let width = img.naturalWidth;
-    //     for (let i = 0; i < 3; i++) {
-    //         for (let j = 0; j < 4; j++) {
-    //             jQuery('#imagePuzzle').append('<div style="width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + img.url + '" style="width: 400px; margin: -' + width/4 * j + 'px 0 0 -' + height/3 * i + 'px"></div>')
-    //         }
-    //         jQuery('#imagePuzzle').append('<br>')
-    //     }
-    // })();
-
-    // jQuery('#sourceImage').attr('src', url).ready(function() {
-    //     let height = img.naturalHeight;
-    //     let width = img.naturalWidth;
-    //     for (let i = 0; i < 3; i++) {
-    //         for (let j = 0; j < 4; j++) {
-    //             jQuery('#imagePuzzle').append('<div style="width: ' + width/4 + 'px; height: ' + height/3 + 'px; overflow: hidden; margin: 0.1vw"><img src="' + img.url + '" style="width: 400px; margin: -' + width/4 * j + 'px 0 0 -' + height/3 * i + 'px"></div>')
-    //         }
-    //         jQuery('#imagePuzzle').append('<br>')
-    //     }
-    // })
+    qMATCHIMAGE = '14';
 
     if (jQuery('#correctColorPicker').length) {
         jQuery('#correctColorPicker').farbtastic('#correctColor');
@@ -504,6 +437,7 @@ jQuery(document).ready(function () {
             jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qDRAGDROP) {
             jQuery("#answers").hide()
             jQuery("#answerCounter").val('1');
@@ -518,6 +452,7 @@ jQuery(document).ready(function () {
             jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qCHECKBOXTEXT || this.value === qRADIOBOXTEXT || this.value === qTRUEFALSE) {
             if (this.value === qCHECKBOXTEXT) {
                 jQuery('.correct').each(function () {
@@ -559,6 +494,7 @@ jQuery(document).ready(function () {
             jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qSORTING) {
             jQuery('.correct').each(function () {
                 jQuery(this).hide()
@@ -575,6 +511,7 @@ jQuery(document).ready(function () {
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#matching").hide();
             jQuery("#puzzleImageContainer").hide();
+            jQuery("#matchImagesContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qCHECKBOXIMG || this.value === qRADIOBOXIMG) {
             if (this.value === qCHECKBOXIMG) {
@@ -598,6 +535,7 @@ jQuery(document).ready(function () {
             jQuery("#addNewWordSearchAnswerContainer").hide();
             jQuery("#matching").hide();
             jQuery("#puzzleImageContainer").hide();
+            jQuery("#matchImagesContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qWORDSEARCH) {
             jQuery("#answers").hide()
@@ -611,6 +549,7 @@ jQuery(document).ready(function () {
             jQuery("#matching").hide();
             jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(jQuery(".spaceSearch").length + 1);
         } else if (this.value === qMATCHING) {
             jQuery("#answers").hide()
@@ -624,6 +563,7 @@ jQuery(document).ready(function () {
             jQuery("#matching").show();
             jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").show();
+            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(jQuery(".answer").length + 1);
         } else if (this.value === qPUZZLE) {
             jQuery("#answers").hide()
@@ -637,7 +577,22 @@ jQuery(document).ready(function () {
             jQuery("#matching").hide();
             jQuery("#puzzleImageContainer").show();
             jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(1);
+        } else if (this.value === qMATCHIMAGE) {
+            jQuery("#answers").hide()
+            jQuery("#singleAnswerContainer").hide();
+            jQuery("#addNewWordSearchAnswerContainer").hide();
+            jQuery("#instructions4th").hide();
+            jQuery("#instructions5th").hide();
+            jQuery("#imagesContainer").hide();
+            jQuery("#wordSearch").hide();
+            jQuery("#addNewAnswerContainer").hide();
+            jQuery("#matching").hide();
+            jQuery("#puzzleImageContainer").hide();
+            jQuery("#addNewMatchingAnswerContainer").hide();
+            jQuery("#answerCounter").val(jQuery(".matchImageUrlContainer").length + 1);
+            jQuery("#matchImagesContainer").show();
         }
     })
 
@@ -708,6 +663,70 @@ jQuery(document).ready(function () {
         mediaUploader.open();
     });
 
+    jQuery('#selectMatchImages').on('click', function (e) {
+        e.preventDefault();
+        if (mediaUploader) {
+            mediaUploader.detach();
+        }
+
+        mediaUploader = wp.media.frames.fle_frame = wp.media({
+            title: 'Select the images',
+            multiple: 'add',
+            button: {
+                text: 'Select the images'
+            }
+        })
+
+
+        mediaUploader.on('open', function () {
+            let selection = mediaUploader.state().get('selection');
+            let images = jQuery('.matchImageUrl');
+            images.each(function () {
+                attachment = wp.media.attachment(jQuery(this).attr("data-id"));
+                attachment.fetch();
+                selection.add(attachment ? [attachment] : []);
+            })
+        })
+
+        mediaUploader.on('select', function () {
+            jQuery('.matchImageUrlContainer').each(function () {
+                let found = false;
+                let imageUrl = jQuery(this).find('.matchImageUrl');
+                mediaUploader.state().get('selection').toJSON().forEach(function (val, index) {
+                    if (imageUrl.val() === val.url + '[]' + val.id) {
+                        found = true;
+                        return false;
+                    }
+                })
+                if (!found) {
+                    jQuery(this).remove();
+                }
+            })
+            mediaUploader.state().get('selection').toJSON().forEach(function (val, index) {
+                let found = false
+                jQuery('.matchImageUrl').each(function () {
+                    if (jQuery(this).val() === val.url + '[]' + val.id) {
+                        found = true;
+                    }
+                })
+                if (!found) {
+                    jQuery("#matchImages").append("<div class='matchImageUrlContainer' style='margin: 0.5vw; float: left; text-align: center'><input style='display: none' data-id='" + val.id + "' class='matchImageUrl' id='matchImageUrl" + (index - 0 + 1) + "' name='matchImageUrl" + (index - 0 + 1) + "' value='" + val.url + "[]" + val.id + "'><img src='" + val.url + "' width='100' height='100' style='max-height: 100px; width: auto;'><br><input type='text' class='imageTitle' id='imageTitle" + (index - 0 + 1) + "' name='imageTitle" + (index - 0 + 1) + "' value=''></div>")
+                }
+            })
+            let counter = 1;
+            jQuery('.matchImageUrlContainer').each(function () {
+                jQuery(this).find('.matchImageUrl').attr('id', 'matchImageUrl' + counter)
+                jQuery(this).find('.matchImageUrl').attr('name', 'matchImageUrl' + counter)
+                jQuery(this).find('.imageTitle').attr('id', 'imageTitle' + counter)
+                jQuery(this).find('.imageTitle').attr('name', 'imageTitle' + counter)
+                counter++;
+            })
+            jQuery("#answerCounter").val(counter);
+        });
+
+        mediaUploader.open();
+    });
+
     jQuery('#selectImage').on('click', function (e) {
         e.preventDefault();
         if (mediaUploader) {
@@ -726,7 +745,9 @@ jQuery(document).ready(function () {
         mediaUploader.on('select', function () {
             let attachment;
             attachment = mediaUploader.state().get('selection').first().toJSON();
-            jQuery('#puzzleImageUrl').val(attachment.url);
+            jQuery('#puzzleImageUrl').attr('value', attachment.url);
+            // console.log(attachment.url)
+            // console.log(jQuery('#puzzleImageUrl')[0])
             let image_preview = jQuery('#puzzleImage');
             image_preview.show()
             image_preview.attr('src', attachment.url).css('width', 'auto');
