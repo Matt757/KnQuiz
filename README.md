@@ -64,6 +64,11 @@ True or false:
 
 <img width="494" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/40fa8965-f493-4f48-9652-46c02fac38ae">
 
+Puzzle: 
+
+<img width="459" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/efab617b-b786-4480-8e63-64b03ae634e4">
+
+
 
 
 Contributors:
