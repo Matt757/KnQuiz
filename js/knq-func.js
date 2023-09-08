@@ -120,7 +120,7 @@ function buildAnswerDragDrop(answers){
                 }
                 if (replace) {
                     replace.offset({top: replace.offset().top + 30,left: replace.offset().left + 30});
-                    replace.css('border', "2px dotted #007AAE")
+                    replace.css('border', "2px dotted " + newShade(color_hover, magnitude))
                     let loop = true
                     let positionLimit = 15
                     while (loop) {
@@ -259,13 +259,6 @@ function buildAnswerCheckRadioSortTrueFalse(answers, tip){
     }
     if (tip === qTRUEFALSE) {
         jQuery('.radioLabel1').eq(0).find('i').ready(function () {
-            console.log(jQuery('.radioLabel1').eq(0).find('i').width())
-            console.log(jQuery('.radioLabel1').eq(0).find('i')[0])
-            console.log(jQuery('.radioLabel1').eq(0).width())
-            console.log(jQuery('.radioLabel1').eq(0).innerWidth())
-            console.log(jQuery('.radioLabel1').eq(0).outerWidth())
-            console.log(jQuery('.radioLabel1').eq(0).outerWidth(true))
-            console.log(jQuery('.radioLabel1').eq(0).css('width'))
             jQuery('#trueColumn').css('width', '20px')
         })
         jQuery('.radioLabel1').eq(1).find('i').ready(function () {
@@ -356,9 +349,229 @@ function buildMatching(answers, rightOnes) {
     })
 }
 
+function buildPuzzle(answers) {
+    answers = answers.split('|')
+    // Create a new Image object
+    const img = new Image();
+
+    // Set the source of the image
+    img.src = answers[2];
+
+    // Wait for the image to load
+    img.onload = () => {
+        // Get the width and height of the image
+        let width = img.width;
+        let height = img.height;
+        const containerWidth = jQuery('#questionContainer').width();
+        if (containerWidth < width) {
+            var ratio = containerWidth / width
+            img.width = width * ratio - Math.max(answers[0], answers[1]) * 2;
+            width = img.width;
+            img.height = height * ratio - Math.max(answers[0], answers[1]) * 2 * ratio;
+            height = img.height
+        }
+
+        // Do something with the width and height (e.g., display them on the page)
+        let index = 0;
+        for (let i = 0; i < answers[0]; i++) {
+            for (let j = 0; j < answers[1]; j++) {
+                jQuery('#knq_answer').append('<div data-row="' + i + '" data-column="' + j + '" id="piece_' + index + '" class="piece" style="float: left; width: ' + width/answers[1] + 'px; height: ' + height/answers[0] + 'px; overflow: hidden; margin: 1px"><img width="' + width + '" height="' + height + '" src="' + jQuery(img).attr('src') + '" style="margin: ' + height/answers[0] * i * -1 + 'px 0 0 ' + width/answers[1] * j * -1 + 'px"></div>')
+                index++;
+            }
+            jQuery('#knq_answer').append('<br>')
+        }
+        let myArray = [];
+        jQuery('.piece').each(function () {
+            myArray.push(this.outerHTML)
+        })
+        shuffle(myArray)
+        jQuery('#knq_answer').empty()
+        jQuery('#knq_answer').append('<div id="rows_columns" style="display: none" data-rows="' + answers[0] + '" data-columns="' + answers[1] + '"></div>')
+        let counter = 1
+        myArray.forEach(element => {
+            if (counter%answers[1] === 0) {
+                element += '<div style=\'clear:both\'></div>';
+            }
+            jQuery('#knq_answer').append(element)
+            counter++;
+        })
+        elemSortablePieces = new Sortable(jQuery("#knq_answer")[0], {
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            swapClass: 'highlight',
+            swap: true,
+            onEnd: function () {
+                let correctAnswersCounter = 0
+                jQuery('.piece').each(function(index) {
+                    if (jQuery(this).attr('id').split('_')[1] - 0 === index) {
+                        correctAnswersCounter++;
+                    }
+                })
+                if (correctAnswersCounter === jQuery('.piece').length) {
+                    funcClickAmRaspuns()
+                }
+            }
+        });
+    };
+}
+
+function buildMatchImage(answers) {
+    // TODO: 30% width should mean 3 images fit on the same row
+    answers = answers.split("[[");
+    imageUrlAnswers = answers[0].split("|")
+    wordAnswers = answers[1].split("|")
+    extraWords = answers[2].split(" ")
+    let htmlBuilder = '';
+    let i;
+    for (i = 1; i < imageUrlAnswers.length; i++) {
+        let answer = imageUrlAnswers[i].split('[]')[0]
+        htmlBuilder += "<li id='" + i + "' style='width: " + imageUrlAnswers[0] + "%; vertical-align: center' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><div class='droppable' data-correct='0' data-dropped-element='0' id='droppableAnswer-" + i + "'></div></li>"
+    }
+    htmlBuilder += "<div style='clear:both'></div><li id='" + i +"' style='width: 100%; display:flex; flex-wrap: wrap; align-items:flex-end;'>"
+    let answersBuilder = []
+    for (i = 0; i < wordAnswers.length; i++) {
+        answersBuilder.push("<div class='draggable' id='draggableAnswer-" + (i + 1) + "'>" + wordAnswers[i] + "</div>")
+    }
+    if (extraWords[0] !== '') {
+        for (let j = 0; j < extraWords.length; j++) {
+            i++;
+            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + i + "'>"+ extraWords[j] + "</div>")
+        }
+    }
+    shuffle(answersBuilder)
+    htmlBuilder += answersBuilder.join('') + "</li>";
+    let maxWidth = 0;
+    let maxHeight = 0;
+    jQuery('#knqList').append(htmlBuilder).ready(function () {
+        jQuery('.droppable').each(function () {
+            if (maxWidth < jQuery(this).width()) {
+                maxWidth = jQuery(this).width()
+            }
+        })
+        jQuery('.draggable').each(function () {
+            if (maxWidth < jQuery(this).width()) {
+                maxWidth = jQuery(this).width()
+            }
+            if (maxHeight < jQuery(this).height()) {
+                maxHeight = jQuery(this).height()
+            }
+        })
+        maxWidth += 10;
+        jQuery('.draggable').each(function () {
+            jQuery(this).css('flex-basis', maxWidth + 'px')
+            jQuery(this).css('flex-shrink', '0')
+            jQuery(this).height(maxHeight)
+        })
+        jQuery('.droppable').each(function () {
+            jQuery(this).width(maxWidth)
+            jQuery(this).height(maxHeight)
+        })
+        jQuery('.knq_unselected').each(function() {
+            if (jQuery(this).width() < maxWidth) {
+                console.log('yeah')
+                console.log(maxWidth)
+                maxWidth = jQuery('.draggable').first().outerWidth()
+                jQuery(this).width(maxWidth)
+            }
+        })
+        // jQuery("#knqList").find('li').last().css('height', 'fit-content')
+    });
+    jQuery('.knq_unselected').css('background-color', color_neutral)
+    let magnitude = -70
+    jQuery('.draggable').each(function () {
+        jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
+    })
+    jQuery('.droppable').each(function () {
+        jQuery(this).droppable({
+            drop: function( event, ui ) {
+                let left = jQuery(this).offset().left
+                let top = jQuery(this).offset().top
+                let replace
+                if (jQuery(this).attr('data-dropped-element') !== '0') {
+                    replace = jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element'))
+                    console.log(replace[0])
+                }
+                if (replace) {
+                    replace.offset({top: replace.offset().top + 30,left: replace.offset().left + 30});
+                    replace.css('border', "2px dotted " + newShade(color_hover, magnitude))
+                    let loop = true
+                    let positionLimit = 15
+                    while (loop) {
+                        loop = false
+                        jQuery(".draggable").each(function () {
+                            if (jQuery(this).offset().top - positionLimit < replace.offset().top && jQuery(this).offset().top >= replace.offset().top && jQuery(this).offset().left - positionLimit < replace.offset().left && jQuery(this).offset().left >= replace.offset().left && jQuery(this).attr('id') !== replace.attr('id')) {
+                                replace.offset({top: replace.offset().top + positionLimit * 2, left: replace.offset().left + positionLimit * 2})
+                                loop = true;
+                            }
+                            else if (jQuery(this).offset().top + positionLimit > replace.offset().top && jQuery(this).offset().top <= replace.offset().top && jQuery(this).offset().left + positionLimit > replace.offset().left && jQuery(this).offset().left <= replace.offset().left && jQuery(this).attr('id') !== replace.attr('id')) {
+                                replace.offset({top: replace.offset().top + positionLimit * 2, left: replace.offset().left + positionLimit * 2})
+                                loop = true;
+                            }
+                            else if (jQuery(this).offset().top - positionLimit < replace.offset().top && jQuery(this).offset().top >= replace.offset().top && jQuery(this).offset().left + positionLimit > replace.offset().left && jQuery(this).offset().left <= replace.offset().left && jQuery(this).attr('id') !== replace.attr('id')) {
+                                replace.offset({top: replace.offset().top + positionLimit * 2, left: replace.offset().left + positionLimit * 2})
+                                loop = true;
+                            }
+                            else if (jQuery(this).offset().top + positionLimit > replace.offset().top && jQuery(this).offset().top <= replace.offset().top && jQuery(this).offset().left - positionLimit < replace.offset().left && jQuery(this).offset().left >= replace.offset().left && jQuery(this).attr('id') !== replace.attr('id')) {
+                                replace.offset({top: replace.offset().top + positionLimit * 2, left: replace.offset().left + positionLimit * 2})
+                                loop = true;
+                            }
+                        })
+                    }
+                }
+                jQuery(ui.draggable).offset({top: top,left: left});
+                jQuery(ui.draggable).css('border', '2px solid ' + newShade(color_hover, magnitude));
+                if (jQuery(ui.draggable).attr('id').split("-")[1] === jQuery(this).attr('id').split("-")[1]) {
+                    jQuery(this).attr('data-correct', '1')
+                }
+                else {
+                    jQuery(this).attr('data-correct', '0')
+                }
+                jQuery(this).attr('data-dropped-element', jQuery(ui.draggable).attr('id').split("-")[1])
+            }
+        })
+    })
+    jQuery('.draggable').each(function () {
+        jQuery(this).draggable({
+            start: function () {
+                let draggable = jQuery(this);
+                draggable.css('border', '2px dotted ' + newShade(color_hover, magnitude));
+                jQuery(".droppable").each(function () {
+                    if (jQuery(this).attr('data-dropped-element') === draggable.attr('id').split("-")[1]) {
+                        jQuery(this).attr('data-dropped-element', '0')
+                    }
+                })
+                jQuery(".draggable").each(function() {
+                    if (jQuery(this).attr('id') !== draggable.attr('id')) {
+                        jQuery(this).css('z-index', 10)
+                    }
+                    else {
+                        jQuery(this).css('z-index', 20)
+                    }
+                })
+            },
+            stop: function () {
+                let draggable = jQuery(this);
+                let positionLimit = 10;
+                jQuery(".draggable").each(function () {
+                    if ((jQuery(this).offset().top < draggable.offset().top + positionLimit && jQuery(this).offset().top  > draggable.offset().top - positionLimit) && (jQuery(this).offset().left < draggable.offset().left + positionLimit && jQuery(this).offset().left > draggable.offset().left - positionLimit) && jQuery(this).attr('id') !== draggable.attr('id')) {
+                        jQuery(this).offset({top: jQuery(this).offset().top + positionLimit * 2, left: jQuery(this).offset().left + positionLimit * 2})
+                    }
+                })
+            }
+        })
+    })
+    jQuery('.droppable').css('background', color_neutral)
+    jQuery('.droppable').css('border', '2px solid ' + newShade(color_neutral, -70))
+    jQuery('.draggable').css('background', color_hover)
+}
+
 function destroySortable() {
-    elemSortableAnswers.destroy()
-    elemSortableRightOnes.destroy()
+    if (jQuery('#type').text() === qPUZZLE) {
+        elemSortablePieces.destroy()
+    } else if (jQuery('#type').text() === qMATCHING) {
+        elemSortableAnswers.destroy()
+        elemSortableRightOnes.destroy()
+    }
 }
 
 //=========================END - FUNCTII BUILD ANSWERS==================================
@@ -370,6 +583,7 @@ function destroySortable() {
 
 //=========================BEGIN - FUNCTII FULL SCREEN==================================
 
+
 function funcFullScreen(){
     jQuery("#fullscreen-link").click(function(e) {
         //dacă s-a apăsat butonul de full-screen
@@ -379,12 +593,14 @@ function funcFullScreen(){
             //ieșire din full screen
             jQuery.fullscreen.exit();
             relocateDraggablesNotFullscreen();
+            resizePuzzleNotFullscreen();
             // relocateTrueFalseNotFullscreen()
         }
         else {
             //intrare în full screen
             jQuery('#quiz').fullscreen();
             relocateDraggablesFullscreen();
+            resizePuzzleFullscreen();
             // relocateTrueFalseFullscreen()
         }
         return false;
@@ -405,13 +621,67 @@ function funcFullScreen(){
             jQuery('#quiz').css("padding","0px");
 			jQuery('#quiz').css("background-color","");
 			ht=parseInt(jQuery('#tabelcentrat').height(),10);wt=parseInt(jQuery('#tabelcentrat').width(),10);
-			console.log(ht+" "+wt);
 			if(ht>wt) jQuery('#tabelcentrat').height(wt+"px"); else jQuery('#tabelcentrat').width(ht+"px");
             jQuery("#fullscreen-link").html("<i class='fa fa-expand'></i>");
             jQuery("#quiz").css("overflow","show");
             scrollToAnchor('knq_question');
         }
     });
+}
+
+
+function resizePuzzleNotFullscreen() {
+    if (jQuery.fullscreen.isFullScreen()) {
+        setTimeout(resizePuzzleNotFullscreen, 100)
+    }
+    else {
+        resizePuzzle(2)
+    }
+}
+
+function resizePuzzleFullscreen() {
+    if (!jQuery.fullscreen.isFullScreen()) {
+        setTimeout(resizePuzzleFullscreen, 100)
+    }
+    else {
+        resizePuzzle(2)
+    }
+}
+
+function resizePuzzle(margin) {
+    // Create a new Image object
+    const img = new Image();
+
+    // Set the source of the image
+    img.src = jQuery('#piece_0').find('img').attr('src');
+
+    const containerWidth = jQuery('#questionContainer').width();
+
+    // Wait for the image to load
+    img.onload = () => {
+        // Get the width and height of the image
+        let width;
+        let height;
+        let rows = jQuery("#rows_columns").attr('data-rows');
+        let columns = jQuery("#rows_columns").attr('data-columns');
+        if (img.width < containerWidth) {
+            width = img.width;
+            height = img.height;
+        } else {
+            const ratio = containerWidth / img.width;
+            img.width = img.width * ratio - Math.max(columns, rows) * margin;
+            width = img.width;
+            img.height = img.height * ratio - Math.max(rows, columns) * margin * ratio;
+            height = img.height
+        }
+        jQuery(".piece").each(function () {
+            jQuery(this).css('width', width/columns + 'px')
+            jQuery(this).css('height', height/rows + 'px')
+            jQuery(this).find('img').css('margin', height/rows * jQuery(this).attr('data-row') * -1 + 'px 0 0 ' + width/columns * jQuery(this).attr('data-column') * -1 + 'px')
+            jQuery(this).find('img').css('width', width)
+            jQuery(this).find('img').css('height', height)
+        })
+    };
 }
 
 function relocateTrueFalseFullscreen() {
