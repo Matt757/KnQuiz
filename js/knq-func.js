@@ -370,8 +370,6 @@ function buildPuzzle(answers) {
             img.height = height * ratio - Math.max(answers[0], answers[1]) * 2 * ratio;
             height = img.height
         }
-        console.log(answers[0])
-        console.log(answers[1])
 
         // Do something with the width and height (e.g., display them on the page)
         let index = 0;
@@ -478,6 +476,7 @@ function buildMatchImage(answers) {
         })
         // jQuery("#knqList").find('li').last().css('height', 'fit-content')
     });
+    jQuery('.knq_unselected').css('background-color', color_neutral)
     let magnitude = -70
     jQuery('.draggable').each(function () {
         jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));

@@ -32,7 +32,6 @@ jQuery(document).ready(function () {
 
 jQuery(window).resize(function () {
     resizePuzzle(2)
-    console.log("mai mic")
 })
 
 // TODO: show feedback only at the end
@@ -343,20 +342,23 @@ function evalAnwers(corecteUser) {
                 if (jQuery("#knq_main_button").val() === msg_done) {
                     //este răspunsul la o întrebare
                     jQuery('.knq_unselected').each(function() {
-                        jQuery(this).on('mouseenter', function() {
-                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
-                        })
-                        jQuery(this).on('mouseleave', function() {
-                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
-                        })
+                        jQuery(this).css('background-color', color_neutral)
+                        // jQuery(this).on('mouseenter', function() {
+                        //     jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        // })
+                        // jQuery(this).on('mouseleave', function() {
+                        //     jQuery(this).css('background-color', jQuery(this).css('background-color'))
+                        // })
+                        jQuery(this).unbind("mouseenter");
+                        jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_selected').each(function() {
-                        jQuery(this).on('mouseenter', function() {
-                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
-                        })
-                        jQuery(this).on('mouseleave', function() {
-                            jQuery(this).css('background-color', jQuery(this).css('background-color'))
-                        })
+                    jQuery('.knq_matching_answer').each(function() {
+                        jQuery(this).unbind("mouseenter");
+                        jQuery(this).unbind("mouseleave");
+                    })
+                    jQuery('.knq_right_one').each(function() {
+                        jQuery(this).unbind("mouseenter");
+                        jQuery(this).unbind("mouseleave");
                     })
                     if (jQuery("#type").text() === qCHECKBOXTEXT || jQuery('#type').text() === qCHECKBOXIMG) {
                         // Handle first, second, sixth and seventh types of questions

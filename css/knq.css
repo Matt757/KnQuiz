@@ -46,11 +46,11 @@ ul.knq_list {
     border-radius: 0.5vw;
 }
 
-.knq_unselected:hover {
-	-moz-border-radius: 0.5vw;
-    -webkit-border-radius: 0.5vw;
-    border-radius: 0.5vw;
-}
+/*.knq_unselected:hover {*/
+/*	-moz-border-radius: 0.5vw;*/
+/*    -webkit-border-radius: 0.5vw;*/
+/*    border-radius: 0.5vw;*/
+/*}*/
 
 .knq_feedback {
     padding: 20px 20px !important;
@@ -158,26 +158,22 @@ label {
     line-height: 2.2em;
 }
 
-.knq_matching_answer:hover {
-    padding-left: 1vw;
-    padding-right: 1vw;
-
-    margin: 0.2vw;
-    border-radius: 5px 120px 120px 5px;
-    -webkit-border-radius: 5px 120px 120px 5px;
-    display: flex;
-    align-items: center;
-}
-
 .knq_matching_answer {
-    padding-left: 1vw;
-    padding-right: 1vw;
-
     margin: 0.2vw;
     border-radius: 5px 120px 120px 5px;
     -webkit-border-radius: 5px 120px 120px 5px;
     display: flex;
     align-items: center;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    font-weight: 400;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    -webkit-transition: background-color 800ms linear;
+    -ms-transition: background-color 800ms linear;
+    transition: background-color 800ms linear;
 }
 
 .knq_matching_answer p {
@@ -191,26 +187,23 @@ label {
     margin: 0 0 0 auto;
 }
 
-.knq_right_one:hover {
-    padding-left: 1vw;
-    padding-right: 1vw;
-    margin: 0.2vw;
-    -webkit-border-radius: 120px 5px 5px 120px;
-    border-radius: 120px 5px 5px 120px;
-    display: flex;
-    position: relative;
-    align-items: center;
-}
-
 .knq_right_one {
-    padding-left: 1vw;
-    padding-right: 1vw;
     margin: 0.2vw;
     -webkit-border-radius: 120px 5px 5px 120px;
     border-radius: 120px 5px 5px 120px;
     display: flex;
     position: relative;
     align-items: center;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    font-weight: 400;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    -webkit-transition: background-color 800ms linear;
+    -ms-transition: background-color 800ms linear;
+    transition: background-color 800ms linear;
 }
 
 .celula {
