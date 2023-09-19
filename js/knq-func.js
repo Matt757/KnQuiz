@@ -23,7 +23,6 @@ function newShade (hexColor, magnitude) {
 function buildAnswerSelectBox(answers){
     let answer = answers.split(/\[\[|]]/);
     answer[0] = answer[0].replace(/(?:\r\n|\r|\n)/g, '<br>')
-    console.log(answer[0])
     let extra = 0;
     if (answer[0] === '[') {
         extra = 1;
@@ -35,7 +34,7 @@ function buildAnswerSelectBox(answers){
         } else {
             let options = answer[j].split("|");
             let optionsBuilder = [];
-            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "'><option value='0'>" + choose_answer_msg + "</option>"
+            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "'><option style='text-align-last: center; text-align: center; -ms-text-align-last: center; -moz-text-align-last: center;' value='0'>" + choose_answer_msg + "</option>"
             options.forEach((element, index) => {
                 optionsBuilder.push("<option value='" + parseInt(index + 1) + "'>" + element + "</option>")
             })
@@ -254,7 +253,7 @@ function buildAnswerCheckRadioSortTrueFalse(answers, tip){
         } else if (tip === qSORTING) {
             jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-arrows-up-down' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
         } else if (tip === qTRUEFALSE) {
-            jQuery("#knqList").append("<li class='knq_unselected' style='cursor: auto !important' id='" + (i + 1) + "'><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p><label style='float: right; width: fit-content;' class='radioLabel" + (i+1) + "' onclick='selectRadio(jQuery(this))' for='true_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='trueRadio' style='float: right; display: none;' type='radio' id='true_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'><label style='float: right; width: fit-content; margin-right: 1vw' onclick='selectRadio(jQuery(this))' class='radioLabel" + (i+1) + "' for='false_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='falseRadio' style='float: right; display: none' type='radio' id='false_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'></li>")
+                jQuery("#knqList").append("<li class='knq_unselected' style='cursor: auto !important' id='" + (i + 1) + "'><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p><label style='float: right; width: fit-content;' class='radioLabel" + (i+1) + "' onclick='selectRadio(jQuery(this))' for='false_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='falseRadio' style='float: right; display: none' type='radio' id='false_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'><label style='float: right; width: fit-content; margin-right: 1vw' onclick='selectRadio(jQuery(this))' class='radioLabel" + (i+1) + "' for='true_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='trueRadio' style='float: right; display: none' type='radio' id='true_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'></li>")
         }
     }
     if (tip === qTRUEFALSE) {
@@ -276,7 +275,7 @@ function buildAnswerCheckRadioSortTrueFalse(answers, tip){
     })
 }
 
-function buildMatching(answers, rightOnes) {
+function buildMatching(answers, rightOnes, noShuffle) {
     width = answers.split('[[')
     answers = width[1].split('|')
     rightOnes = rightOnes.split('|')
@@ -285,7 +284,9 @@ function buildMatching(answers, rightOnes) {
     for (i = 0; i < answers.length; i++) {
         htmlArray.push('<div class="knq_matching_answer" id="knq_answer_' + (i + 1) + '"><p>' + answers[i] + '</p><i class="fa-solid fa-caret-right"></i></div>')
     }
-    htmlArray = shuffle(htmlArray)
+    if (!noShuffle) {
+        htmlArray = shuffle(htmlArray)
+    }
     htmlBuilder += htmlArray.join("")
     htmlBuilder += '</td><td style="border: none" id="matchingRightOnes">'
     htmlArray = []
@@ -468,13 +469,10 @@ function buildMatchImage(answers) {
         })
         jQuery('.knq_unselected').each(function() {
             if (jQuery(this).width() < maxWidth) {
-                console.log('yeah')
-                console.log(maxWidth)
                 maxWidth = jQuery('.draggable').first().outerWidth()
                 jQuery(this).width(maxWidth)
             }
         })
-        // jQuery("#knqList").find('li').last().css('height', 'fit-content')
     });
     jQuery('.knq_unselected').css('background-color', color_neutral)
     let magnitude = -70
@@ -489,7 +487,6 @@ function buildMatchImage(answers) {
                 let replace
                 if (jQuery(this).attr('data-dropped-element') !== '0') {
                     replace = jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element'))
-                    console.log(replace[0])
                 }
                 if (replace) {
                     replace.offset({top: replace.offset().top + 30,left: replace.offset().left + 30});
@@ -565,6 +562,173 @@ function buildMatchImage(answers) {
     jQuery('.draggable').css('background', color_hover)
 }
 
+function buildCategories(answers) {
+    let categories = answers.split('[[');
+    let htmlBuilder = "";
+    let answersBuilder = [];
+    let answerCounter = 0;
+    for (let i = 0; i < categories.length; i++) {
+        let elements = categories[i].split('|');
+        htmlBuilder += "<div data-offset-top='-1' data-width='-1' data-height='-1' data-offset-left='-1' style='text-align: center; width: 40%' class='droppable' id='category-" + i + "'><p>" + elements[0] + "</p></div>"
+        for (let j = 1; j < elements.length; j++) {
+            answersBuilder.push("<div data-category='" + i + "' data-dropped='-1' class='draggable' id='answer" + answerCounter + "'>" + elements[j] + "</div>");
+            answerCounter++;
+        }
+    }
+    shuffle(answersBuilder)
+    htmlBuilder +=  "<br>" + answersBuilder.join('');
+
+    let maxWidth = 0;
+    let maxHeight = 0;
+    jQuery("#knq_answer").append(htmlBuilder).ready(function () {
+        jQuery('.draggable').each(function () {
+            if (maxWidth < jQuery(this).width()) {
+                maxWidth = jQuery(this).width()
+            }
+            if (maxHeight < jQuery(this).height()) {
+                maxHeight = jQuery(this).height()
+            }
+        })
+        maxWidth += 10;
+        jQuery('.draggable').each(function () {
+            jQuery(this).css('width', maxWidth + 'px')
+            // jQuery(this).css('flex-shrink', '0')
+            jQuery(this).height(maxHeight)
+        })
+        jQuery('.droppable').each(function () {
+            jQuery(this).height(maxHeight * 3)
+            jQuery(this).css('margin-bottom', '0.5vw')
+            jQuery(this).attr('data-offset-top', jQuery(this).offset().top)
+            jQuery(this).attr('data-offset-left', jQuery(this).offset().left)
+            jQuery(this).attr('data-width', jQuery(this).width())
+            jQuery(this).attr('data-height', jQuery(this).height())
+        })
+        jQuery('.knq_unselected').each(function() {
+            if (jQuery(this).width() < maxWidth) {
+                maxWidth = jQuery('.draggable').first().outerWidth()
+                jQuery(this).width(maxWidth)
+            }
+        })
+    });
+
+    let magnitude = -70
+
+    jQuery('.droppable').each(function () {
+        jQuery(this).css('background', color_neutral)
+        jQuery(this).css('border', '2px solid ' + newShade(color_neutral, -70))
+        jQuery(this).droppable({
+            drop: function( event, ui ) {
+                let draggable = jQuery(ui.draggable)
+                let draggableOffset = draggable.offset()
+                let category = jQuery(this)
+                let categoryOffset = category.offset()
+                if (draggableOffset.left > categoryOffset.left && draggableOffset.left < categoryOffset.left + parseFloat(category.css('width')) - parseFloat(draggable.css('width')) && draggableOffset.top > categoryOffset.top && draggableOffset.top < categoryOffset.top + parseFloat(category.css('height')) - parseFloat(draggable.css('height'))) {
+                    jQuery(ui.draggable).css('border', '2px solid ' + newShade(color_hover, magnitude));
+                    jQuery(ui.draggable).attr('data-dropped', jQuery(this).attr('id').split("-")[1])
+                }
+            }
+        })
+    })
+
+    jQuery('.draggable').each(function () {
+        jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
+        jQuery(this).css('background', color_hover)
+        jQuery(this).draggable({
+            start: function () {
+                let draggable = jQuery(this);
+                draggable.attr('data-dropped', -1);
+                draggable.css('border', '2px dotted ' + newShade(color_hover, magnitude));
+                jQuery(".draggable").each(function() {
+                    if (jQuery(this).attr('id') !== draggable.attr('id')) {
+                        jQuery(this).css('z-index', 10)
+                    }
+                    else {
+                        jQuery(this).css('z-index', 20)
+                    }
+                })
+            },
+            stop: function () {
+                let draggable = jQuery(this);
+                let positionLimit = 10;
+                jQuery(".draggable").each(function () {
+                    if ((jQuery(this).offset().top < draggable.offset().top + positionLimit && jQuery(this).offset().top  > draggable.offset().top - positionLimit) && (jQuery(this).offset().left < draggable.offset().left + positionLimit && jQuery(this).offset().left > draggable.offset().left - positionLimit) && jQuery(this).attr('id') !== draggable.attr('id')) {
+                        jQuery(this).offset({top: jQuery(this).offset().top + positionLimit * 2, left: jQuery(this).offset().left + positionLimit * 2})
+                        let draggableOffset = jQuery(this).offset()
+                        let category = jQuery("#category-" + jQuery(this).attr('data-dropped'));
+                        if (category.length) {
+                            let categoryOffset = category.offset();
+                            if (draggableOffset.left < categoryOffset.left || draggableOffset.left > categoryOffset.left + parseFloat(category.css('width')) - parseFloat(draggable.css('width')) || draggableOffset.top < categoryOffset.top || draggableOffset.top > categoryOffset.top + parseFloat(category.css('height')) - parseFloat(draggable.css('height'))) {
+                                jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
+                                jQuery(this).attr('data-dropped', '-1')
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    })
+
+}
+
+function buildPixelatedImage(answers) {
+
+    console.log(jQuery("#knq_answer").height())
+
+    // Create a new Image object
+    const img = new Image();
+
+    // Set the source of the image
+    img.src = answers;
+
+    console.log(jQuery("#quiz")[0].scrollHeight);
+
+    img.onload = () => {
+        // Get the width and height of the image
+        let width = img.width;
+        let height = img.height;
+        const containerWidth = jQuery('#questionContainer').width();
+        if (containerWidth < width) {
+            var ratio = containerWidth / width
+            img.width = width * ratio - Math.max(answers[0], answers[1]) * 2;
+            img.height = height * ratio - Math.max(answers[0], answers[1]) * 2 * ratio;
+        }
+
+        let value = 0.02;
+        jQuery('#knq_answer').append('<label style="width: fit-content" for="imageAnswer">' + text_guess + ':</label><br><input size="50" id="imageAnswer" type="text" value=""><img data-attempt="1" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
+        jQuery('#pixelate').pixelate({ value: value, reveal: false })
+
+        jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+        let attempt;
+        let tries = 8, timeout = 3000, step = value;
+        value += step;
+        timeoutArray = []
+        while (tries) {
+            timeoutArray.push(setTimeout(function () {
+                console.log(jQuery("#quiz")[0].scrollHeight);
+                attempt = parseInt(jQuery('#pixelate').attr('data-attempt'));
+                jQuery('#pixelate').remove();
+                jQuery('#knq_answer').find('canvas').each(function () {
+                    jQuery(this).remove();
+                })
+                jQuery('#knq_answer').append('<img data-attempt="' + (attempt + 1) + '" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
+                jQuery('#pixelate').pixelate({ value: value, reveal: false })
+                value = value + step;
+            }, timeout))
+            timeout += 3000;
+            tries --;
+        }
+        timeoutArray.push(setTimeout(function() {
+            jQuery('#pixelate').remove();
+            jQuery('#knq_answer').find('canvas').each(function () {
+                jQuery(this).remove();
+            })
+            jQuery('#knq_answer').append('<img data-attempt="' + (attempt + 2) + '" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
+            jQuery('#pixelate').pixelate({ value: 1, reveal: false })
+        }, timeout))
+    };
+}
+
+
 function destroySortable() {
     if (jQuery('#type').text() === qPUZZLE) {
         elemSortablePieces.destroy()
@@ -592,16 +756,24 @@ function funcFullScreen(){
         if(jQuery.fullscreen.isFullScreen()){
             //ieșire din full screen
             jQuery.fullscreen.exit();
+            if (jQuery('#type').text() === qPIXELATEDIMAGE) {
+                jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+            }
             relocateDraggablesNotFullscreen();
-            resizePuzzleNotFullscreen();
-            // relocateTrueFalseNotFullscreen()
+            if (jQuery('#type').text() === qPUZZLE) {
+                resizePuzzleNotFullscreen();
+            }
         }
         else {
             //intrare în full screen
+            if (jQuery('#type').text() === qPIXELATEDIMAGE) {
+                jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+            }
             jQuery('#quiz').fullscreen();
             relocateDraggablesFullscreen();
-            resizePuzzleFullscreen();
-            // relocateTrueFalseFullscreen()
+            if (jQuery('#type').text() === qPUZZLE) {
+                resizePuzzleFullscreen();
+            }
         }
         return false;
     });
@@ -725,12 +897,24 @@ function relocateDraggablesFullscreen() {
         setTimeout(relocateDraggablesFullscreen, 100)
     }
     else {
-        reapplyDraggable()
-        jQuery(".droppable").each(function () {
-            if (jQuery(this).attr('data-dropped-element') !== '0') {
-                jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({top: jQuery(this).offset().top, left: jQuery(this).offset().left})
-            }
-        })
+        if (jQuery('#type').text() !== qCATEGORY) {
+            reapplyDraggable()
+            jQuery(".droppable").each(function () {
+                if (jQuery(this).attr('data-dropped-element') !== '0') {
+                    jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({top: jQuery(this).offset().top, left: jQuery(this).offset().left})
+                }
+            })
+        }
+        else {
+            jQuery(".draggable").each(function () {
+                let draggable = jQuery(this).detach();
+                if (jQuery(this).attr('data-dropped') === '-1') {
+                    draggable.css('left', '0')
+                    draggable.css('top', '0')
+                }
+                jQuery("#knq_answer").append(draggable);
+            })
+        }
     }
 }
 
@@ -739,12 +923,48 @@ function relocateDraggablesNotFullscreen() {
         setTimeout(relocateDraggablesNotFullscreen, 100)
     }
     else {
-        reapplyDraggable()
-        jQuery(".droppable").each(function () {
-            if (jQuery(this).attr('data-dropped-element') !== '0') {
-                jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({top: jQuery(this).offset().top, left: jQuery(this).offset().left})
-            }
-        })
+        if (jQuery('#type').text() !== qCATEGORY) {
+            reapplyDraggable()
+            jQuery(".droppable").each(function () {
+                if (jQuery(this).attr('data-dropped-element') !== '0') {
+                    jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({top: jQuery(this).offset().top, left: jQuery(this).offset().left})
+                }
+            })
+        } else {
+            jQuery(".draggable").each(function () {
+                let draggable = jQuery(this).detach();
+                if (jQuery(this).attr('data-dropped') === '-1') {
+                    draggable.css('left', '0')
+                    draggable.css('top', '0')
+                }
+                jQuery("#knq_answer").append(draggable);
+            })
+            jQuery(".draggable").each(function () {
+                let draggable = jQuery(this)
+                let draggableOffset = jQuery(this).offset();
+                let category = jQuery("#category-" + jQuery(this).attr('data-dropped'));
+                if (category.length) {
+                    category.ready(function () {
+                        let categoryOffsetLeft = parseFloat(category.attr('data-offset-left'));
+                        let categoryOffsetTop = parseFloat(category.attr('data-offset-top'));
+                        let categoryWidth = parseFloat(category.attr('data-width'));
+                        let categoryHeight = parseFloat(category.attr('data-height'));
+                        let newLeft = Math.random() * (categoryWidth - parseFloat(draggable.width())) + categoryOffsetLeft;
+                        let newTop = Math.random() * (categoryHeight - parseFloat(draggable.height())) + categoryOffsetTop;
+                        console.log(categoryOffsetLeft)
+                        console.log(categoryOffsetTop)
+                        console.log(categoryOffsetLeft + categoryWidth)
+                        console.log(categoryOffsetTop + categoryHeight)
+                        console.log("left: " + newLeft)
+                        console.log("top: " + newTop)
+                        if (draggableOffset.left < categoryOffsetLeft || draggableOffset.left > categoryOffsetLeft + categoryWidth || draggableOffset.top < categoryOffsetTop || draggableOffset.top > categoryOffsetTop + categoryHeight) {
+                            draggable.offset({left: newLeft, top: newTop})
+                            console.log("hello?")
+                        }
+                    })
+                }
+            })
+        }
     }
 }
 
