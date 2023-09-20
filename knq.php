@@ -37,20 +37,19 @@ function debug_to_console($data)
 
 function knq_scripts()
 {
-    wp_register_style('knqcss', plugins_url('/css/knq.css', __FILE__), "1.3.6");
+    wp_register_style('knqcss', plugins_url('/css/knq.css', __FILE__), "1.3.7");
     wp_enqueue_style('knqcss');
-    wp_enqueue_script('knq-js', plugins_url('knq/js/knq.js'), array('jquery', 'jquery-ui-core', 'jquery-ui-sortable', 'jquery-ui-tooltip'), '1.3.6', true);
+    wp_enqueue_script('knq-js', plugins_url('knq/js/knq.js'), array('jquery', 'jquery-ui-core', 'jquery-ui-sortable', 'jquery-ui-tooltip'), '1.3.7', true);
     wp_localize_script('knq-js', 'knq_object', array('ajax_url' => admin_url('admin-ajax.php')));
-    wp_enqueue_script('knq-func-js', plugins_url('knq/js/knq-func.js'), array(), '1.3.6', true);
-    wp_enqueue_script('fullscreen-js', plugins_url('knq/js/jquery.fullscreen.min.js'), array(), '1.3.6', true);
+    wp_enqueue_script('knq-func-js', plugins_url('knq/js/knq-func.js'), array(), '1.3.7', true);
+    wp_enqueue_script('fullscreen-js', plugins_url('knq/js/jquery.fullscreen.min.js'), array(), '1.3.7', true);
 
-    wp_enqueue_script('knq-wordsearch-js', plugins_url('knq/js/knq-wordsearch.js'), array(), '1.3.6', true);
-    wp_enqueue_script('knq-crossword-js', plugins_url('knq/js/knq-crossword.js'), array(), '1.3.6', true);
+    wp_enqueue_script('knq-wordsearch-js', plugins_url('knq/js/knq-wordsearch.js'), array(), '1.3.7', true);
+    wp_enqueue_script('knq-crossword-js', plugins_url('knq/js/knq-crossword.js'), array(), '1.3.7', true);
     wp_enqueue_script('sortable-js', plugins_url('knq/js/Sortable.min.js'), array(), '1.14.0', true);
     wp_enqueue_script('swap-js', plugins_url('knq/js/Swap.js'), array(), '1.14.0', true);
     wp_enqueue_script('mousetrap-js', plugins_url('knq/js/mousetrap.min.js'), array(), '1.6.5', true);
     wp_enqueue_script('pixelate', plugins_url('knq/js/pixelate.min.js'), array(), '1.14.0', true);
-    //wp_enqueue_script('SortableJS', 'https://SortableJS.github.io/Sortable/Sortable.min.js');
     wp_enqueue_script("jquery-ui-draggable");
     wp_enqueue_script("jquery-ui-droppable");
 
@@ -58,7 +57,7 @@ function knq_scripts()
 
 function knqb_scripts($hook)
 {
-    wp_enqueue_script('knqb-js', plugin_dir_url(__FILE__) . '/js/knqb.js', array(), '1.3.6', true);
+    wp_enqueue_script('knqb-js', plugin_dir_url(__FILE__) . '/js/knqb.js', array(), '1.3.7', true);
     wp_register_style('chosencss', plugins_url('css/chosen.min.css', __FILE__), true, '', 'all');
     wp_register_style('farbtastic', plugins_url('css/farbtastic.css', __FILE__), true, '', 'all');
     wp_register_script('chosenjs', plugins_url('js/chosen.jquery.min.js', __FILE__), array('jquery'), '', true);

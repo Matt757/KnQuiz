@@ -7,7 +7,7 @@ function newAnswer(type) {
         jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>Correct</label></div></li>");
     } else if (type == qTRUEFALSE) {
         jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button><input type='checkbox' class='correct' onclick='uncheckAnswers(" + counter + ")' id='correct" + counter + "' name='correct" + counter + "' value='correct'><label class='correct_label' for='correct" + counter + "'>True</label></div></li>");
-    } else if (type == qSORTING) {
+    } else if (type == qSORTING || type == qCROSSWORDEASY) {
         jQuery("#answers").append("<li id='answerLi" + counter + "' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer" + counter + "' id='answerContainer" + counter + "'><i style='margin-right: 1vw' class=\"fa-solid fa-arrows-up-down\"></i><input autocomplete='off' size=\'80\' value=\'\' class='answer' name='answer" + counter + "'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;'  onclick='deleteAnswer(" + counter + ", " + jQuery('#typeSelect').find(":selected").val() + ")'><i class='fa fa-minus-circle' aria-hidden='true'></i></button></div></li>");
     } else if (type == qMATCHING) {
         jQuery('#matching').append('<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer' + counter + '" id="matchingContainer' + counter + '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer' + counter + '" value=""><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect' + counter + '" value=""><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(' + counter + ',11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>')
@@ -21,8 +21,10 @@ function newAnswer(type) {
     return false;
 }
 
+// todo: validation for newest types of questions
+
 function deleteAnswer(counter, type) {
-    if (type == qRADIOBOXTEXT || type == qCHECKBOXTEXT || type == qSORTING) {
+    if (type == qRADIOBOXTEXT || type == qCHECKBOXTEXT || type == qSORTING || type == qCROSSWORDEASY) {
         if (confirm(msg_delq)) {
             jQuery("#answerLi" + counter).remove();
         }
@@ -340,6 +342,7 @@ function checkPuzzle() {
 
 
 function hideAll() {
+    jQuery("#crosswordContainer").hide();
     jQuery("#answers").hide()
     jQuery("#singleAnswerContainer").hide();
     jQuery("#instructions4th").hide();
@@ -452,6 +455,7 @@ jQuery(document).ready(function () {
     })
 
     jQuery("#typeSelect").on("change", function () {
+        console.log(this.value);
         if (this.value === qSELECTBOX) {
             hideAll()
             jQuery("#answerCounter").val('1');
@@ -551,6 +555,19 @@ jQuery(document).ready(function () {
             hideAll()
             jQuery("#answerCounter").val(1);
             jQuery("#pixelatedImageContainer").show();
+        } else if (this.value === qCROSSWORDEASY) {
+            hideAll()
+            jQuery('.correct').each(function () {
+                jQuery(this).hide()
+            })
+            jQuery('.correct_label').each(function () {
+                jQuery(this).hide()
+            })
+            jQuery("#addNewAnswerContainer").show();
+            jQuery('#addNewAnswer').attr('onclick', 'newAnswer(' + this.value + '); return false');
+            jQuery("#answerCounter").val(jQuery(".answerContainer").length + 1);
+            jQuery("#answers").show();
+            jQuery("#crosswordContainer").show();
         }
     })
 

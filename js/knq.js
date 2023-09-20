@@ -15,21 +15,26 @@ jQuery(document).ready(function () {
     qMATCHIMAGE = '14';
     qCATEGORY = '15';
     qPIXELATEDIMAGE = '16';
-	// color_ok="B1D9BC";
-	// color_nok="FAB6B6";
-	// color_neutral="F4F4F4";
-	// color_hover="FFF9B9";
-	// color_bhover="C2BD8C";
+    // color_ok="B1D9BC";
+    // color_nok="FAB6B6";
+    // color_neutral="F4F4F4";
+    // color_hover="FFF9B9";
+    // color_bhover="C2BD8C";
     rcorecte = 0; // număr de răspunsuri corecte
     rtext = ""; // textul cu rezultatul după rezolvarea chestionarul
     startOffsetLeft = 0;
     startOffsetTop = 0;
-	jQuery( document ).tooltip({track: true});
+    // jQuery( document ).tooltip({track: true});
+    // TODO: tooltip still appears
 
     loadQuestion();
     funcFullScreen();
-	Mousetrap.bind('f', function() { jQuery("#fullscreen-link").trigger('click'); });
-	Mousetrap.bind('enter', function() { jQuery("#knq_main_button").trigger('click'); });
+    Mousetrap.bind('f', function () {
+        jQuery("#fullscreen-link").trigger('click');
+    });
+    Mousetrap.bind('enter', function () {
+        jQuery("#knq_main_button").trigger('click');
+    });
 })
 
 jQuery(window).resize(function () {
@@ -92,7 +97,7 @@ function loadQuestion() {
                 jQuery("#knqList").hide();
                 jQuery("#knqImages").hide();
                 jQuery("#knq_answer").hide();
-				jQuery("#knq_feedback").hide();
+                jQuery("#knq_feedback").hide();
                 jQuery("#knq_main_button").on('click', function () {
                     funcClickAmRaspuns();
                 });
@@ -141,8 +146,10 @@ function loadQuestion() {
                 buildAnswerCheckRadioImage(answers, tip);
             } else if (tip === qWORDSEARCH) {
                 buildWordSearch(answers);
-			} else if (tip === qCROSSWORD) {
+            } else if (tip === qCROSSWORD) {
                 buildCrossWord(answers);
+            } else if (tip === qCROSSWORDEASY) {
+                buildCrossWordEasy(answers, rightOnes);
             } else if (tip === qMATCHING) {
                 buildMatching(answers, rightOnes, response[0].question.includes("***"));
             } else if (tip === qPUZZLE) {
@@ -164,7 +171,7 @@ function loadQuestion() {
             jQuery('.loader').hide();
             if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE || tip === qMATCHIMAGE) {
                 jQuery("#knqList").show()
-            } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING || tip === qPUZZLE || tip === qCATEGORY || tip === qPIXELATEDIMAGE) {
+            } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING || tip === qPUZZLE || tip === qCATEGORY || tip === qPIXELATEDIMAGE || tip === qCROSSWORDEASY) {
                 jQuery("#knq_answer").show();
             }
 
@@ -364,20 +371,20 @@ function evalAnswers(corecteUser) {
                 let points = jQuery("#points")
                 if (jQuery("#knq_main_button").val() === msg_done) {
                     //este răspunsul la o întrebare
-                    jQuery('.knq_unselected').each(function() {
+                    jQuery('.knq_unselected').each(function () {
                         jQuery(this).css('background-color', color_neutral)
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_selected').each(function() {
+                    jQuery('.knq_selected').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_matching_answer').each(function() {
+                    jQuery('.knq_matching_answer').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_right_one').each(function() {
+                    jQuery('.knq_right_one').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
@@ -607,8 +614,7 @@ function evalAnswers(corecteUser) {
                                 correctAnswersCounter++
                                 jQuery(answersList[i - 1]).css("background-color", color_ok);
                                 jQuery(rightOnes[i - 1]).css("background-color", color_ok);
-                            }
-                            else {
+                            } else {
                                 jQuery(answersList[i - 1]).css("background-color", color_nok);
                                 jQuery(rightOnes[i - 1]).css("background-color", color_nok);
                             }
@@ -618,13 +624,12 @@ function evalAnswers(corecteUser) {
                     } else if (jQuery('#type').text() === qPUZZLE) {
                         let correctAnswersCounter = 0;
                         destroySortable()
-                        jQuery('.piece').each(function(index) {
+                        jQuery('.piece').each(function (index) {
                             jQuery(this).css('margin', '0')
                             resizePuzzle(0)
                             if (jQuery(this).attr('id').split('_')[1] - 0 !== index) {
                                 jQuery(this).css('opacity', '0.5');
-                            }
-                            else {
+                            } else {
                                 correctAnswersCounter++;
                             }
                         })
@@ -639,8 +644,7 @@ function evalAnswers(corecteUser) {
                                 correctAnswersCounter++;
                                 jQuery(this).css('background', color_ok)
                                 jQuery(this).css('border', '2px solid ' + newShade(color_ok, -70))
-                            }
-                            else {
+                            } else {
                                 jQuery(this).css('background', color_nok)
                                 jQuery(this).css('border', '2px solid ' + newShade(color_nok, -70))
                             }
@@ -648,12 +652,10 @@ function evalAnswers(corecteUser) {
                         computeScore(correctAnswersCounter, draggableList.length, response)
                         nextOrFinish()
                     } else if (jQuery('#type').text() === qPIXELATEDIMAGE) {
-                        timeoutArray.forEach(function(timeout) {
+                        timeoutArray.forEach(function (timeout) {
                             clearTimeout(timeout);
                         })
                         jQuery("#knq_answer").css('height', 'fit-content');
-                        // console.log(jQuery("#pixelate")[0])
-                        // let pixelate = jQuery('#pixelate').remove();
                         jQuery('#knq_answer').find('canvas').each(function () {
                             jQuery(this).remove();
                         })
@@ -665,8 +667,38 @@ function evalAnswers(corecteUser) {
                             computeScore(0, 10, response)
                             jQuery("#imageAnswer").css('background', color_nok + "!important")
                         }
-                        // pixelate.show
-                        // jQuery("#knq_answer").append(pixelate)
+                        nextOrFinish()
+                    } else if (jQuery('#type').text() === qCROSSWORDEASY) {
+                        let ro = response[0].right_one;
+                        let corecte = ro.split('|');
+                        corecte = corecte[0].split('\n');
+                        for (let i = 0; i < corecte.length; i++) {
+                            if (i !== corecte.length - 1) {
+                                corecte[i] = corecte[i].slice(0, -1)
+                            }
+                        }
+                        let index = 0;
+                        let correctAnswersCounter = 0;
+                        jQuery('#knq_answer').find('tr.crosswordRow').each(function () {
+                            let answerBuilder = '';
+                            jQuery(this).find('input').each(function () {
+                                answerBuilder += jQuery(this).val();
+                            })
+                            if (answerBuilder === corecte[index].replace(/ /g, '').toUpperCase()) {
+                                correctAnswersCounter++;
+                                jQuery(this).find('input').each(function () {
+                                    jQuery(this).css('background-color', color_ok)
+                                    jQuery(this).attr('disabled', 'disabled')
+                                })
+                            } else {
+                                jQuery(this).find('input').each(function () {
+                                    jQuery(this).css('background-color', color_nok)
+                                    jQuery(this).attr('disabled', 'disabled')
+                                })
+                            }
+                            index++;
+                        })
+                        computeScore(correctAnswersCounter, index, response)
                         nextOrFinish()
                     }
                 } else {

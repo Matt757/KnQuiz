@@ -10,8 +10,10 @@ function insertDefaultAnswerList()
     $codform .= "<li id='answerLi2' class='answerLi' style='padding: 0.5vw;'><div class='answerContainer' name='answerContainer2' id='answerContainer2'><i style='margin-right: 1vw' class='fa-solid fa-arrows-up-down'></i><input autocomplete='off' size='80' class='answer' name='answer2' value=''>";
     $codform .= "<button type=button style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(1, 1)' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button>";
     $codform .= "<input type='checkbox' onclick='uncheckAnswers(2)' class='correct' id='correct2' name='correct2' value='correct'>";
-    $codform .= "<label class='correct_label' for='correct2'>Correct</label></div></li></ul>";
+    $codform .= "<label class='correct_label' for='correct2'>Correct</label></div></li>";
+    $codform .= "</ul>";
     $codform .= "<div style='display: none' id='addNewAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(1); return false' counter='2' name='addNewAnswer' id='addNewAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
+    $codform .= "<div id='crosswordContainer' style='padding: 0.5vw; width:fit-content; display: none'><label for='crosswordAnswers'>" . __('Write the crossword solution here', 'knq') . ":</label><textarea rows='5' cols='100' id='crosswordAnswers' name='crosswordAnswers'></textarea><br><label for='crosswordRightColumn'>" . __('On which column is the result of the crossword', 'knq') . "?</label><input type='number' min='1' id='crosswordRightColumn' name='crosswordRightColumn' value=''></div>";
     return $codform;
 }
 
@@ -143,7 +145,7 @@ function knq_questions()
         $answerCounter = $_POST["answerCounter"];
         $answerBuilder = "";
         $correctAnswerBuilder = "";
-        if ($_POST["typeSelect"] == '1' || $_POST["typeSelect"] == '2' || $_POST["typeSelect"] == '3' || $_POST["typeSelect"] == '12') {
+        if ($_POST["typeSelect"] == '1' || $_POST["typeSelect"] == '2' || $_POST["typeSelect"] == '3' || $_POST["typeSelect"] == '12' || $_POST["typeSelect"] == '9') {
             for ($i = 1; $i < $answerCounter; $i++) {
                 if (isset($_POST["answer" . $i]) && $_POST["answer" . $i] != "") {
                     $answerBuilder .= $_POST["answer" . $i] . "|";
@@ -154,6 +156,9 @@ function knq_questions()
             }
             $answerBuilder = rtrim($answerBuilder, "|");
             $correctAnswerBuilder = rtrim($correctAnswerBuilder, "|");
+            if ($_POST["typeSelect"] == '9') {
+                $correctAnswerBuilder .= $_POST['crosswordAnswers'] . '|' . $_POST['crosswordRightColumn'];
+            }
         } else if ($_POST["typeSelect"] == '4') {
             $answerBuilder .= $_POST["singleAnswer"];
         } else if ($_POST["typeSelect"] == '5') {
@@ -296,15 +301,15 @@ function knq_questions()
     $counter = 1;
     $i = 1;
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='questionArea'>" . __("Question", "knq") . ":</label></td><td><textarea rows='5' cols='100' name='questionArea' id='questionArea'>" . rtrim($detaliiIntrebari[0]->question, "***") . "</textarea></td><td><label for='noShuffle'>" . __('Do not shuffle this question\'s answers', 'knq') . ": </label><input " . (strpos($detaliiIntrebari[0]->question, "***")?"checked":"") . " id='noShuffle' name='noShuffle' type='checkbox'></td></tr>";
-    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td colspan='2'><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option><option value='12'" . ($detaliiIntrebari[0]->type == 12 ? "selected" : "") . ">" . __("True or False", "knq") . "</option><option value='13'" . ($detaliiIntrebari[0]->type == 13 ? "selected" : "") . ">" . __("Puzzle", "knq") . "</option><option value='14'" . ($detaliiIntrebari[0]->type == 14 ? "selected" : "") . ">" . __("Match image", "knq") . "</option><option value='15'" . ($detaliiIntrebari[0]->type == 15 ? "selected" : "") . ">" . __("Sort words in categories", "knq") . "</option><option value='16'" . ($detaliiIntrebari[0]->type == 16 ? "selected" : "") . ">" . __("Guess pixelated image", "knq") . "</option></select></td></tr>";
+    $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='typeSelect'>" . __("Question type", "knq") . ":</label></td><td colspan='2'><select name='typeSelect' id='typeSelect'><option value='1'" . ($detaliiIntrebari[0]->type == 1 ? "selected" : "") . ">" . __("Multiple choice (check box)", "knq") . "</option><option style='margin-left: 1vw' value='2'" . ($detaliiIntrebari[0]->type == 2 ? "selected" : "") . ">" . __("Single choice (radio box)", "knq") . "</option><option value='6'" . ($detaliiIntrebari[0]->type == 6 ? "selected" : "") . ">" . __("Multiple choice with images (check box)", "knq") . "</option><option value='7'" . ($detaliiIntrebari[0]->type == 7 ? "selected" : "") . ">" . __("Single choice with images (radio box)", "knq") . "</option><option value='3'" . ($detaliiIntrebari[0]->type == 3 ? "selected" : "") . ">" . __("Sort the answers (sorting)", "knq") . "</option><option value='4'" . ($detaliiIntrebari[0]->type == 4 ? "selected" : "") . ">" . __("Choose the words from lists (select box)", "knq") . "</option><option value='5'" . ($detaliiIntrebari[0]->type == 5 ? "selected" : "") . ">" . __("Word bank (drag & drop)", "knq") . "</option><option value='8'" . ($detaliiIntrebari[0]->type == 8 ? "selected" : "") . ">" . __("Word search", "knq") . "</option><option value='9'" . ($detaliiIntrebari[0]->type == 9 ? "selected" : "") . ">" . __("Crosswords", "knq") . "</option><option value='11'" . ($detaliiIntrebari[0]->type == 11 ? "selected" : "") . ">" . __("Text matching", "knq") . "</option><option value='12'" . ($detaliiIntrebari[0]->type == 12 ? "selected" : "") . ">" . __("True or False", "knq") . "</option><option value='13'" . ($detaliiIntrebari[0]->type == 13 ? "selected" : "") . ">" . __("Puzzle", "knq") . "</option><option value='14'" . ($detaliiIntrebari[0]->type == 14 ? "selected" : "") . ">" . __("Match image", "knq") . "</option><option value='15'" . ($detaliiIntrebari[0]->type == 15 ? "selected" : "") . ">" . __("Sort words in categories", "knq") . "</option><option value='16'" . ($detaliiIntrebari[0]->type == 16 ? "selected" : "") . ">" . __("Guess pixelated image", "knq") . "</option></select></td></tr>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label>" . __("Answer(s)", "knq") . ":</label></td><td colspan='2'>";
-    if ($detaliiIntrebari[0]->type == 1 || $detaliiIntrebari[0]->type == 2 || $detaliiIntrebari[0]->type == 3 || $detaliiIntrebari[0]->type == 12) {
+    if ($detaliiIntrebari[0]->type == 1 || $detaliiIntrebari[0]->type == 2 || $detaliiIntrebari[0]->type == 3 || $detaliiIntrebari[0]->type == 12 || $detaliiIntrebari[0]->type == 9) {
         $codform .= "<ul id='answers'>";
         $answersArray = explode("|", $detaliiIntrebari[0]->answers);
         foreach ($answersArray as $answer) {
             $codform .= '<li id="answerLi' . $counter . '" class="answerLi" style="padding: 0.5vw; width:fit-content;"><div class="answerContainer" style="display: inline-block" name="answerContainer' . $counter . '" id="answerContainer' . $counter . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="80" class="answer" name="answer' . $counter . '" value="' . $answer . '">';
             $codform .= "<button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer($counter," . $detaliiIntrebari[0]->type . ")' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button>";
-            if ($detaliiIntrebari[0]->type == 3) {
+            if ($detaliiIntrebari[0]->type == 3 || $detaliiIntrebari[0]->type == 9) {
                 $codform .= "<input type='checkbox' onclick='uncheckAnswers(" . $counter . ")' class='correct' style='display: none' id='correct" . $counter . "' name='correct" . $counter . "' value='correct'>";
                 $codform .= "<label class='correct_label' style='display: none' for='correct" . $counter . "'>" . __("Correct", "knq") . "</label></div></li>";
             } else {
@@ -318,6 +323,14 @@ function knq_questions()
             $counter++;
         }
         $codform .= "</ul><div id='addNewAnswerContainer'>" . __("To add a new answer, click here", "knq") . ": <button onclick='newAnswer(" . $detaliiIntrebari[0]->type . "); return false' counter='$counter' name='addNewAnswer' id='addNewAnswer' class='button button-primary'><i class='fa fa-plus-circle' aria-hidden=\"true\"></i></button><br></div>";
+
+        //TODO: use lambda here
+        if ($detaliiIntrebari[0]->type == 9) {
+            $crossword = explode('|', $detaliiIntrebari[0]->right_one);
+            $codform .= "<div id='crosswordContainer' style='padding: 0.5vw; width:fit-content;'><label for='crosswordAnswers'>" . __('Write the crossword solution here', 'knq') . ":</label><br><textarea rows='5' cols='100' id='crosswordAnswers' name='crosswordAnswers'>" . $crossword[0] . "</textarea><br><label for='crosswordRightColumn'>" . __('On which column is the result of the crossword', 'knq') . "?</label><input type='number' min='1' id='crosswordRightColumn' name='crosswordRightColumn' value='" . $crossword[1] . "'></div>";
+        } else {
+            $codform .= "<div id='crosswordContainer' style='padding: 0.5vw; width:fit-content; display: none'><label for='crosswordAnswers'>" . __('Write the crossword solution here', 'knq') . ":</label><br><textarea rows='5' cols='100' id='crosswordAnswers' name='crosswordAnswers'></textarea><br><label for='crosswordRightColumn'>" . __('On which column is the result of the crossword', 'knq') . "?</label><input type='number' min='1' id='crosswordRightColumn' name='crosswordRightColumn' value=''></div>";
+        }
         $codform .= insertDefaultSingleAnswer();
         $codform .= insertDefaultImageAnswers();
         $codform .= insertDefaultWordSearch();
@@ -457,9 +470,9 @@ function knq_questions()
             $codform .= '<div class="matchImageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" data-id="' . $imageInfo[1] . '" class="matchImageUrl" id="matchImageUrl' . $counter . '" name="matchImageUrl' . $counter . '" value="' . $answer . '"><img src="' . $imageInfo[0] . '" style="max-height: 100px; width: auto;"><br><input type="text" class="imageTitle" id="imageTitle' . $counter . '" name="imageTitle' . $counter . '" value="' . $wordsArray[$i - 1] . '"></div>';
             $counter++;
         }
-        // TODO: when changin between match image and puzzle images are already selected - could not recreate
-        // TODO: export quiz - JSON with all questions
-        // TODO: aritmogrife
+        // TODO when changin between match image and puzzle images are already selected - could not recreate
+        // TODO export quiz - JSON with all questions
+        // TODO aritmogrife
         $codform .= "</div><div style='clear:both'></div><div id='matchExtraWordsContainer'><label for='matchExtraWords'>" . __('Extra words that do not correspond to any image (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='matchExtraWords' name='matchExtraWords'>" . $answersArray[2] . "</textarea></div>";
         $codform .= "</div>";
         $codform .= insertDefaultCategories();
@@ -495,6 +508,17 @@ function knq_questions()
         $codform .= "<div id='pixelatedImageContainer'><button class='button button-primary' id='selectPixelatedImage' style='margin-bottom: 0.5vw' type='button'>".__("Select image","knq")."</button><br><label for='imageAnswer'>".__("What is in the image?","knq")."</label><input style='margin-bottom: 0.5vw' id='imageAnswer' name='imageAnswer' type='text' value='" . $detaliiIntrebari[0]->right_one . "'><br>";
         $codform .= '<div class="pixelatedImageUrlContainer" style="margin: 0.5vw; float: left; text-align: center"><input style="display: none" class="pixelatedImageUrl" id="pixelatedImageUrl" name="pixelatedImageUrl" value="' . $detaliiIntrebari[0]->answers . '"><img id="pixelatedImage" src="' . $detaliiIntrebari[0]->answers . '" style="max-height: 100px; width: auto;"></div></div>';
         $codform .= "</td></tr>";
+    } else if ($detaliiIntrebari[0]->type == 9) {
+        $codform .= insertDefaultAnswerList();
+        $codform .= insertDefaultSingleAnswer();
+        $codform .= insertDefaultImageAnswers();
+        $codform .= insertDefaultWordSearch();
+        $codform .= insertDefaultMatching();
+        $codform .= insertDefaultPuzzle();
+        $codform .= insertDefaultMatchImages();
+        $codform .= insertDefaultCategories();
+        $codform .= insertDefaultPixelatedImage();
+
     }
     $codform .= "<input id='answerCounter' name='answerCounter' style='display: none' value='" . $counter . "'>";
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td widht=30%><label for='positiveArea'>" . __("Positive feedback", "knq") . ":</label></td><td colspan='2'><textarea rows='5' cols='100' name='positiveArea' id='positiveArea'>" . $detaliiIntrebari[0]->feedbackp . "</textarea></td></tr>";
