@@ -68,6 +68,9 @@ Puzzle:
 
 <img width="459" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/efab617b-b786-4480-8e63-64b03ae634e4">
 
+Match images with text:
+
+<img width="418" alt="image" src="https://github.com/Matt757/KnQuiz/assets/61180595/a93fffff-4bf1-4009-a72a-ffeb310940b9">
 
 
 
