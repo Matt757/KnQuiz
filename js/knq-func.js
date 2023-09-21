@@ -751,7 +751,7 @@ function buildPixelatedImage(answers) {
 function buildCrossWordEasy(answers, rightOnes) {
     let crosswordData = rightOnes.split('|')
     let crossword = crosswordData[0].split('\n');
-    let htmlBuilder = "<table><tbody>";
+    let htmlBuilder = "<table style='border-collapse: separate; width: fit-content; border-spacing: 0.5vw;'><tbody>";
     let maxLen = crossword[0].length;
     for (let i = 0; i < crossword.length; i++) {
         if (i !== crossword.length - 1) {
@@ -765,9 +765,9 @@ function buildCrossWordEasy(answers, rightOnes) {
     htmlBuilder += '<tr>';
     for (let i = 0; i < maxLen; i++) {
         if (i === crosswordData[1] - 1) {
-            htmlBuilder += '<td style="text-align: center; padding: 0">A</td>'
+            htmlBuilder += '<td style="text-align: center; padding: 0; border: 0; background-color: rgba(0,0,0,0);">A</td>'
         } else {
-            htmlBuilder += '<td style="padding: 0"></td>'
+            htmlBuilder += '<td style="padding: 0; border: 0; background-color: rgba(0,0,0,0);"></td>'
         }
     }
     htmlBuilder += '</tr>';
@@ -775,9 +775,9 @@ function buildCrossWordEasy(answers, rightOnes) {
         htmlBuilder += '<tr class="crosswordRow">';
         for (let j = 0; j < maxLen; j++) {
             if (j < crossword[i].length) {
-                htmlBuilder += '<td style="text-align: center; padding: 0;">' + ((crossword[i].charAt(j) !== ' ') ? '<input class="crosswordCell" style="width: 2em; height: 2em; text-align: center; ' + ((j === crosswordData[1] - 1)? 'border: 2px solid black' : '') + '" type="text">' : '') + '</td>';
+                htmlBuilder += '<td style="text-align: center; padding: 0; border: 0; background-color: rgba(0,0,0,0);">' + ((crossword[i].charAt(j) !== ' ') ? '<input class="crosswordCell" style="width: 2em; height: 2em; text-align: center; ' + ((j === crosswordData[1] - 1)? 'border: 2px solid black' : '') + '" type="text">' : '') + '</td>';
             } else {
-                htmlBuilder += '<td style="padding: 0"></td>';
+                htmlBuilder += '<td style="padding: 0; border: 0; background-color: rgba(0,0,0,0);"></td>';
             }
         }
         htmlBuilder += '</tr>';
@@ -785,9 +785,9 @@ function buildCrossWordEasy(answers, rightOnes) {
     htmlBuilder += '<tr>';
     for (let i = 0; i < maxLen; i++) {
         if (i === crosswordData[1] - 1) {
-            htmlBuilder += '<td style="text-align: center; padding: 0">B</td>'
+            htmlBuilder += '<td style="text-align: center; padding: 0; border: 0; background-color: rgba(0,0,0,0);">B</td>'
         } else {
-            htmlBuilder += '<td style="padding: 0"></td>'
+            htmlBuilder += '<td style="padding: 0; border: 0; background-color: rgba(0,0,0,0);"></td>'
         }
     }
     htmlBuilder += '</tr>';

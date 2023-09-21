@@ -7,7 +7,7 @@ jQuery(document).ready(function () {
     qCHECKBOXIMG = '6';
     qRADIOBOXIMG = '7';
     qWORDSEARCH = '8';
-    qCROSSWORDEASY = '9'; // TODO: aritmogrif
+    qCROSSWORDEASY = '9';
     qCROSSWORD = '10';
     qMATCHING = '11';
     qTRUEFALSE = '12';
@@ -311,9 +311,9 @@ function funcClickAmRaspuns() {
                     jQuery("#knq_feedback").html("<strong>" + text_all_wrong + "</strong>" + rtext + "\n" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".");
                 } else if (rcorecte == cate && highscore) {
                     jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
-                    jQuery("#knq_feedback").html("<strong>" + text_all_right + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
+                    jQuery("#knq_feedback").html("<strong>" + text_all_correct + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
                 } else if (rcorecte == cate)
-                    jQuery("#knq_feedback").html("<strong>" + text_all_right + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
+                    jQuery("#knq_feedback").html("<strong>" + text_all_correct + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
                 else if (highscore) {
                     jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
                     jQuery("#knq_feedback").html("<strong>" + text_partial_correct + " " + rcorecte + " " + text_partial_out_of + " " + cate + ".</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");

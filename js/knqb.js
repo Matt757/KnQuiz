@@ -14,14 +14,12 @@ function newAnswer(type) {
     } else if (type == qWORDSEARCH) {
         jQuery('<div id="spaceSearchContainer' + counter + '" class="spaceSearchContainer"><textarea style="font-family: Courier New;" rows="12" cols="12" autocomplete="off" id="spaceSearch' + counter + '" name="spaceSearch' + counter + '" class="spaceSearch"></textarea><br><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: auto; margin-right: auto; display: block" onclick="deleteAnswer(' + counter + ',' + type + ')" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>').insertAfter(jQuery('.spaceSearchContainer').last())
     } else if (type == qCATEGORY) {
-        jQuery('#categories').append("<li id='category" + counter + "' class='category'><label for='categoryName" + counter + "'>Category Name:</label><br><input type='text' id='categoryName" + counter + "' name='categoryName" + counter + "' value='Category " + counter + "'><br><label for='category" + counter + "Elements'>Elements belonging to the category:</label><br><input size='80' type='text' id='category" + counter + "Elements' name='category" + counter + "Elements' value='element 1, element 2'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(" + counter + ", " + type + ")' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button></li>")
+        jQuery('#categories').append("<li id='category" + counter + "' class='category'><label for='categoryName" + counter + "'>Category Name:</label><br><input type='text' id='categoryName" + counter + "' name='categoryName" + counter + "' class='categoryName' value='Category " + counter + "'><br><label for='category" + counter + "Elements'>Elements belonging to the category:</label><br><input size='80' type='text' id='category" + counter + "Elements' name='category" + counter + "Elements' class='categoryElements' value='element 1, element 2'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(" + counter + ", " + type + ")' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button></li>")
     }
     counter++;
     answerCounter.val(counter);
     return false;
 }
-
-// todo: validation for newest types of questions
 
 function deleteAnswer(counter, type) {
     if (type == qRADIOBOXTEXT || type == qCHECKBOXTEXT || type == qSORTING || type == qCROSSWORDEASY) {
@@ -291,8 +289,73 @@ function checkQuestionFormData() {
             jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + width_limit + "</strong></p></div>").insertAfter("#matchImageWidth")
             return false;
         }
+    } else if (jQuery("#typeSelect").find(":selected").val() === qCATEGORY) {
+        if (jQuery('.category').length < 2) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + min_2_categories + "</strong></p></div>").insertAfter("#categories")
+            return false;
+        }
+        let empty = false;
+        jQuery('.categoryName').each(function () {
+            if (jQuery(this).val() === '') {
+                empty = true;
+                jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_category + "</strong></p></div>").insertAfter('#' + jQuery(this).attr('id'))
+                return false;
+            }
+        })
+        if (empty) {
+            return false;
+        }
+        empty = false;
+        jQuery('.categoryElements').each(function () {
+            if (jQuery(this).val() === '') {
+                empty = true;
+                jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_category + "</strong></p></div>").insertAfter(jQuery(this).next())
+                return false;
+            }
+        })
+        if (empty) {
+            return false;
+        }
+    } else if (jQuery("#typeSelect").find(":selected").val() === qPIXELATEDIMAGE) {
+        if (!jQuery('#pixelatedImage').length) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + no_pixelated_image + "</strong></p></div>").insertAfter('#selectPixelatedImage')
+            return false;
+        }
+        if (jQuery('#imageAnswer').val() === '') {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_image_answer + "</strong></p></div>").insertAfter('#selectPixelatedImage')
+            return false;
+        }
+    } else if (jQuery("#typeSelect").find(":selected").val() === qCROSSWORDEASY) {
+        let answers = jQuery('.answer');
+        if (!answers.length) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + min_1_question + "</strong></p></div>").insertAfter('#answers')
+            return false;
+        }
+        let empty = false;
+        answers.each(function () {
+            if (jQuery(this).val() === '') {
+                empty = true;
+                jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_question + "</strong></p></div>").insertAfter('#answers')
+                return false;
+            }
+        })
+        if (empty) {
+            return false;
+        }
+        let crossword = jQuery('#crosswordAnswers');
+        if (crossword.val() === '') {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + empty_crossword + "</strong></p></div>").insertAfter('#crosswordAnswers')
+            return false;
+        }
+        let rightColumn = jQuery("#crosswordRightColumn")
+        if (rightColumn.val() - 0 < 1) {
+            jQuery("<div id='errorMessage' class=\"notice notice-error is-dismissible\"><p><strong>" + column_limit + "</strong></p></div>").insertAfter("#crosswordRightColumn")
+            return false;
+        }
     }
 }
+
+// TODO: to have multiple quizzes on the same page, put specific id for every element using the id of the quiz
 
 function count(main_str, sub_str) {
     main_str += '';
