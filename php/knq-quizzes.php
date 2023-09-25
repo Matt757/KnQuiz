@@ -88,6 +88,30 @@ function knq_quizzes()
             $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq_details (quiz_id, option_name, option_value) VALUES (" . $qid . ", 'created', NOW())")
         );
     }
+    if (isset($_POST["valid5"])) {
+        $idu = $_POST["quizId5"] - 0;
+        set_error_handler(function($errno, $errstr, $errfile, $errline) {
+            // error was suppressed with the @-operator
+            if (0 === error_reporting()) {
+                return false;
+            }
+
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+        });
+        try {
+            $intrebari = json_decode(stripslashes($_POST['importJson']));
+//        var_dump($intrebari);
+            foreach($intrebari as $intrebare) {
+                $counter = $wpdb->get_results($wpdb->prepare("SELECT max(order_id) as max FROM " . $wpdb->prefix . "knq WHERE quiz_id=" . $idu . "  ORDER BY order_id"));
+                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "knq (quiz_id,order_id,question,type,answers,right_one,feedbackp,feedbackn,image,image_position) VALUES ($idu," . ($counter[0]->max - 0 + 1) . ",'" . $intrebare->question . "'," . $intrebare->type . ",'" . $intrebare->answers . "','" . $intrebare->right_one . "','" . $intrebare->feedbackp . "','" . $intrebare->feedbackn . "','" . $intrebare->image . "','" . $intrebare->image_position . "')"));
+            }
+            echo '<div class="notice notice-success is-dismissible"><p><strong>' . __('Questions imported successfully', 'knq') . '</strong></p></div>';
+        }
+        catch (Exception $exception) {
+            echo '<div class="notice notice-error is-dismissible"><p><strong>' . __('Error importing questions', 'knq') . '</strong></p></div>';
+        }
+        restore_error_handler();
+    }
     $quizuri = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT quiz_id, option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id!=0 AND option_name='title' ORDER BY option_value"));
 
     foreach ($quizuri as $quiz) {
@@ -239,8 +263,6 @@ function knq_quizzes()
     $mainColor = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $quizId . " AND option_name='main_color'"));
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%><label for='mainColor'>" . __("Main color", "knq") . ":</label></td><td style='display: flex; margin: auto;'><input style='height: fit-content' id='mainColor' name='mainColor' value='" . (count($mainColor) == 0 ? $globalMainColor : $mainColor[0]->option_value) . "'/><div id='mainColorPicker'></div><input readonly style='margin-left: 0.5vw; height: fit-content; background-color: " . $globalMainColor . "' value='" . __('Global value', 'knq') . ": " . $globalMainColor . "'></td></tr>";
 
-//    $codform .= add_option();
-
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20%></td><td><input type='submit' style='margin-top: 0.5vw' class='button button-primary' value='" . __('Update Quiz', 'knq') . "' id='updateQuiz'></td></tr>";
     $codform .= "</table></form><br>";
 
@@ -251,7 +273,7 @@ function knq_quizzes()
     $i = 1;
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '"><td width="20%">' . __("Reorder questions", "knq") . ':</td><td><div id="questions">';
     foreach ($intrebari as $intrebare) {
-        $codform .= '<div style="margin-top: 1vw; margin-bottom: 1vw;" class="question" id="question' . $mockId . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input type="hidden" name="question_id_' . $mockId . '" value="' . $intrebare->knq_id . '"><input class="question_text" type="text" size="50" readonly value="' . $intrebare->question . '"></div>';
+        $codform .= '<div style="margin-top: 1vw; margin-bottom: 1vw;" class="question" id="question' . $mockId . '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input type="hidden" name="question_id_' . $mockId . '" value="' . $intrebare->knq_id . '"><input class="question_text" type="text" size="50" readonly value="' . rtrim($intrebare->question, "***") . '"></div>';
         $mockId++;
     }
     $codform .= '</div></td></tr><tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '"><td width="20%"></td><td><input type="submit" style="margin-top: 0.5vw" class="button button-primary" value="' . __("Update order of questions", "knq") . '" id="updateQuestionOrder"></td></tr></table></form><br>';
@@ -263,8 +285,16 @@ function knq_quizzes()
     $codform .= '<tr class="' . ($i++ % 2 == 0 ? "active" : "inactive") . '">' . "<td width=20% style='vertical-align:middle;'><label for='randomAnswers'>" . __("Shortcode - the quiz with title and the description", "knq") . ":</label></td><td style='vertical-align:middle;'><input type=text size=50 onfocus='this.select();' onmouseup='return false;' readonly value='[kqn id=$quizId title=1 description=1]'></td></tr>";
     $codform .= "</table><br>";
 
+
+    $intrebari = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT question, type, answers, right_one, feedbackp, feedbackn, image, image_position FROM " . $wpdb->prefix . "knq WHERE quiz_id=" . $quizId));
     $codform .= '<table role="presentation" class="wp-list-table widefat plugins"><tbody id="the-list">';
-    $codform .= "<tr class=inactive><td width=20% style='vertical-align:middle;'>" . __("Be careful! When you delete a quizz, there is no undo!", "knq") . "</td><td style='vertical-align:middle;'><form method='post' action='' novalidate='novalidate'><input type='submit' class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white;' id='removeQuiz' value='" . __("Delete quizz", "knq") . "' onclick='return confirm(\"" . __('Are you sure? There is no undo to that!', 'knq') . "\");'><input type='hidden' name='valid2' value='1'><input type='hidden' name='quizId2' value='" . $quizId . "' /></form></td></tr></table>";
+    $codform .= "<tr class=inactive><td width=20% style='vertical-align:middle;'>" . __("Export the quiz as a JSON string with all the questions.", "knq") . "</td><td style='vertical-align:middle;'><textarea rows='5' cols='100' id='exportJson' name='exportJson'>" . json_encode($intrebari) . "</textarea></td></tr></table><br>";
+
+    $codform .= '<table role="presentation" class="wp-list-table widefat plugins"><tbody id="the-list">';
+    $codform .= "<tr class=inactive><td width=20% style='vertical-align:middle;'>" . __("Import questions into the quiz from a JSON string.", "knq") . "</td><td style='vertical-align:middle;'><form method='post' action='' novalidate='novalidate'><textarea rows='5' cols='100' id='importJson' name='importJson'></textarea><br><input type='submit' class='button button-primary' value='Import questions'><input type='hidden' name='valid5' value='1'><input type='hidden' name='quizId5' value='" . $quizId . "' /></form></td></tr></table><br>";
+
+    $codform .= '<table role="presentation" class="wp-list-table widefat plugins"><tbody id="the-list">';
+    $codform .= "<tr class=inactive><td width=20% style='vertical-align:middle;'>" . __("Be careful! When you delete a quizz, there is no undo!", "knq") . "</td><td style='vertical-align:middle;'><form method='post' action='' novalidate='novalidate'><input type='submit' class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white;' id='removeQuiz' value='" . __("Delete quiz", "knq") . "' onclick='return confirm(\"" . __('Are you sure? There is no undo to that!', 'knq') . "\");'><input type='hidden' name='valid2' value='1'><input type='hidden' name='quizId2' value='" . $quizId . "' /></form></td></tr></table>";
     echo $codform;
     echo '</div>';
 }
