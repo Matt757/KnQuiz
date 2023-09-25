@@ -58,15 +58,15 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     $crtid = (int)$knq_atts['id'];
     $showTitle = (int)$knq_atts['title'];
     $showDescription = (int)$knq_atts['description'];
-    $o = "<div id='quiz' class='ibox'>";
+    $o = "<div id='quiz" . $crtid . "'' class='ibox quiz' data-quiz-id='" . $crtid . "'>";
     //$o .= "<span><a id='fullscreen-link'><i class='fa fa-expand'></i></a></span>";
-    $o .= "<p id='quizId' style='display: none'>" . $crtid . "</p><a id='fullscreen-link' style='float:right;cursor: pointer;' title='Comută pe ecran plin'><i class='fa fa-expand'></i></a>";
+    $o .= "<p id='quizId" . $crtid . "''' style='display: none'>" . $crtid . "</p><a id='fullscreen-link" . $crtid . "''' style='float:right;cursor: pointer;' title='Comută pe ecran plin'><i class='fa fa-expand'></i></a>";
     $score = $wpdb->get_results($wpdb->prepare("SELECT score, timestamp FROM " . $wpdb->prefix . "knq_user_scores WHERE quiz_id=" . $crtid . " AND user_id='" . (_wp_get_current_user()->ID - 0) . "'"));
 
     if (count($score) == 0) {
-        $o .= "<p id='quizCompletion' completed_before='0'><span id='score'>" . __("Current score", "knq") . ": 0</span>. " . __('You have not completed this quiz before', 'knq') . ".</p><span style='display: none' id='points'>0</span>";
+        $o .= "<p id='quizCompletion" . $crtid . "''' completed_before='0'><span id='score" . $crtid . "'''>" . __("Current score", "knq") . ": 0</span>. " . __('You have not completed this quiz before', 'knq') . ".</p><span style='display: none' id='points" . $crtid . "'''>0</span>";
     } else {
-        $o .= "<p id='quizCompletion' completed_before='1'><span id='score'>" . __("Current score", "knq") . ": 0</span>. " . __('Previous score', 'knq') . ": " . $score[0]->score . " (" . date_i18n(get_option('time_format'), strtotime($score[0]->timestamp)) . ", " . date_i18n(get_option('date_format'), strtotime($score[0]->timestamp)) . ").</p><span style='display: none' id='points'>0</span>";
+        $o .= "<p id='quizCompletion" . $crtid . "''' completed_before='1'><span id='score" . $crtid . "'''>" . __("Current score", "knq") . ": 0</span>. " . __('Previous score', 'knq') . ": " . $score[0]->score . " (" . date_i18n(get_option('time_format'), strtotime($score[0]->timestamp)) . ", " . date_i18n(get_option('date_format'), strtotime($score[0]->timestamp)) . ").</p><span style='display: none' id='points" . $crtid . "'''>0</span>";
     }
     if ($showTitle == 1) {
         $title = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='title'"));
@@ -89,7 +89,7 @@ function funcKNQ($atts = [], $content = null, $tag = '')
         $globalShuffleAnswers = $globalShuffleAnswers[0]->option_value;
     }
     $randomAnswers = $wpdb->get_results($wpdb->prepare("SELECT option_value FROM " . $wpdb->prefix . "knq_details WHERE quiz_id=" . $crtid . " AND option_name='random_answers'"));
-    $o .= '<p id="shuffleAnswers" style="display: none">' . (count($randomAnswers) != 0 ? $randomAnswers[0]->option_value : $globalShuffleAnswers) . '</p>';
+    $o .= '<p id="shuffleAnswers' . $crtid . '" style="display: none">' . (count($randomAnswers) != 0 ? $randomAnswers[0]->option_value : $globalShuffleAnswers) . '</p>';
 
     $cate = $wpdb->get_row($wpdb->prepare("SELECT COUNT(order_id) AS cate FROM " . $wpdb->prefix . "knq WHERE quiz_id=$crtid AND order_id>0"));
     $cate = $cate->cate - 0;
@@ -107,10 +107,15 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     }
 
     $iduri = implode("|", $iduri);
-    $o .= "<div id='questionContainer'></div>";
-    $o .= "<button id='redoQuiz' style='display: none' class='button button-primary'>" . __("Redo quiz", "knq") . "</button>";
+    $o .= "<div id='questionContainer" . $crtid . "''></div>";
+    $o .= "<button id='redoQuiz" . $crtid . "' style='display: none' class='button button-primary'>" . __("Redo quiz", "knq") . "</button>";
+    $o .= '<div style="display:none;" id="iduri' . $crtid . '">' . $iduri . '</div>';
+    $o .= '<div style="display:none;" id="crti' . $crtid . '">1</div>';
+    $o .= '<div style="display:none;" id="feedback_end_' . $crtid . '"></div>';
+    $o .= '<div style="display:none;" id="right_answers_' . $crtid . '"></div>';
+    $o .= '<div style="display:none;" id="current_fullscreen"></div>';
     $o .= '<script type="text/javascript">iduri="' . $iduri . '";';
-    $o .= 'cate=' . $cate . ';crti=1;';
+    $o .= 'cate=' . $cate . ';crti' . $crtid . '=1;';
 
     $answerQuestion = get_option_value($crtid, 'answer_question', __('Done!', 'knq'));
     $nextQuestion = get_option_value($crtid, 'next_question', __('Next!', 'knq'));
@@ -124,6 +129,7 @@ function funcKNQ($atts = [], $content = null, $tag = '')
 
     $o .= 'text_partial_out_of="' . __('questions right out of', 'knq') . '"; text_partial_correct="' . __('You got', 'knq') . '"; text_all_correct="' . __('You got all the questions right.', 'knq') . '"; text_new_highscore="' . __('New highscore!', '') . '"; text_final_score="' . __('Final score') . '"; text_all_wrong="' . __('You got all the questions wrong.', 'knq') . '"; text_previous_score="' . __('Previous score', 'knq') . '"; text_obtained_now="' . __('obtained now', 'knq') . '"; text_guess="' . __('Type here what you see in the image', 'knq') . '"; text_true="' . __('T', 'knq') . '"; text_false="' . __('F', 'knq') . '"; color_hover="' . $mainColor . '"; color_neutral="' . $neutralColor . '";color_nok="' . $wrongColor . '"; color_ok ="' . $correctColor . '" ;msg_done="' . $answerQuestion . '";msg_next="' . $nextQuestion . '";msg_finish="' . $finishQuiz . '";msg_correct="' . $correctAnswerMessage . '";msg_wrong="' . $wrongAnswerMessage . '"; find_words="' . __('Find above the following words', 'knq') . '"; choose_answer_msg="' . __('Choose the right answer', 'knq') . '"';
     $o .= '</script>';
+    echo '<script type="text/javascript">window.onload="loadQuestions()";</script>';
 
 
     // enclosing tags
@@ -136,7 +142,7 @@ function funcKNQ($atts = [], $content = null, $tag = '')
     }
 
     // end box
-    $o .= '</div></div>';
+    $o .= '</div>';
 
     // return output
     return $o;

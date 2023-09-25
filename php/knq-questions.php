@@ -57,7 +57,7 @@ function insertDefaultPuzzle() {
 
 function insertDefaultMatchImages() {
     $codform = "<div style='display:none;' id='matchImagesContainer'><div id='matchImages'><button class='button button-primary' id='selectMatchImages' type='button'>Select Images</button><br><div id='matchImageWidthContainer'><label for='matchImageWidth'>".__("Image width","knq").": </label><input style='margin-bottom: 0.5vw' min='1' max='100' id='matchImageWidth' name='matchImageWidth' type='number' value='10'><label for='matchImageWidth'>%</label></div></div><div style='clear:both'></div>";
-    $codform .= "<div id='matchExtraWordsContainer'><label for='matchExtraWords'>" . __('Extra words that do not correspond to any image (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='matchExtraWords' name='matchExtraWords'></textarea></div>";
+    $codform .= "<div id='matchExtraWordsContainer'><label for='matchExtraWords'>" . __('Extra words that do not correspond to any image (leave empty if you do not wish to have such words)', 'knq') . ":</label><br><textarea rows='5' cols='100' id='matchExtraWords' name='matchExtraWords'></textarea></div>";
     $codform .= "</div>";
     return $codform;
 }
@@ -346,16 +346,16 @@ function knq_questions()
             $codform .= "<div id='singleAnswerContainer'><textarea rows='5' cols='100' autocomplete='off' size=\'80\' id='singleAnswer' name='singleAnswer'>" . $detaliiIntrebari[0]->answers . "</textarea>";
             $codform .= "<p id='instructions4th'>" . __("Include between double square brackets, separated by a vertical bar (pipe), the alternative words.<br>Put the correct one to be the first in list. The list of options will be shuffled.<br>Example: <strong>We live on [[Earth|Jupiter|Saturn|Moon]].</strong>", "knq") . "</p>";
             $codform .= "<p style='display: none' id='instructions5th'>" . __("The word bank will collect all the words between double square brackets.<br>Example: <strong>This is an [[example]] of such a [[question]].</strong>", "knq") . "</p>";
-            $codform .= "<div style='display: none' id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='extraWords' name='extraWords'></textarea></div>";
+            $codform .= "<div style='display: none' id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><br><textarea rows='5' cols='100' id='extraWords' name='extraWords'></textarea></div>";
         } else {
             $answers = explode('|', $detaliiIntrebari[0]->answers);
             $codform .= "<div id='singleAnswerContainer'><textarea rows='5' cols='100' autocomplete='off' size=\'80\' id='singleAnswer' name='singleAnswer'>" . $answers[0] . "</textarea>";
             $codform .= "<p style='display: none' id='instructions4th'>" . __("Include between double square brackets, separated by a vertical bar (pipe), the alternative words.<br>Put the correct one to be the first in list. The list of options will be shuffled.<br>Example: <strong>We live on [[Earth|Jupiter|Saturn|Moon]].</strong>", "knq") . "</p>";
             $codform .= "<p id='instructions5th'>" . __("The word bank will collect all the words between double square brackets.<br>Example: <strong>This is an [[example]] of such a [[question]].</strong>", "knq") . "</p>";
             if (count($answers) > 1) {
-                $codform .= "<div id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='extraWords' name='extraWords'>" . $answers[1] . "</textarea></div>";
+                $codform .= "<div id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><br><textarea rows='5' cols='100' id='extraWords' name='extraWords'>" . $answers[1] . "</textarea></div>";
             } else {
-                $codform .= "<div id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='extraWords' name='extraWords'></textarea></div>";
+                $codform .= "<div id='extraWordsContainer'><label for='extraWords'>" . __('Extra words that are not found in the text above (leave empty if you do not wish to have such words)', 'knq') . ":</label><br><textarea rows='5' cols='100' id='extraWords' name='extraWords'></textarea></div>";
             }
 
         }
@@ -471,7 +471,7 @@ function knq_questions()
             $counter++;
         }
         // TODO when changin between match image and puzzle images are already selected - could not recreate
-        $codform .= "</div><div style='clear:both'></div><div id='matchExtraWordsContainer'><label for='matchExtraWords'>" . __('Extra words that do not correspond to any image (leave empty if you do not wish to have such words)', 'knq') . ":</label><textarea rows='5' cols='100' id='matchExtraWords' name='matchExtraWords'>" . $answersArray[2] . "</textarea></div>";
+        $codform .= "</div><div style='clear:both'></div><div id='matchExtraWordsContainer'><label for='matchExtraWords'>" . __('Extra words that do not correspond to any image (leave empty if you do not wish to have such words)', 'knq') . ":</label><br><textarea rows='5' cols='100' id='matchExtraWords' name='matchExtraWords'>" . $answersArray[2] . "</textarea></div>";
         $codform .= "</div>";
         $codform .= insertDefaultCategories();
         $codform .= insertDefaultPixelatedImage();

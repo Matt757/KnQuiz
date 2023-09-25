@@ -20,7 +20,7 @@ function newShade(hexColor, magnitude) {
 }
 
 
-function buildAnswerSelectBox(answers) {
+function buildAnswerSelectBox(answers, quizId) {
     let answer = answers.split(/\[\[|]]/);
     answer[0] = answer[0].replace(/(?:\r\n|\r|\n)/g, '<br>')
     let extra = 0;
@@ -34,7 +34,7 @@ function buildAnswerSelectBox(answers) {
         } else {
             let options = answer[j].split("|");
             let optionsBuilder = [];
-            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "'><option style='text-align-last: center; text-align: center; -ms-text-align-last: center; -moz-text-align-last: center;' value='0'>" + choose_answer_msg + "</option>"
+            htmlBuilder += "<select class='knq-answer-select' id='answerSelect" + j + "_" + quizId + "'><option style='text-align-last: center; text-align: center; -ms-text-align-last: center; -moz-text-align-last: center;' value='0'>" + choose_answer_msg + "</option>"
             options.forEach((element, index) => {
                 optionsBuilder.push("<option value='" + parseInt(index + 1) + "'>" + element + "</option>")
             })
@@ -43,10 +43,10 @@ function buildAnswerSelectBox(answers) {
             htmlBuilder += "<select>"
         }
     }
-    jQuery("#knq_answer").append("<div id='1'><p style='user-select: none'>" + htmlBuilder + "</p></div>");
+    jQuery("#knq_answer" + quizId).append("<div id='1_" + quizId + "'><p style='user-select: none'>" + htmlBuilder + "</p></div>");
 }
 
-function buildAnswerDragDrop(answers) {
+function buildAnswerDragDrop(answers, quizId) {
     answers = answers.split('|')
     let extraWords
     if (answers.length > 1) {
@@ -60,29 +60,29 @@ function buildAnswerDragDrop(answers) {
     if (answer[0] === '[') {
         extra = 1
     }
-    let htmlBuilder = "<div id='sentence' style='display:block'>"
+    let htmlBuilder = "<div id='sentence_" + quizId + "' style='display:block'>"
     let answersBuilder = []
     let j
     for (j = 0; j < answer.length; j++) {
         if (!((j + extra) % 2)) {
             htmlBuilder += answer[j];
         } else {
-            htmlBuilder += "<div class='droppable' data-correct='0' data-dropped-element='0' id='droppableAnswer-" + j + "'></div>"
-            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + j + "'>" + answer[j] + "</div>")
+            htmlBuilder += "<div class='droppable' data-correct='0' data-dropped-element='0' id='droppableAnswer-" + j + "_" + quizId + "'></div>"
+            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + j + "_" + quizId + "'>" + answer[j] + "</div>")
         }
     }
     if (extraWords[0] !== '') {
         for (let i = 0; i < extraWords.length; i++) {
             j++;
-            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + j + "'>" + extraWords[i] + "</div>")
+            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + j + "_" + quizId + "'>" + extraWords[i] + "</div>")
         }
     }
 
     shuffle(answersBuilder)
-    htmlBuilder += "</div><br><div id='answerBlocks' style='margin-top: 1vw;'>" + answersBuilder.join('') + "</div>";
+    htmlBuilder += "</div><br><div id='answerBlocks_" + quizId + "' style='margin-top: 1vw;'>" + answersBuilder.join('') + "</div>";
     maxWidth = 0
     let height = 0
-    jQuery("#knq_answer").append(htmlBuilder).ready(function () {
+    jQuery("#knq_answer" + quizId).append(htmlBuilder).ready(function () {
         jQuery('.droppable').each(function () {
             if (maxWidth < jQuery(this).width()) {
                 maxWidth = jQuery(this).width()
@@ -200,20 +200,20 @@ function buildAnswerDragDrop(answers) {
     jQuery('.draggable').css('background', color_hover)
 }
 
-function buildAnswerCheckRadioImage(answers, tip) {
+function buildAnswerCheckRadioImage(answers, tip, quizId) {
     answers = answers.split("|");
     let htmlBuilder = '';
     for (i = 1; i < answers.length; i++) {
         // în funcție de tipul de întrebare, iconița din stânga diferă
         let answer = answers[i].split('[]')[0]
         if (tip === qCHECKBOXIMG) {
-            htmlBuilder += "<li id='" + i + "' style='width: " + answers[0] + "%;' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><i class='fa fa-square-o' aria-hidden='true' style='display: inline-block'></i></li>"
+            htmlBuilder += "<li id='" + i + "_" + quizId + "' style='width: " + answers[0] + "%;' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><i class='fa fa-square-o' aria-hidden='true' style='display: inline-block'></i></li>"
         } else {
-            htmlBuilder += "<li id='" + i + "' style='width: " + answers[0] + "%;' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><i class='fa fa-circle-o' aria-hidden='true' style='display: inline-block'></i></li>"
+            htmlBuilder += "<li id='" + i + "_" + quizId + "' style='width: " + answers[0] + "%;' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><i class='fa fa-circle-o' aria-hidden='true' style='display: inline-block'></i></li>"
         }
     }
     let maxHeight = 0
-    jQuery('#knqList').append(htmlBuilder)
+    jQuery('#knqList' + quizId).append(htmlBuilder)
     jQuery('.imageClass').each(function () {
         jQuery(this).on('load', function () {
             jQuery('.imageClass').each(function () {
@@ -228,7 +228,7 @@ function buildAnswerCheckRadioImage(answers, tip) {
         })
         return false
     })
-    jQuery("#knqList").css('height', 'fit-content')
+    jQuery("#knqList" + quizId).css('height', 'fit-content')
     jQuery('.knq_unselected').css('background-color', color_neutral)
     jQuery('.knq_unselected').each(function () {
         jQuery(this).on('mouseenter', function () {
@@ -247,29 +247,29 @@ function selectRadio(object) {
     object.children("i").attr("class", "fa-regular fa-circle-check");
 }
 
-function buildAnswerCheckRadioSortTrueFalse(answers, tip) {
+function buildAnswerCheckRadioSortTrueFalse(answers, tip, quizId) {
     answers = answers.split("|");
     if (tip === qTRUEFALSE) {
-        jQuery('#knqList').append('<li style="margin: 3px;"><div style="float:right;"><div style="display: inline-block; margin-right: 1vw; text-align: center" id="trueColumn">' + text_true + '</div><div style="display: inline-block; text-align: center" id="falseColumn">' + text_false + '</div></div><br></li>')
+        jQuery('#knqList' + quizId).append('<li style="margin: 3px;"><div style="float:right;"><div style="display: inline-block; margin-right: 1vw; text-align: center" id="trueColumn_' + quizId + '">' + text_true + '</div><div style="display: inline-block; text-align: center" id="falseColumn_' + quizId + '">' + text_false + '</div></div><br></li>')
     }
     for (i = 0; i < answers.length; i++) {
         // în funcție de tipul de întrebare, iconița din stânga diferă
         if (tip === qCHECKBOXTEXT) {
-            jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-square-o' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
+            jQuery("#knqList" + quizId).append("<li class='knq_unselected' id='" + (i + 1) + "_" + quizId + "'><i class='fa fa-square-o' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
         } else if (tip === qRADIOBOXTEXT) {
-            jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-circle-o' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
+            jQuery("#knqList" + quizId).append("<li class='knq_unselected' id='" + (i + 1) + "_" + quizId + "'><i class='fa fa-circle-o' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
         } else if (tip === qSORTING) {
-            jQuery("#knqList").append("<li class='knq_unselected' id='" + (i + 1) + "'><i class='fa fa-arrows-up-down' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
+            jQuery("#knqList" + quizId).append("<li class='knq_unselected' id='" + (i + 1) + "_" + quizId + "'><i class='fa fa-arrows-up-down' aria-hidden='true'></i><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p></li>");
         } else if (tip === qTRUEFALSE) {
-            jQuery("#knqList").append("<li class='knq_unselected' style='cursor: auto !important' id='" + (i + 1) + "'><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p><label style='float: right; width: fit-content;' class='radioLabel" + (i + 1) + "' onclick='selectRadio(jQuery(this))' for='false_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='falseRadio' style='float: right; display: none' type='radio' id='false_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'><label style='float: right; width: fit-content; margin-right: 1vw' onclick='selectRadio(jQuery(this))' class='radioLabel" + (i + 1) + "' for='true_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='trueRadio' style='float: right; display: none' type='radio' id='true_radio_" + (i + 1) + "' name='true_false_" + (i + 1) + "'></li>")
+            jQuery("#knqList" + quizId).append("<li class='knq_unselected' style='cursor: auto !important' id='" + (i + 1) + "_" + quizId + "'><p style='user-select: none; display: inline'>&nbsp;" + answers[i] + "</p><label style='float: right; width: fit-content;' class='radioLabel" + (i + 1) + "' onclick='selectRadio(jQuery(this))' for='false_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='falseRadio' style='float: right; display: none' type='radio' id='false_radio_" + (i + 1) + "_" + quizId + "' name='true_false_" + (i + 1) + "'><label style='float: right; width: fit-content; margin-right: 1vw' onclick='selectRadio(jQuery(this))' class='radioLabel" + (i + 1) + "' for='true_radio_" + (i + 1) + "'><i style='width: 20px' class='fa fa-circle-o' aria-hidden='true'></i></label><input class='trueRadio' style='float: right; display: none' type='radio' id='true_radio_" + (i + 1) + "_" + quizId + "' name='true_false_" + (i + 1) + "'></li>")
         }
     }
     if (tip === qTRUEFALSE) {
         jQuery('.radioLabel1').eq(0).find('i').ready(function () {
-            jQuery('#trueColumn').css('width', '20px')
+            jQuery('#trueColumn_' + quizId).css('width', '20px')
         })
         jQuery('.radioLabel1').eq(1).find('i').ready(function () {
-            jQuery('#falseColumn').css('width', '20px')
+            jQuery('#falseColumn_' + quizId).css('width', '20px')
         })
     }
     jQuery('.knq_unselected').css('background-color', color_neutral)
@@ -283,55 +283,55 @@ function buildAnswerCheckRadioSortTrueFalse(answers, tip) {
     })
 }
 
-function buildMatching(answers, rightOnes, noShuffle) {
+function buildMatching(answers, rightOnes, noShuffle, quizId) {
     width = answers.split('[[')
     answers = width[1].split('|')
     rightOnes = rightOnes.split('|')
-    let htmlBuilder = '<table style="width: 100%"><tbody><tr><td style="border: none; width: ' + width[0] + '%" id="matchingAnswers">'
+    let htmlBuilder = '<table style="width: 100%"><tbody><tr><td style="border: none; width: ' + width[0] + '%" id="matchingAnswers_' + quizId + '">'
     let htmlArray = []
     for (i = 0; i < answers.length; i++) {
-        htmlArray.push('<div class="knq_matching_answer" id="knq_answer_' + (i + 1) + '"><p>' + answers[i] + '</p><i class="fa-solid fa-caret-right"></i></div>')
+        htmlArray.push('<div class="knq_matching_answer" id="knq_answer_' + (i + 1) + '_' + quizId + '"><p>' + answers[i] + '</p><i class="fa-solid fa-caret-right"></i></div>')
     }
     if (!noShuffle) {
         htmlArray = shuffle(htmlArray)
     }
     htmlBuilder += htmlArray.join("")
-    htmlBuilder += '</td><td style="border: none" id="matchingRightOnes">'
+    htmlBuilder += '</td><td style="border: none" id="matchingRightOnes_' + quizId + '">'
     htmlArray = []
     for (i = 0; i < rightOnes.length; i++) {
-        htmlArray.push('<div class="knq_right_one" id="knq_right_one_' + (i + 1) + '"><i class="fa-solid fa-caret-left"></i><p>' + rightOnes[i] + '</p></div>')
+        htmlArray.push('<div class="knq_right_one" id="knq_right_one_' + (i + 1) + '_' + quizId + '"><i class="fa-solid fa-caret-left"></i><p>' + rightOnes[i] + '</p></div>')
     }
     htmlArray = shuffle(htmlArray)
     htmlBuilder += htmlArray.join("")
     htmlBuilder += '</td></tr></tbody></table>'
-    jQuery('#knq_answer').append(htmlBuilder).ready(function () {
+    jQuery('#knq_answer' + quizId).append(htmlBuilder).ready(function () {
         let maxHeight = 0
-        jQuery('.knq_matching_answer').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_matching_answer').each(function () {
             if (jQuery(this).height() > maxHeight) {
                 maxHeight = jQuery(this).height();
             }
         })
-        jQuery('.knq_right_one').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_right_one').each(function () {
             if (jQuery(this).height() > maxHeight) {
                 maxHeight = jQuery(this).height();
             }
         })
-        jQuery('.knq_matching_answer').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_matching_answer').each(function () {
             jQuery(this).height(maxHeight)
         })
-        jQuery('.knq_right_one').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_right_one').each(function () {
             jQuery(this).height(maxHeight)
         })
     })
-    elemSortableAnswers = new Sortable(jQuery("#matchingAnswers")[0], {
+    elemSortableAnswers[quizId] = new Sortable(jQuery("#matchingAnswers_" + quizId)[0], {
         animation: 150,
         ghostClass: 'blue-background-class',
         swapClass: 'highlight',
         swap: true
     });
-    jQuery("#matchingAnswers").addClass("ui-sortable")
-    jQuery('.knq_matching_answer').css('background', color_neutral)
-    jQuery('.knq_matching_answer').each(function () {
+    jQuery("#matchingAnswers_" + quizId).addClass("ui-sortable")
+    jQuery("#quiz" + quizId).find('.knq_matching_answer').css('background', color_neutral)
+    jQuery("#quiz" + quizId).find('.knq_matching_answer').each(function () {
         jQuery(this).on('mouseenter', function () {
             jQuery(this).css('background-color', color_hover)
         })
@@ -339,16 +339,16 @@ function buildMatching(answers, rightOnes, noShuffle) {
             jQuery(this).css('background-color', color_neutral)
         })
     })
-    jQuery("#matchingAnswers:hover").css('background', color_hover)
-    elemSortableRightOnes = new Sortable(jQuery("#matchingRightOnes")[0], {
+    jQuery("#matchingAnswers_" + quizId + ":hover").css('background', color_hover)
+    elemSortableRightOnes[quizId] = new Sortable(jQuery("#matchingRightOnes_" + quizId)[0], {
         animation: 150,
         ghostClass: 'blue-background-class',
         swapClass: 'highlight',
         swap: true
     });
-    jQuery("#matchingRightOnes").addClass("ui-sortable")
-    jQuery('.knq_right_one').css('background', color_neutral);
-    jQuery('.knq_right_one').each(function () {
+    jQuery("#matchingRightOnes_" + quizId).addClass("ui-sortable")
+    jQuery("#quiz" + quizId).find('.knq_right_one').css('background', color_neutral);
+    jQuery("#quiz" + quizId).find('.knq_right_one').each(function () {
         jQuery(this).on('mouseenter', function () {
             jQuery(this).css('background-color', color_hover)
         })
@@ -358,7 +358,7 @@ function buildMatching(answers, rightOnes, noShuffle) {
     })
 }
 
-function buildPuzzle(answers) {
+function buildPuzzle(answers, quizId) {
     answers = answers.split('|')
     // Create a new Image object
     const img = new Image();
@@ -371,7 +371,7 @@ function buildPuzzle(answers) {
         // Get the width and height of the image
         let width = img.width;
         let height = img.height;
-        const containerWidth = jQuery('#questionContainer').width();
+        const containerWidth = jQuery('#questionContainer' + quizId).width();
         if (containerWidth < width) {
             var ratio = containerWidth / width
             img.width = width * ratio - Math.max(answers[0], answers[1]) * 2;
@@ -384,47 +384,50 @@ function buildPuzzle(answers) {
         let index = 0;
         for (let i = 0; i < answers[0]; i++) {
             for (let j = 0; j < answers[1]; j++) {
-                jQuery('#knq_answer').append('<div data-row="' + i + '" data-column="' + j + '" id="piece_' + index + '" class="piece" style="float: left; width: ' + width / answers[1] + 'px; height: ' + height / answers[0] + 'px; overflow: hidden; margin: 1px"><img width="' + width + '" height="' + height + '" src="' + jQuery(img).attr('src') + '" style="margin: ' + height / answers[0] * i * -1 + 'px 0 0 ' + width / answers[1] * j * -1 + 'px"></div>')
+                jQuery('#knq_answer' + quizId).append('<div data-row="' + i + '" data-column="' + j + '" id="piece_' + index + '_' + quizId + '" class="piece_' + quizId + '" style="float: left; width: ' + width / answers[1] + 'px; height: ' + height / answers[0] + 'px; overflow: hidden; margin: 1px"><img width="' + width + '" height="' + height + '" src="' + jQuery(img).attr('src') + '" style="max-width: ' + width + 'px; margin: ' + height / answers[0] * i * -1 + 'px 0 0 ' + width / answers[1] * j * -1 + 'px"></div>')
                 index++;
             }
-            jQuery('#knq_answer').append('<br>')
+            jQuery('#knq_answer' + quizId).append('<br>')
         }
         let myArray = [];
-        jQuery('.piece').each(function () {
+        jQuery('.piece_' + quizId).each(function () {
             myArray.push(this.outerHTML)
         })
         shuffle(myArray)
-        jQuery('#knq_answer').empty()
-        jQuery('#knq_answer').append('<div id="rows_columns" style="display: none" data-rows="' + answers[0] + '" data-columns="' + answers[1] + '"></div>')
+        jQuery('#knq_answer' + quizId).empty()
+        let htmlBuilder = '<div class="knq_puzzle" id="knq_puzzle_' + quizId + '">'
+        htmlBuilder += '<div id="rows_columns_' + quizId + '" style="display: none" data-rows="' + answers[0] + '" data-columns="' + answers[1] + '"></div>'
         let counter = 1
         myArray.forEach(element => {
             if (counter % answers[1] === 0) {
                 element += '<div style=\'clear:both\'></div>';
             }
-            jQuery('#knq_answer').append(element)
+            htmlBuilder += element
             counter++;
         })
-        elemSortablePieces = new Sortable(jQuery("#knq_answer")[0], {
+        htmlBuilder += '</div>';
+        jQuery('#knq_answer' + quizId).append(htmlBuilder);
+        elemSortablePieces[quizId] = new Sortable(jQuery("#knq_puzzle_" + quizId)[0], {
             animation: 150,
             ghostClass: 'blue-background-class',
             swapClass: 'highlight',
             swap: true,
             onEnd: function () {
                 let correctAnswersCounter = 0
-                jQuery('.piece').each(function (index) {
+                jQuery('.piece_' + quizId).each(function (index) {
                     if (jQuery(this).attr('id').split('_')[1] - 0 === index) {
                         correctAnswersCounter++;
                     }
                 })
-                if (correctAnswersCounter === jQuery('.piece').length) {
-                    funcClickAmRaspuns()
+                if (correctAnswersCounter === jQuery('.piece_' + quizId).length) {
+                    funcClickAmRaspuns(quizId)
                 }
             }
         });
     };
 }
 
-function buildMatchImage(answers) {
+function buildMatchImage(answers, quizId) {
     // TODO: 30% width should mean 3 images fit on the same row
     answers = answers.split("[[");
     imageUrlAnswers = answers[0].split("|")
@@ -434,30 +437,30 @@ function buildMatchImage(answers) {
     let i;
     for (i = 1; i < imageUrlAnswers.length; i++) {
         let answer = imageUrlAnswers[i].split('[]')[0]
-        htmlBuilder += "<li id='" + i + "' style='width: " + imageUrlAnswers[0] + "%; vertical-align: center' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><div class='droppable' data-correct='0' data-dropped-element='0' id='droppableAnswer-" + i + "'></div></li>"
+        htmlBuilder += "<li id='" + i + "_" + quizId + "' style='width: " + imageUrlAnswers[0] + "%; vertical-align: center' class='knq_image knq_unselected'><div><img class='imageClass' style='max-width: 100%; height: auto; display: inline-block; pointer-events: none;' src='" + answer + "'></div><div class='droppable' data-correct='0' data-dropped-element='0' id='droppableAnswer-" + i + "_" + quizId + "'></div></li>"
     }
-    htmlBuilder += "<div style='clear:both'></div><li id='" + i + "' style='width: 100%; display:flex; flex-wrap: wrap; align-items:flex-end;'>"
+    htmlBuilder += "<div style='clear:both'></div><li id='" + i + "_" + quizId + "' style='width: 100%; display:flex; flex-wrap: wrap; align-items:flex-end;'>"
     let answersBuilder = []
     for (i = 0; i < wordAnswers.length; i++) {
-        answersBuilder.push("<div class='draggable' id='draggableAnswer-" + (i + 1) + "'>" + wordAnswers[i] + "</div>")
+        answersBuilder.push("<div class='draggable' id='draggableAnswer-" + (i + 1) + "_" + quizId + "'>" + wordAnswers[i] + "</div>")
     }
     if (extraWords[0] !== '') {
         for (let j = 0; j < extraWords.length; j++) {
             i++;
-            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + i + "'>" + extraWords[j] + "</div>")
+            answersBuilder.push("<div class='draggable' id='draggableAnswer-" + i + "_" + quizId + "'>" + extraWords[j] + "</div>")
         }
     }
     shuffle(answersBuilder)
     htmlBuilder += answersBuilder.join('') + "</li>";
     let maxWidth = 0;
     let maxHeight = 0;
-    jQuery('#knqList').append(htmlBuilder).ready(function () {
-        jQuery('.droppable').each(function () {
+    jQuery('#knqList' + quizId).append(htmlBuilder).ready(function () {
+        jQuery("#quiz" + quizId).find('.droppable').each(function () {
             if (maxWidth < jQuery(this).width()) {
                 maxWidth = jQuery(this).width()
             }
         })
-        jQuery('.draggable').each(function () {
+        jQuery("#quiz" + quizId).find('.draggable').each(function () {
             if (maxWidth < jQuery(this).width()) {
                 maxWidth = jQuery(this).width()
             }
@@ -466,16 +469,16 @@ function buildMatchImage(answers) {
             }
         })
         maxWidth += 10;
-        jQuery('.draggable').each(function () {
+        jQuery("#quiz" + quizId).find('.draggable').each(function () {
             jQuery(this).css('flex-basis', maxWidth + 'px')
             jQuery(this).css('flex-shrink', '0')
             jQuery(this).height(maxHeight)
         })
-        jQuery('.droppable').each(function () {
+        jQuery("#quiz" + quizId).find('.droppable').each(function () {
             jQuery(this).width(maxWidth)
             jQuery(this).height(maxHeight)
         })
-        jQuery('.knq_unselected').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_unselected').each(function () {
             if (jQuery(this).width() < maxWidth) {
                 maxWidth = jQuery('.draggable').first().outerWidth()
                 jQuery(this).width(maxWidth)
@@ -484,10 +487,10 @@ function buildMatchImage(answers) {
     });
     jQuery('.knq_unselected').css('background-color', color_neutral)
     let magnitude = -70
-    jQuery('.draggable').each(function () {
+    jQuery("#quiz" + quizId).find('.draggable').each(function () {
         jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
     })
-    jQuery('.droppable').each(function () {
+    jQuery("#quiz" + quizId).find('.droppable').each(function () {
         jQuery(this).droppable({
             drop: function (event, ui) {
                 let left = jQuery(this).offset().left
@@ -543,7 +546,7 @@ function buildMatchImage(answers) {
             }
         })
     })
-    jQuery('.draggable').each(function () {
+    jQuery("#quiz" + quizId).find('.draggable').each(function () {
         jQuery(this).draggable({
             start: function () {
                 let draggable = jQuery(this);
@@ -575,21 +578,21 @@ function buildMatchImage(answers) {
             }
         })
     })
-    jQuery('.droppable').css('background', color_neutral)
-    jQuery('.droppable').css('border', '2px solid ' + newShade(color_neutral, -70))
-    jQuery('.draggable').css('background', color_hover)
+    jQuery("#quiz" + quizId).find('.droppable').css('background', color_neutral)
+    jQuery("#quiz" + quizId).find('.droppable').css('border', '2px solid ' + newShade(color_neutral, -70))
+    jQuery("#quiz" + quizId).find('.draggable').css('background', color_hover)
 }
 
-function buildCategories(answers) {
+function buildCategories(answers, quizId) {
     let categories = answers.split('[[');
     let htmlBuilder = "";
     let answersBuilder = [];
     let answerCounter = 0;
     for (let i = 0; i < categories.length; i++) {
         let elements = categories[i].split('|');
-        htmlBuilder += "<div data-offset-top='-1' data-width='-1' data-height='-1' data-offset-left='-1' style='text-align: center; width: 40%' class='droppable' id='category-" + i + "'><p>" + elements[0] + "</p></div>"
+        htmlBuilder += "<div data-offset-top='-1' data-width='-1' data-height='-1' data-offset-left='-1' style='text-align: center; width: 40%' class='droppable' id='category-" + i + "_" + quizId + "'><p>" + elements[0] + "</p></div>"
         for (let j = 1; j < elements.length; j++) {
-            answersBuilder.push("<div data-category='" + i + "' data-dropped='-1' class='draggable' id='answer" + answerCounter + "'>" + elements[j] + "</div>");
+            answersBuilder.push("<div data-category='" + i + "' data-dropped='-1' class='draggable' id='answer" + answerCounter + "_" + quizId + "'>" + elements[j] + "</div>");
             answerCounter++;
         }
     }
@@ -598,8 +601,8 @@ function buildCategories(answers) {
 
     let maxWidth = 0;
     let maxHeight = 0;
-    jQuery("#knq_answer").append(htmlBuilder).ready(function () {
-        jQuery('.draggable').each(function () {
+    jQuery("#knq_answer" + quizId).append(htmlBuilder).ready(function () {
+        jQuery("#quiz" + quizId).find('.draggable').each(function () {
             if (maxWidth < jQuery(this).width()) {
                 maxWidth = jQuery(this).width()
             }
@@ -608,12 +611,12 @@ function buildCategories(answers) {
             }
         })
         maxWidth += 10;
-        jQuery('.draggable').each(function () {
+        jQuery("#quiz" + quizId).find('.draggable').each(function () {
             jQuery(this).css('width', maxWidth + 'px')
             // jQuery(this).css('flex-shrink', '0')
             jQuery(this).height(maxHeight)
         })
-        jQuery('.droppable').each(function () {
+        jQuery("#quiz" + quizId).find('.droppable').each(function () {
             jQuery(this).height(maxHeight * 3)
             jQuery(this).css('margin-bottom', '0.5vw')
             jQuery(this).attr('data-offset-top', jQuery(this).offset().top)
@@ -621,7 +624,7 @@ function buildCategories(answers) {
             jQuery(this).attr('data-width', jQuery(this).width())
             jQuery(this).attr('data-height', jQuery(this).height())
         })
-        jQuery('.knq_unselected').each(function () {
+        jQuery("#quiz" + quizId).find('.knq_unselected').each(function () {
             if (jQuery(this).width() < maxWidth) {
                 maxWidth = jQuery('.draggable').first().outerWidth()
                 jQuery(this).width(maxWidth)
@@ -631,7 +634,7 @@ function buildCategories(answers) {
 
     let magnitude = -70
 
-    jQuery('.droppable').each(function () {
+    jQuery("#quiz" + quizId).find('.droppable').each(function () {
         jQuery(this).css('background', color_neutral)
         jQuery(this).css('border', '2px solid ' + newShade(color_neutral, -70))
         jQuery(this).droppable({
@@ -648,7 +651,7 @@ function buildCategories(answers) {
         })
     })
 
-    jQuery('.draggable').each(function () {
+    jQuery("#quiz" + quizId).find('.draggable').each(function () {
         jQuery(this).css('border', '2px dotted ' + newShade(color_hover, magnitude));
         jQuery(this).css('background', color_hover)
         jQuery(this).draggable({
@@ -674,7 +677,7 @@ function buildCategories(answers) {
                             left: jQuery(this).offset().left + positionLimit * 2
                         })
                         let draggableOffset = jQuery(this).offset()
-                        let category = jQuery("#category-" + jQuery(this).attr('data-dropped'));
+                        let category = jQuery("#category-" + jQuery(this).attr('data-dropped') + "_" + quizId);
                         if (category.length) {
                             let categoryOffset = category.offset();
                             if (draggableOffset.left < categoryOffset.left || draggableOffset.left > categoryOffset.left + parseFloat(category.css('width')) - parseFloat(draggable.css('width')) || draggableOffset.top < categoryOffset.top || draggableOffset.top > categoryOffset.top + parseFloat(category.css('height')) - parseFloat(draggable.css('height'))) {
@@ -690,9 +693,7 @@ function buildCategories(answers) {
 
 }
 
-function buildPixelatedImage(answers) {
-
-    console.log(jQuery("#knq_answer").height())
+function buildPixelatedImage(answers, quizId) {
 
     // Create a new Image object
     const img = new Image();
@@ -700,13 +701,11 @@ function buildPixelatedImage(answers) {
     // Set the source of the image
     img.src = answers;
 
-    console.log(jQuery("#quiz")[0].scrollHeight);
-
     img.onload = () => {
         // Get the width and height of the image
         let width = img.width;
         let height = img.height;
-        const containerWidth = jQuery('#questionContainer').width();
+        const containerWidth = jQuery('#questionContainer' + quizId).width();
         if (containerWidth < width) {
             var ratio = containerWidth / width
             img.width = width * ratio - Math.max(answers[0], answers[1]) * 2;
@@ -714,41 +713,40 @@ function buildPixelatedImage(answers) {
         }
 
         let value = 0.02;
-        jQuery('#knq_answer').append('<label style="width: fit-content" for="imageAnswer">' + text_guess + ':</label><br><input size="50" id="imageAnswer" type="text" value=""><img data-attempt="1" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
-        jQuery('#pixelate').pixelate({value: value, reveal: false})
+        jQuery('#knq_answer' + quizId).append('<label style="width: fit-content" for="imageAnswer_' + quizId + '">' + text_guess + ':</label><br><input size="50" id="imageAnswer_' + quizId + '" type="text" value=""><img data-attempt="1" id="pixelate_' + quizId + '" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer" + quizId).width() + 'px" data-pixelate>')
+        jQuery('#pixelate_' + quizId).pixelate({value: value, reveal: false})
 
-        jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+        jQuery("#knq_answer" + quizId).height(jQuery("#knq_answer" + quizId).height());
         let attempt;
         let tries = 8, timeout = 3000, step = value;
         value += step;
         timeoutArray = []
         while (tries) {
             timeoutArray.push(setTimeout(function () {
-                console.log(jQuery("#quiz")[0].scrollHeight);
-                attempt = parseInt(jQuery('#pixelate').attr('data-attempt'));
-                jQuery('#pixelate').remove();
-                jQuery('#knq_answer').find('canvas').each(function () {
+                attempt = parseInt(jQuery('#pixelate_' + quizId).attr('data-attempt'));
+                jQuery('#pixelate_' + quizId).remove();
+                jQuery('#knq_answer' + quizId).find('canvas').each(function () {
                     jQuery(this).remove();
                 })
-                jQuery('#knq_answer').append('<img data-attempt="' + (attempt + 1) + '" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
-                jQuery('#pixelate').pixelate({value: value, reveal: false})
+                jQuery('#knq_answer' + quizId).append('<img data-attempt="' + (attempt + 1) + '" id="pixelate_' + quizId + '" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer" + quizId).width() + 'px" data-pixelate>')
+                jQuery('#pixelate_' + quizId).pixelate({value: value, reveal: false})
                 value = value + step;
             }, timeout))
             timeout += 3000;
             tries--;
         }
         timeoutArray.push(setTimeout(function () {
-            jQuery('#pixelate').remove();
-            jQuery('#knq_answer').find('canvas').each(function () {
+            jQuery('#pixelate_' + quizId).remove();
+            jQuery('#knq_answer' + quizId).find('canvas').each(function () {
                 jQuery(this).remove();
             })
-            jQuery('#knq_answer').append('<img data-attempt="' + (attempt + 2) + '" id="pixelate" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer").width() + 'px" data-pixelate>')
-            jQuery('#pixelate').pixelate({value: 1, reveal: false})
+            jQuery('#knq_answer' + quizId).append('<img data-attempt="' + (attempt + 2) + '" id="pixelate_' + quizId + '" src="' + jQuery(img).attr('src') + '" style="width: ' + jQuery("#questionContainer" + quizId).width() + 'px" data-pixelate>')
+            jQuery('#pixelate_' + quizId).pixelate({value: 1, reveal: false})
         }, timeout))
     };
 }
 
-function buildCrossWordEasy(answers, rightOnes) {
+function buildCrossWordEasy(answers, rightOnes, quizId) {
     let crosswordData = rightOnes.split('|')
     let crossword = crosswordData[0].split('\n');
     let htmlBuilder = "<table style='border-collapse: separate; width: fit-content; border-spacing: 0.5vw;'><tbody>";
@@ -796,7 +794,7 @@ function buildCrossWordEasy(answers, rightOnes) {
     for (let i = 0; i < answers.length; i++) {
         htmlBuilder += '<div>' + (i + 1) + '. ' + answers[i] + '</div>'
     }
-    jQuery('#knq_answer').append(htmlBuilder).ready(function () {
+    jQuery('#knq_answer' + quizId).append(htmlBuilder).ready(function () {
         jQuery('.crosswordCell').each(function () {
             jQuery(this).on('input', function () {
                 // console.log(jQuery(this).parent().next().find('input')[0])
@@ -835,12 +833,12 @@ function buildCrossWordEasy(answers, rightOnes) {
     });
 }
 
-function destroySortable() {
-    if (jQuery('#type').text() === qPUZZLE) {
-        elemSortablePieces.destroy()
-    } else if (jQuery('#type').text() === qMATCHING) {
-        elemSortableAnswers.destroy()
-        elemSortableRightOnes.destroy()
+function destroySortable(quizId) {
+    if (jQuery('#type' + quizId).text() === qPUZZLE) {
+        elemSortablePieces[quizId].destroy()
+    } else if (jQuery('#type' + quizId).text() === qMATCHING) {
+        elemSortableAnswers[quizId].destroy()
+        elemSortableRightOnes[quizId].destroy()
     }
 }
 
@@ -850,92 +848,73 @@ function destroySortable() {
 //=========================BEGIN - FUNCTII FULL SCREEN==================================
 
 
-function funcFullScreen() {
-    jQuery("#fullscreen-link").click(function (e) {
+function funcFullScreen(quizId) {
+    jQuery("#fullscreen-link" + quizId).click(function (e) {
         //dacă s-a apăsat butonul de full-screen
-        // jQuery('#trueColumn').hide()
-        // jQuery('#falseColumn').hide()
         if (jQuery.fullscreen.isFullScreen()) {
             //ieșire din full screen
             jQuery.fullscreen.exit();
-            if (jQuery('#type').text() === qPIXELATEDIMAGE) {
-                jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+            jQuery('.quiz').each(function () {
+                jQuery(this).css('overflow', 'hidden')
+            })
+            if (jQuery('#type' + quizId).text() === qPIXELATEDIMAGE) {
+                jQuery("#knq_answer" + quizId).height(jQuery("#knq_answer" + quizId).height());
             }
             relocateDraggablesNotFullscreen();
-            if (jQuery('#type').text() === qPUZZLE) {
+            if (jQuery('#type' + quizId).text() === qPUZZLE) {
                 resizePuzzleNotFullscreen();
             }
         } else {
             //intrare în full screen
-            if (jQuery('#type').text() === qPIXELATEDIMAGE) {
-                jQuery("#knq_answer").height(jQuery("#knq_answer").height());
+            jQuery('#current_fullscreen').text(quizId);
+            if (jQuery('#type' + quizId).text() === qPIXELATEDIMAGE) {
+                jQuery("#knq_answer" + quizId).height(jQuery("#knq_answer" + quizId).height());
             }
-            jQuery('#quiz').fullscreen();
+            jQuery('#quiz' + quizId).fullscreen();
             relocateDraggablesFullscreen();
-            if (jQuery('#type').text() === qPUZZLE) {
+            if (jQuery('#type' + quizId).text() === qPUZZLE) {
                 resizePuzzleFullscreen();
             }
         }
         return false;
     });
-    jQuery(document).bind('fscreenchange', function (e, state, elem) {
-        if (jQuery.fullscreen.isFullScreen()) {
-            jQuery('#quiz').css("padding", "50px");
-            jQuery('#quiz').css("background-color", "white");
-            if (jQuery.isFunction(jQuery.fn.resizeTableWS)) {
-                resizeTableWS();
-            }
-            //ht=parseInt(jQuery('#tabelcentrat').height(),10);wt=parseInt(jQuery('#tabelcentrat').width(),10);
-            //console.log(ht+" "+wt);
-            //if(ht>wt) jQuery('#tabelcentrat').height(wt+"px"); else jQuery('#tabelcentrat').width(ht+"px");
-            jQuery("#fullscreen-link").html("<i class='fa fa-compress'></i>");
-            jQuery("#quiz").css("overflow", "scroll");
-        } else {
-            jQuery('#quiz').css("padding", "0px");
-            jQuery('#quiz').css("background-color", "");
-            ht = parseInt(jQuery('#tabelcentrat').height(), 10);
-            wt = parseInt(jQuery('#tabelcentrat').width(), 10);
-            if (ht > wt) jQuery('#tabelcentrat').height(wt + "px"); else jQuery('#tabelcentrat').width(ht + "px");
-            jQuery("#fullscreen-link").html("<i class='fa fa-expand'></i>");
-            jQuery("#quiz").css("overflow", "show");
-            scrollToAnchor('knq_question');
-        }
-    });
 }
 
 
 function resizePuzzleNotFullscreen() {
+    let quizId = jQuery('#current_fullscreen').text();
     if (jQuery.fullscreen.isFullScreen()) {
         setTimeout(resizePuzzleNotFullscreen, 100)
     } else {
-        resizePuzzle(2)
+        resizePuzzle(2, quizId)
     }
 }
 
 function resizePuzzleFullscreen() {
+    let quizId = jQuery('#current_fullscreen').text();
     if (!jQuery.fullscreen.isFullScreen()) {
         setTimeout(resizePuzzleFullscreen, 100)
     } else {
-        resizePuzzle(2)
+        resizePuzzle(2, quizId)
     }
 }
 
-function resizePuzzle(margin) {
+function resizePuzzle(margin, quizId) {
     // Create a new Image object
     const img = new Image();
 
     // Set the source of the image
-    img.src = jQuery('#piece_0').find('img').attr('src');
+    img.src = jQuery('#piece_0' + '_' + quizId).find('img').attr('src');
 
-    const containerWidth = jQuery('#questionContainer').width();
+    const containerWidth = jQuery('#questionContainer' + quizId).width();
 
     // Wait for the image to load
     img.onload = () => {
         // Get the width and height of the image
         let width;
         let height;
-        let rows = jQuery("#rows_columns").attr('data-rows');
-        let columns = jQuery("#rows_columns").attr('data-columns');
+        let rows = jQuery("#rows_columns_" + quizId).attr('data-rows');
+        let columns = jQuery("#rows_columns_" + quizId).attr('data-columns');
         if (img.width < containerWidth) {
             width = img.width;
             height = img.height;
@@ -946,7 +925,7 @@ function resizePuzzle(margin) {
             img.height = img.height * ratio - Math.max(rows, columns) * margin * ratio;
             height = img.height
         }
-        jQuery(".piece").each(function () {
+        jQuery(".piece_" + quizId).each(function () {
             jQuery(this).css('width', width / columns + 'px')
             jQuery(this).css('height', height / rows + 'px')
             jQuery(this).find('img').css('margin', height / rows * jQuery(this).attr('data-row') * -1 + 'px 0 0 ' + width / columns * jQuery(this).attr('data-column') * -1 + 'px')
@@ -962,13 +941,13 @@ function relocateTrueFalseFullscreen() {
     } else {
         if (jQuery('.radioLabel1').eq(0).length) {
             jQuery('.radioLabel1').eq(0).ready(function () {
-                jQuery('#trueColumn').css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width() / 2 - jQuery('#trueColumn').width() / 2)
+                jQuery('#trueColumn_' + quizId).css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width() / 2 - jQuery('#trueColumn_' + quizId).width() / 2)
             })
             jQuery('.radioLabel1').eq(1).ready(function () {
-                jQuery('#falseColumn').css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width() / 2 - jQuery('#falseColumn').width() / 2)
+                jQuery('#falseColumn_' + quizId).css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width() / 2 - jQuery('#falseColumn_' + quizId).width() / 2)
             })
-            jQuery('#trueColumn').show()
-            jQuery('#falseColumn').show()
+            jQuery('#trueColumn_' + quizId).show()
+            jQuery('#falseColumn_' + quizId).show()
         }
     }
 }
@@ -979,13 +958,13 @@ function relocateTrueFalseNotFullscreen() {
     } else {
         if (jQuery('.radioLabel1').eq(0).length) {
             jQuery('.radioLabel1').eq(0).ready(function () {
-                jQuery('#trueColumn').css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width() / 2 - jQuery('#trueColumn').width() / 2)
+                jQuery('#trueColumn_' + quizId).css('left', jQuery('.radioLabel1').eq(0).offset().left + jQuery('.radioLabel1').eq(0).width() / 2 - jQuery('#trueColumn_' + quizId).width() / 2)
             })
             jQuery('.radioLabel1').eq(1).ready(function () {
-                jQuery('#falseColumn').css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width() / 2 - jQuery('#falseColumn').width() / 2)
+                jQuery('#falseColumn_' + quizId).css('left', jQuery('.radioLabel1').eq(1).offset().left + jQuery('.radioLabel1').eq(1).width() / 2 - jQuery('#falseColumn_' + quizId).width() / 2)
             })
-            jQuery('#trueColumn').show()
-            jQuery('#falseColumn').show()
+            jQuery('#trueColumn_' + quizId).show()
+            jQuery('#falseColumn_' + quizId).show()
         }
     }
 }
@@ -994,8 +973,9 @@ function relocateDraggablesFullscreen() {
     if (!jQuery.fullscreen.isFullScreen()) {
         setTimeout(relocateDraggablesFullscreen, 100)
     } else {
-        if (jQuery('#type').text() !== qCATEGORY) {
-            reapplyDraggable()
+        let quizId = jQuery('#current_fullscreen').text();
+        if (jQuery('#type' + quizId).text() !== qCATEGORY) {
+            reapplyDraggable(quizId)
             jQuery(".droppable").each(function () {
                 if (jQuery(this).attr('data-dropped-element') !== '0') {
                     jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({
@@ -1011,7 +991,7 @@ function relocateDraggablesFullscreen() {
                     draggable.css('left', '0')
                     draggable.css('top', '0')
                 }
-                jQuery("#knq_answer").append(draggable);
+                jQuery("#knq_answer" + quizId).append(draggable);
             })
         }
     }
@@ -1021,8 +1001,9 @@ function relocateDraggablesNotFullscreen() {
     if (jQuery.fullscreen.isFullScreen()) {
         setTimeout(relocateDraggablesNotFullscreen, 100)
     } else {
-        if (jQuery('#type').text() !== qCATEGORY) {
-            reapplyDraggable()
+        let quizId = jQuery('#current_fullscreen').text();
+        if (jQuery('#type' + quizId).text() !== qCATEGORY) {
+            reapplyDraggable(quizId)
             jQuery(".droppable").each(function () {
                 if (jQuery(this).attr('data-dropped-element') !== '0') {
                     jQuery('#draggableAnswer-' + jQuery(this).attr('data-dropped-element')).offset({
@@ -1038,12 +1019,12 @@ function relocateDraggablesNotFullscreen() {
                     draggable.css('left', '0')
                     draggable.css('top', '0')
                 }
-                jQuery("#knq_answer").append(draggable);
+                jQuery("#knq_answer" + quizId).append(draggable);
             })
             jQuery(".draggable").each(function () {
                 let draggable = jQuery(this)
                 let draggableOffset = jQuery(this).offset();
-                let category = jQuery("#category-" + jQuery(this).attr('data-dropped'));
+                let category = jQuery("#category-" + jQuery(this).attr('data-dropped') + '_' + quizId);
                 if (category.length) {
                     category.ready(function () {
                         let categoryOffsetLeft = parseFloat(category.attr('data-offset-left'));
@@ -1069,7 +1050,7 @@ function relocateDraggablesNotFullscreen() {
     }
 }
 
-function reapplyDraggable() {
+function reapplyDraggable(quizId) {
     jQuery(".draggable").each(function () {
         let dropped = false;
         let draggableId = jQuery(this).attr('id').split("-")[1]
@@ -1082,7 +1063,7 @@ function reapplyDraggable() {
             let draggable = jQuery(this).detach()
             draggable.css('left', '0')
             draggable.css('top', '0')
-            jQuery(draggable.get(0).outerHTML).appendTo("#answerBlocks")
+            jQuery(draggable.get(0).outerHTML).appendTo("#answerBlocks_" + quizId)
         }
         jQuery('.draggable').each(function () {
             jQuery(this).draggable({

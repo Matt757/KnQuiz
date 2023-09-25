@@ -20,15 +20,64 @@ jQuery(document).ready(function () {
     // color_neutral="F4F4F4";
     // color_hover="FFF9B9";
     // color_bhover="C2BD8C";
-    rcorecte = 0; // număr de răspunsuri corecte
-    rtext = ""; // textul cu rezultatul după rezolvarea chestionarul
+    // rcorecte = 0; // număr de răspunsuri corecte
+    // jQuery('#feedback_end_' + quizId).text(''); // textul cu rezultatul după rezolvarea chestionarul
     startOffsetLeft = 0;
     startOffsetTop = 0;
+    elemSortable = {};
+    elemSortablePieces = {};
+    elemSortableAnswers = {};
+    elemSortableRightOnes = {};
     // jQuery( document ).tooltip({track: true});
     // TODO: tooltip still appears
 
-    loadQuestion();
-    funcFullScreen();
+    jQuery(document).bind('fscreenchange', function (e, state, elem) {
+        let quizId = jQuery('#current_fullscreen').text();
+        if (jQuery.fullscreen.isFullScreen()) {
+            jQuery('#quiz' + quizId).css("padding", "50px");
+            jQuery('#quiz' + quizId).css("background-color", "white");
+            if (jQuery.isFunction(jQuery.fn.resizeTableWS)) {
+                resizeTableWS();
+            }
+            //ht=parseInt(jQuery('#tabelcentrat').height(),10);wt=parseInt(jQuery('#tabelcentrat').width(),10);
+            //console.log(ht+" "+wt);
+            //if(ht>wt) jQuery('#tabelcentrat').height(wt+"px"); else jQuery('#tabelcentrat').width(ht+"px");
+            jQuery("#fullscreen-link" + quizId).html("<i class='fa fa-compress'></i>");
+            jQuery("#quiz" + quizId).css("overflow", "scroll");
+        } else {
+            jQuery('#quiz' + quizId).css("padding", "0px");
+            jQuery('#quiz' + quizId).css("background-color", "");
+            ht = parseInt(jQuery('#tabelcentrat' + quizId).height(), 10);
+            wt = parseInt(jQuery('#tabelcentrat' + quizId).width(), 10);
+            if (ht > wt) jQuery('#tabelcentrat' + quizId).height(wt + "px"); else jQuery('#tabelcentrat' + quizId).width(ht + "px");
+            jQuery("#fullscreen-link" + quizId).html("<i class='fa fa-expand'></i>");
+            jQuery("#quiz" + quizId).css("overflow", "show");
+            scrollToAnchor('knq_question' + quizId);
+        }
+    });
+
+    jQuery('.quiz').each(function() {
+        let quizId = jQuery(this).attr('data-quiz-id')
+        loadQuestion(quizId);
+        funcFullScreen(quizId);
+        jQuery('#redoQuiz' + quizId).click(function () {
+            jQuery('#right_answers_' + quizId).text("");
+            jQuery('#feedback_end_' + quizId).text("");
+            startOffsetLeft = 0
+            startOffsetTop = 0
+            jQuery('#crti' + quizId).text(1);
+            jQuery(this).hide();
+            jQuery("#knq_feedback" + quizId).hide();
+            jQuery("#score" + quizId).text("Current score: 0");
+            jQuery("#knq_main_button" + quizId).val(msg_done);
+            jQuery("#knq_main_button" + quizId).show();
+            jQuery("#knqList" + quizId).hide();
+            jQuery("#points" + quizId).text(0);
+            jQuery("#knq_answer" + quizId).hide();
+            loadQuestion(quizId);
+        })
+    })
+
     Mousetrap.bind('f', function () {
         jQuery("#fullscreen-link").trigger('click');
     });
@@ -38,27 +87,19 @@ jQuery(document).ready(function () {
 })
 
 jQuery(window).resize(function () {
-    resizePuzzle(2)
+    let quizId = jQuery('#current_fullscreen').text();
+    if (jQuery('#current_fullscreen').text() === '') {
+        jQuery('.knq_puzzle').each(function () {
+            console.log(jQuery(this).attr('id').split('_')[2])
+            resizePuzzle(2, jQuery(this).attr('id').split('_')[2])
+        })
+    }
+    else {
+        resizePuzzle(2, quizId)
+    }
 })
 
-// TODO: show feedback only at the end
-
-jQuery('#redoQuiz').click(function () {
-    rcorecte = 0;
-    rtext = "";
-    startOffsetLeft = 0
-    startOffsetTop = 0
-    crti = 1
-    jQuery(this).hide();
-    jQuery("#knq_feedback").hide();
-    jQuery("#score").text("Current score: 0");
-    jQuery("#knq_main_button").val(msg_done);
-    jQuery("#knq_main_button").show();
-    jQuery("#knqList").hide();
-    jQuery("#points").text(0);
-    jQuery("#knq_answer").hide();
-    loadQuestion();
-})
+// TODO: show feedback only at the end option
 
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
@@ -70,12 +111,12 @@ function shuffle(array) {
     return array;
 }
 
-function loadQuestion() {
+function loadQuestion(quizId) {
     var ajax_url = knq_object.ajax_url;
     var data = {
         'action': 'detaliiIntrebare',
-        'iduri': iduri,
-        'crti': crti
+        'iduri': jQuery('#iduri' + quizId).text(),
+        'crti': jQuery('#crti' + quizId).text()
     };
     jQuery.ajax({
         url: ajax_url,
@@ -83,27 +124,29 @@ function loadQuestion() {
         data: data,
         dataType: 'json',
         success: function (response) {
-            let knq_question = jQuery("#knq_question")
-            let questionContainer = jQuery("#questionContainer")
+            let knq_question = jQuery("#knq_question" + quizId)
+            let questionContainer = jQuery("#questionContainer" + quizId)
             let tip = response[0].type;
-            jQuery('#type').text(tip);
+            crti = jQuery('#crti' + quizId).text()
+            jQuery('#type' + quizId).text(tip);
             if (knq_question.length === 0) {
                 // sunt la prima întrebare, deci creez scheletul pentru prima întrebare (schelet și pentru următoarele)
-                questionContainer.append("<h3 id='knq_question' class='knq_question' name='knq_question'></h3>")
-                questionContainer.append("<p id='type' style='display: none'>" + tip + "</p>")
-                questionContainer.append("<div style='display: none' class='loader'></div>")
-                questionContainer.append('<div class="knq_container"><ul class="knq_list" id="knqList"></ul><div id="knqImages"></div><div id="knq_answer" class="knq_answer"></div><div style="clear:both"></div><div id="knq_feedback" class="knq_feedback"></div><p center><input id="knq_main_button" class="knq_main_button" type=button value="' + msg_done + '"!></p>');
+                questionContainer.append("<h3 id='knq_question" + quizId + "' class='knq_question' name='knq_question" + quizId + "'></h3>")
+                questionContainer.append("<p id='type" + quizId + "' style='display: none'>" + tip + "</p>")
+                questionContainer.append("<div style='display: none' class='loader' id='loader_" + quizId + "'></div>")
+                questionContainer.append('<div class="knq_container"><ul class="knq_list" id="knqList' + quizId + '"></ul><div id="knqImages' + quizId + '"></div><div id="knq_answer' + quizId + '" class="knq_answer"></div><div style="clear:both"></div><div id="knq_feedback' + quizId + '" class="knq_feedback"></div><p center><input id="knq_main_button' + quizId + '" class="knq_main_button" type=button value="' + msg_done + '"!></p>');
                 jQuery('.knq_feedback').css('background-color', color_hover);
-                jQuery("#knqList").hide();
-                jQuery("#knqImages").hide();
-                jQuery("#knq_answer").hide();
-                jQuery("#knq_feedback").hide();
-                jQuery("#knq_main_button").on('click', function () {
-                    funcClickAmRaspuns();
+                jQuery("#knqList" + quizId).hide();
+                jQuery("#knqImages" + quizId).hide();
+                jQuery("#knq_answer" + quizId).hide();
+                jQuery("#knq_feedback" + quizId).hide();
+                jQuery("#knq_main_button" + quizId).on('click', function () {
+                    funcClickAmRaspuns(quizId);
                 });
-                knq_question = jQuery("#knq_question")
+                knq_question = jQuery("#knq_question" + quizId)
             }
             //afișăm mai întâi întrebarea
+            iduri = jQuery('#iduri' + quizId).text();
             showNumberOfQ = !(crti === iduri.split("|").length && crti === 1);
             if (response[0].image !== "" && response[0].image !== null) {
                 //întrebarea are imagine, sus, jos, dreapta sau stanga
@@ -137,75 +180,75 @@ function loadQuestion() {
             let answers = response[0].answers;
             let rightOnes = response[0].right_one;
             if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qTRUEFALSE) {
-                buildAnswerCheckRadioSortTrueFalse(answers, tip);
+                buildAnswerCheckRadioSortTrueFalse(answers, tip, quizId);
             } else if (tip === qSELECTBOX) {
-                buildAnswerSelectBox(answers);
+                buildAnswerSelectBox(answers, quizId);
             } else if (tip === qDRAGDROP) {
-                buildAnswerDragDrop(answers);
+                buildAnswerDragDrop(answers, quizId);
             } else if (tip === qCHECKBOXIMG || tip === qRADIOBOXIMG) {
-                buildAnswerCheckRadioImage(answers, tip);
+                buildAnswerCheckRadioImage(answers, tip, quizId);
             } else if (tip === qWORDSEARCH) {
-                buildWordSearch(answers);
+                buildWordSearch(answers, quizId);
             } else if (tip === qCROSSWORD) {
-                buildCrossWord(answers);
+                buildCrossWord(answers, quizId);
             } else if (tip === qCROSSWORDEASY) {
-                buildCrossWordEasy(answers, rightOnes);
+                buildCrossWordEasy(answers, rightOnes, quizId);
             } else if (tip === qMATCHING) {
-                buildMatching(answers, rightOnes, response[0].question.includes("***"));
+                buildMatching(answers, rightOnes, response[0].question.includes("***"), quizId);
             } else if (tip === qPUZZLE) {
-                buildPuzzle(answers);
+                buildPuzzle(answers, quizId);
             } else if (tip === qMATCHIMAGE) {
-                buildMatchImage(answers);
+                buildMatchImage(answers, quizId);
             } else if (tip === qCATEGORY) {
-                buildCategories(answers);
+                buildCategories(answers, quizId);
             } else if (tip === qPIXELATEDIMAGE) {
-                buildPixelatedImage(answers);
+                buildPixelatedImage(answers, quizId);
             }
-            if ((tip === qSORTING || (jQuery("#shuffleAnswers").text() === '1' && (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG))) && !response[0].question.includes("***")) {
+            if ((tip === qSORTING || (jQuery("#shuffleAnswers" + quizId).text() === '1' && (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG))) && !response[0].question.includes("***")) {
                 // dacă e un tip cu mai multe răspunsuri, are logică să fie amestecate, dacă s-a optat pentru așa ceva
-                var ul = jQuery("#knqList")[0];
+                var ul = jQuery("#knqList" + quizId)[0];
                 for (var i = ul.children.length; i >= 0; i--) {
                     ul.appendChild(ul.children[Math.random() * i | 0]);
                 }
             }
-            jQuery('.loader').hide();
+            jQuery('#loader_' + quizId).hide();
             if (tip === qCHECKBOXTEXT || tip === qRADIOBOXTEXT || tip === qSORTING || tip === qCHECKBOXIMG || tip === qRADIOBOXIMG || tip === qTRUEFALSE || tip === qMATCHIMAGE) {
-                jQuery("#knqList").show()
+                jQuery("#knqList" + quizId).show()
             } else if (tip === qSELECTBOX || tip === qDRAGDROP || tip === qWORDSEARCH || tip === qCROSSWORD || tip === qMATCHING || tip === qPUZZLE || tip === qCATEGORY || tip === qPIXELATEDIMAGE || tip === qCROSSWORDEASY) {
-                jQuery("#knq_answer").show();
+                jQuery("#knq_answer" + quizId).show();
             }
 
             jQuery(".knq_unselected").bind("click", function () {
                 //aici definesc comportamentul la click pe unul dintre răspunsurile multiple disponibile
-                funcClickSelected(jQuery(this));
+                funcClickSelected(jQuery(this), quizId);
             });
 
             jQuery(".knq_image_unselected").bind("click", function () {
                 //aici definesc comportamentul la click pe unul dintre răspunsurile multiple disponibile
-                funcClickImage(jQuery(this));
+                funcClickImage(jQuery(this), quizId);
             });
 
             if (tip === qSORTING) {
                 //definesc comportamentul de sortare
-                elemSortable = new Sortable(jQuery("#knqList")[0], {
+                elemSortable[quizId] = new Sortable(jQuery("#knqList" + quizId)[0], {
                     animation: 150,
                     ghostClass: 'blue-background-class'
                 });
-                jQuery("#knqList").addClass("ui-sortable")
+                jQuery("#knqList" + quizId).addClass("ui-sortable")
             }
-            jQuery("#knq_main_button").val(msg_done);
+            jQuery("#knq_main_button" + quizId).val(msg_done);
             if (crti != 1) {
                 //la prima întrebare nu fac salt, căci altfel în pagină sare direct la quiz
-                scrollToAnchor('knq_question');
+                scrollToAnchor('knq_question' + quizId);
             }
         }
     })
 }
 
 
-function funcClickSelected(obiect) {
+function funcClickSelected(obiect, quizId) {
     //aici definesc comportamentul la click pe unul dintre răspunsurile multiple disponibile
-    if (jQuery("#type").text() === qCHECKBOXTEXT || jQuery("#type").text() === qCHECKBOXIMG) {
+    if (jQuery("#type" + quizId).text() === qCHECKBOXTEXT || jQuery("#type" + quizId).text() === qCHECKBOXIMG) {
         if (obiect.children("i").attr("class") == "fa fa-square-o") {
             obiect.children("i").attr("class", "fa fa-check-square-o");
             obiect.removeClass("knq_unselected");
@@ -215,8 +258,8 @@ function funcClickSelected(obiect) {
             obiect.removeClass("knq_selected");
             obiect.addClass("knq_unselected");
         }
-    } else if (jQuery("#type").text() === qRADIOBOXTEXT || jQuery("#type").text() === qRADIOBOXIMG) {
-        jQuery(".knq_list").children().each(function () {
+    } else if (jQuery("#type" + quizId).text() === qRADIOBOXTEXT || jQuery("#type" + quizId).text() === qRADIOBOXIMG) {
+        jQuery("#knqList" + quizId).children().each(function () {
             jQuery(this).children("i").attr("class", "fa fa-circle-o");
             jQuery(this).removeClass("knq_selected");
             jQuery(this).addClass("knq_unselected");
@@ -228,9 +271,9 @@ function funcClickSelected(obiect) {
 }
 
 
-function funcClickImage(obiect) {
+function funcClickImage(obiect, quizId) {
     //aici definesc comportamentul la click pe imaginile multiple disponibile
-    if (jQuery("#type").text() === qCHECKBOXIMG) {
+    if (jQuery("#type" + quizId).text() === qCHECKBOXIMG) {
         if (obiect.children("i").attr("class") == "fa fa-square-o") {
             obiect.children("i").attr("class", "fa fa-check-square-o");
             obiect.removeClass('knq_image_unselected')
@@ -240,8 +283,8 @@ function funcClickImage(obiect) {
             obiect.removeClass('knq_image_unselected')
             obiect.addClass('knq_image_selected')
         }
-    } else if (jQuery("#type").text() === qRADIOBOXIMG) {
-        jQuery("#knqImages").children().each(function () {
+    } else if (jQuery("#type" + quizId).text() === qRADIOBOXIMG) {
+        jQuery("#knqImages" + quizId).children().each(function () {
             jQuery(this).children("i").attr("class", "fa fa-circle-o");
             jQuery(this).removeClass('knq_image_selected')
             jQuery(this).addClass('knq_image_unselected')
@@ -258,21 +301,22 @@ function scrollToAnchor(aid) {
     jQuery('html,body').animate({scrollTop: aTag.offset().top}, 'slow');
 }
 
-function funcClickAmRaspuns() {
+function funcClickAmRaspuns(quizId) {
     var ajax_url = knq_object.ajax_url;
-    if (jQuery("#knq_main_button").val() == msg_finish) {
+    if (jQuery("#knq_main_button" + quizId).val() == msg_finish) {
+        jQuery('#loader_' + quizId).show();
         //s-au terminat întrebările, evaluez notă
-        cate = iduri.split("|").length;
-        rtext = "<br>" + rtext;
-        let score = jQuery("#score")
-        if (jQuery("#quizCompletion").attr('completed_before') === '0') {
-            jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. Nota anterioară: ' + parseFloat(score.text().split(": ")[1]) + ' obținută acum.')
+        cate = jQuery('#iduri' + quizId).text().split("|").length;
+        jQuery('#feedback_end_' + quizId).text("<br>" + jQuery('#feedback_end_' + quizId).text());
+        let score = jQuery("#score" + quizId)
+        if (jQuery("#quizCompletion" + quizId).attr('completed_before') === '0') {
+            jQuery("#quizCompletion" + quizId).html('<span id="score">' + score.text() + '</span>' + '. Nota anterioară: ' + parseFloat(score.text().split(": ")[1]) + ' obținută acum.')
         }
-        jQuery("#knq_question").html("Rezultatele finale:");
+        jQuery("#knq_question" + quizId).html("Rezultatele finale:");
         var data = {
             'action': 'updateScore',
             'score': parseFloat(score.text().split(": ")[1]),
-            'quizId': jQuery("#quizId").text()
+            'quizId': jQuery("#quiz" + quizId).attr('data-quiz-id')
         };
         let highscore = false;
         // cu ajax-ul acesta punem nota mai mare, dacă s-a obținut notă mai mare
@@ -304,97 +348,97 @@ function funcClickAmRaspuns() {
                 //     jQuery("#knq_feedback").html("<strong>Ați răspuns corect la " + rcorecte + " întrebări din " + cate + ".</strong>" + rtext + "\n<b>Nota finală: " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " Ați obținut un nou scor record!") + "</b>");
                 // } else
                 //     jQuery("#knq_feedback").html("<strong>Ați răspuns corect la " + rcorecte + " întrebări din " + cate + ".</strong>" + rtext + "\n<b>Nota finală: " + parseFloat(score.text().split(": ")[1]) + ".</b>");
-                if (rcorecte === 0 && highscore) {
-                    jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
-                    jQuery("#knq_feedback").html("<strong>" + text_all_wrong + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
-                } else if (rcorecte === 0) {
-                    jQuery("#knq_feedback").html("<strong>" + text_all_wrong + "</strong>" + rtext + "\n" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".");
-                } else if (rcorecte == cate && highscore) {
-                    jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
-                    jQuery("#knq_feedback").html("<strong>" + text_all_correct + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
-                } else if (rcorecte == cate)
-                    jQuery("#knq_feedback").html("<strong>" + text_all_correct + "</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
+                if (jQuery('#right_answers_' + quizId).text() === '0' && highscore) {
+                    jQuery("#quizCompletion" + quizId).html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_all_wrong + "</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
+                } else if (jQuery('#right_answers_' + quizId).text() === '0') {
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_all_wrong + "</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".");
+                } else if (jQuery('#right_answers_' + quizId).text() - 0 === cate && highscore) {
+                    jQuery("#quizCompletion" + quizId).html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_all_correct + "</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
+                } else if (jQuery('#right_answers_' + quizId).text() - 0 === cate)
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_all_correct + "</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
                 else if (highscore) {
-                    jQuery("#quizCompletion").html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
-                    jQuery("#knq_feedback").html("<strong>" + text_partial_correct + " " + rcorecte + " " + text_partial_out_of + " " + cate + ".</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
+                    jQuery("#quizCompletion" + quizId).html('<span id="score">' + score.text() + '</span>' + '. ' + text_previous_score + ': ' + parseFloat(score.text().split(": ")[1]) + ' ' + text_obtained_now + '.')
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_partial_correct + " " + jQuery('#right_answers_' + quizId).text() + " " + text_partial_out_of + " " + cate + ".</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + "." + (firstTime ? "" : " " + text_new_highscore) + "</b>");
                 } else {
-                    jQuery("#knq_feedback").html("<strong>" + text_partial_correct + " " + rcorecte + " " + text_partial_out_of + " " + cate + ".</strong>" + rtext + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
+                    jQuery("#knq_feedback" + quizId).html("<strong>" + text_partial_correct + " " + jQuery('#right_answers_' + quizId).text() + " " + text_partial_out_of + " " + cate + ".</strong>" + jQuery('#feedback_end_' + quizId).text() + "\n<b>" + text_final_score + ": " + parseFloat(score.text().split(": ")[1]) + ".</b>");
                 }
 
-                jQuery(".knq_list").empty();
-                jQuery("#knq_answer").empty();
-                jQuery("#knq_main_button").hide();
-                jQuery("#redoQuiz").show()
+                jQuery("#knqList" + quizId).empty();
+                jQuery("#knq_answer" + quizId).empty();
+                jQuery("#knq_main_button" + quizId).hide();
+                jQuery("#redoQuiz" + quizId).show()
+                jQuery('#loader_' + quizId).hide();
             },
             error: function (response) {
                 console.log(response)
             }
         })
-
-    } else if (jQuery("#knq_main_button").val() == msg_done) {
+    } else if (jQuery("#knq_main_button" + quizId).val() == msg_done) {
         //a răspuns la întrebarea curentă, trecem mai departe
         let corecte = [];
-        jQuery("#knqList").children().each(function () {
+        jQuery("#knqList" + quizId).children().each(function () {
             if (jQuery(this).hasClass("knq_selected")) {
-                corecte.push(jQuery(this).attr("id"));
+                corecte.push(jQuery(this).attr("id").split('_')[0]);
             }
         });
-        evalAnswers(corecte);
+        evalAnswers(corecte, quizId);
     } else {
         // move to the next question
-        crti++;
-        evalAnswers("");
+        jQuery('#crti' + quizId).text(jQuery('#crti' + quizId).text() - 0 + 1);
+        evalAnswers("", quizId);
     }
 }
 
 
-function evalAnswers(corecteUser) {
+function evalAnswers(corecteUser, quizId) {
     //evaluează corectitudinea răspunsurilor
     var ajax_url = knq_object.ajax_url;
     var data = {
         'action': 'detaliiIntrebare',
-        'iduri': iduri,
-        'crti': crti
+        'iduri': jQuery('#iduri' + quizId).text(),
+        'crti': jQuery('#crti' + quizId).text()
     };
-
     jQuery.ajax({
         url: ajax_url,
         type: 'post',
         data: data,
         dataType: 'json',
         beforeSend: function () {
-            jQuery("#knq_main_button").prop('disabled', true);
+            jQuery("#knq_main_button" + quizId).prop('disabled', true);
         },
         success: function (response) {
+            crti = jQuery('#crti' + quizId).text();
             if (response.length > 0) {
-                let score = jQuery("#score")
-                let points = jQuery("#points")
-                if (jQuery("#knq_main_button").val() === msg_done) {
+                let score = jQuery("#score" + quizId)
+                let points = jQuery("#points" + quizId)
+                if (jQuery("#knq_main_button" + quizId).val() === msg_done) {
                     //este răspunsul la o întrebare
-                    jQuery('.knq_unselected').each(function () {
+                    jQuery('#quiz' + quizId).find('.knq_unselected').each(function () {
                         jQuery(this).css('background-color', color_neutral)
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_selected').each(function () {
+                    jQuery('#quiz' + quizId).find('.knq_selected').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_matching_answer').each(function () {
+                    jQuery('#quiz' + quizId).find('.knq_matching_answer').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    jQuery('.knq_right_one').each(function () {
+                    jQuery('#quiz' + quizId).find('.knq_right_one').each(function () {
                         jQuery(this).unbind("mouseenter");
                         jQuery(this).unbind("mouseleave");
                     })
-                    if (jQuery("#type").text() === qCHECKBOXTEXT || jQuery('#type').text() === qCHECKBOXIMG) {
+                    if (jQuery("#type" + quizId).text() === qCHECKBOXTEXT || jQuery('#type' + quizId).text() === qCHECKBOXIMG) {
                         // Handle first, second, sixth and seventh types of questions
-                        let answersList = jQuery(".knq_unselected");
+                        let answersList = jQuery('#quiz' + quizId).find(".knq_unselected");
                         answersList.each(function (index) {
                             jQuery(this).unbind('click');
                         })
-                        jQuery(".knq_selected").each(function (index) {
+                        jQuery('#quiz' + quizId).find(".knq_selected").each(function (index) {
                             jQuery(this).unbind('click');
                         })
                         ro = response[0].right_one;
@@ -410,9 +454,9 @@ function evalAnswers(corecteUser) {
                             }
                             partialScore = parseFloat(partialScore)
                             score.text(score.text().split(": ")[0] + ": " + partialScore)
-                            jQuery("#knq_feedback").html(msg_correct + fd).show();
-                            rcorecte++;
-                            rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>";
+                            jQuery("#knq_feedback" + quizId).html(msg_correct + fd).show();
+                            jQuery('#right_answers_' + quizId).text(jQuery('#right_answers_' + quizId).text() - 0 + 1);
+                            jQuery('#feedback_end_' + quizId).text(jQuery('#feedback_end_' + quizId).text() + crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>");
                         } else {
                             // partially correct answers
                             let partialScore;
@@ -439,18 +483,21 @@ function evalAnswers(corecteUser) {
                             }
                             partialScore = parseFloat(partialScore)
                             score.text(score.text().split(": ")[0] + ": " + partialScore)
-                            jQuery("#knq_feedback").html(msg_wrong + (fdn == "" ? fd : fdn)).show();
-                            rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>";
+                            jQuery("#knq_feedback" + quizId).html(msg_wrong + (fdn == "" ? fd : fdn)).show();
+                            jQuery('#feedback_end_' + quizId).text(jQuery('#feedback_end_' + quizId).text() + crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>");
                         }
-                        jQuery(".knq_list").children().each(function () {
-                            if ((corecte.indexOf(jQuery(this).attr("id")) === -1) && (jQuery(this).hasClass("knq_selected")))
+                        jQuery("#knqList" + quizId).children().each(function () {
+                            if ((corecte.indexOf(jQuery(this).attr("id").split('_')[0]) === -1) && (jQuery(this).hasClass("knq_selected"))) {
                                 jQuery(this).css("background-color", color_nok);
-                            if (corecte.indexOf(jQuery(this).attr("id")) !== -1)
+                            }
+                            if (corecte.indexOf(jQuery(this).attr("id").split('_')[0]) !== -1) {
                                 jQuery(this).css("background-color", color_ok);
+                            }
+
                         });
-                        nextOrFinish()
-                    } else if (jQuery("#type").text() === qTRUEFALSE) {
-                        let answersList = jQuery(".knq_unselected");
+                        nextOrFinish(quizId)
+                    } else if (jQuery("#type" + quizId).text() === qTRUEFALSE) {
+                        let answersList = jQuery('#quiz' + quizId).find(".knq_unselected");
                         ro = response[0].right_one;
                         corecte = ro.split("|");
                         let correctAnswersCounter = 0;
@@ -465,13 +512,12 @@ function evalAnswers(corecteUser) {
                                     correctAnswersCounter++;
                                 }
                             } else if (jQuery(this).find('.falseRadio').is(':checked')) {
-                                console.log("yup, im checked")
                                 if (!corecte.includes(jQuery(this).find('.falseRadio').attr('name').split('_')[2])) {
                                     correctAnswersCounter++;
                                 }
                             }
                         })
-                        computeScore(correctAnswersCounter, answersList.length, response)
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
                         answersList.each(function () {
                             if ((corecte.indexOf(jQuery(this).find('.falseRadio').attr('name').split('_')[2]) === -1) && jQuery(this).find('.falseRadio').is(':checked')) {
                                 jQuery(this).css("background-color", color_ok);
@@ -481,11 +527,11 @@ function evalAnswers(corecteUser) {
                                 jQuery(this).css("background-color", color_nok);
                             }
                         });
-                        nextOrFinish()
-                    } else if (jQuery("#type").text() === qRADIOBOXTEXT || jQuery('#type').text() === qRADIOBOXIMG) {
+                        nextOrFinish(quizId)
+                    } else if (jQuery("#type" + quizId).text() === qRADIOBOXTEXT || jQuery('#type' + quizId).text() === qRADIOBOXIMG) {
                         // Handle first, second, sixth and seventh types of questions
-                        let answersList = jQuery(".knq_selected");
-                        jQuery(".knq_unselected").each(function (index) {
+                        let answersList = jQuery('#quiz' + quizId).find(".knq_selected");
+                        jQuery('#quiz' + quizId).find(".knq_unselected").each(function (index) {
                             jQuery(this).unbind('click');
                         })
                         answersList.each(function (index) {
@@ -495,42 +541,42 @@ function evalAnswers(corecteUser) {
                         corecte = ro.split("|");
                         let correctAnswersCounter = 0;
                         answersList.each(function () {
-                            if (corecte.includes(jQuery(this).attr('id'))) {
+                            if (corecte.includes(jQuery(this).attr('id').split('_')[0])) {
                                 correctAnswersCounter++;
                             }
                         })
-                        computeScore(correctAnswersCounter, corecte.length, response)
-                        jQuery(".knq_list").children().each(function () {
-                            if ((corecte.indexOf(jQuery(this).attr("id")) === -1) && (jQuery(this).hasClass("knq_selected")))
+                        computeScore(correctAnswersCounter, corecte.length, response, quizId)
+                        jQuery("#knqList" + quizId).children().each(function () {
+                            if ((corecte.indexOf(jQuery(this).attr("id").split('_')[0]) === -1) && (jQuery(this).hasClass("knq_selected")))
                                 jQuery(this).css("background-color", color_nok);
-                            if (corecte.indexOf(jQuery(this).attr("id")) !== -1)
+                            if (corecte.indexOf(jQuery(this).attr("id").split('_')[0]) !== -1)
                                 jQuery(this).css("background-color", color_ok);
                         });
-                        nextOrFinish()
-                    } else if (jQuery("#type").text() === qSORTING) {
+                        nextOrFinish(quizId)
+                    } else if (jQuery("#type" + quizId).text() === qSORTING) {
                         // Handle the third type of question
-                        elemSortable.destroy();
-                        jQuery('#knqList').removeClass("ui-sortable");
+                        elemSortable[quizId].destroy();
+                        jQuery('#knqList' + quizId).removeClass("ui-sortable");
                         let correctAnswersCounter = 0;
-                        let answersList = jQuery(".knq_unselected");
+                        let answersList = jQuery('#quiz' + quizId).find(".knq_unselected");
                         var previous = null;
                         answersList.each(function (index) {
-                            jQuery(this).find('p').text(jQuery(this).text() + " (" + jQuery(this).attr('id') + ")")
+                            jQuery(this).find('p').text(jQuery(this).text() + " (" + jQuery(this).attr('id').split('_')[0] + ")")
                             if (index === 0) {
-                                if (String(parseInt(jQuery(this).attr('id')) + 1) === answersList.eq(index + 1).attr('id') || (parseInt(jQuery(this).attr('id'))) === index + 1) {
+                                if (String(parseInt(jQuery(this).attr('id').split('_')[0]) + 1) === answersList.eq(index + 1).attr('id').split('_')[0] || (parseInt(jQuery(this).attr('id').split('_')[0])) === index + 1) {
                                     jQuery(this).css("background-color", color_ok);
                                     correctAnswersCounter++;
                                 } else {
                                     jQuery(this).css("background-color", color_nok);
                                 }
                             } else if (index === answersList.length - 1) {
-                                if (String(jQuery(this).attr('id') - 1) === answersList.eq(index - 1).attr('id') || (parseInt(jQuery(this).attr('id'))) === index + 1) {
+                                if (String(jQuery(this).attr('id').split('_')[0] - 1) === answersList.eq(index - 1).attr('id').split('_')[0] || (parseInt(jQuery(this).attr('id').split('_')[0])) === index + 1) {
                                     jQuery(this).css("background-color", color_ok);
                                     correctAnswersCounter++;
                                 } else {
                                     jQuery(this).css("background-color", color_nok);
                                 }
-                            } else if (String(index + 1) === jQuery(this).attr('id') || String(jQuery(this).attr('id') - 1) === answersList.eq(index - 1).attr('id') || String(parseInt(jQuery(this).attr('id')) + 1) === answersList.eq(index + 1).attr('id')) {
+                            } else if (String(index + 1) === jQuery(this).attr('id').split('_')[0] || String(jQuery(this).attr('id').split('_')[0] - 1) === answersList.eq(index - 1).attr('id').split('_')[0] || String(parseInt(jQuery(this).attr('id').split('_')[0]) + 1) === answersList.eq(index + 1).attr('id').split('_')[0]) {
                                 jQuery(this).css("background-color", color_ok);
                                 correctAnswersCounter++;
                             } else {
@@ -538,12 +584,12 @@ function evalAnswers(corecteUser) {
                             }
                             previous = this;
                         })
-                        computeScore(correctAnswersCounter, answersList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery("#type").text() === qSELECTBOX) {
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery("#type" + quizId).text() === qSELECTBOX) {
                         // Handle the fourth type of question
                         let correctAnswersCounter = 0;
-                        let answersList = jQuery(".knq-answer-select");
+                        let answersList = jQuery('#quiz' + quizId).find(".knq-answer-select");
                         answersList.each(function () {
                             jQuery(this).find('option').each(function () {
                                 jQuery(this).attr('disabled', 'disabled')
@@ -555,19 +601,21 @@ function evalAnswers(corecteUser) {
                                 jQuery(this).css("background-color", color_nok);
                             }
                         })
-                        computeScore(correctAnswersCounter, answersList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery("#type").text() === qDRAGDROP || jQuery("#type").text() === qMATCHIMAGE) {
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery("#type" + quizId).text() === qDRAGDROP || jQuery("#type" + quizId).text() === qMATCHIMAGE) {
                         // Handle the fifth type of question
                         let correctAnswersCounter = 0;
-                        let answersList = jQuery(".droppable");
-                        let draggableList = jQuery(".draggable");
+                        let answersList = jQuery('#quiz' + quizId).find(".droppable");
+                        let draggableList = jQuery('#quiz' + quizId).find(".draggable");
                         let droppedElements = 0;
                         answersList.each(function () {
                             if (jQuery(this).attr('data-dropped-element') !== '0') {
                                 droppedElements++;
                             }
                             let droppedElement = jQuery("#draggableAnswer-" + jQuery(this).attr('data-dropped-element'))
+                            // console.log(droppedElement[0]);
+                            // console.log("#draggableAnswer-" + jQuery(this).attr('data-dropped-element') + '_' + quizId);
                             jQuery(this).droppable('destroy');
                             if (jQuery(this).attr('data-correct') === '1') {
                                 jQuery(this).css('background', color_ok)
@@ -586,11 +634,11 @@ function evalAnswers(corecteUser) {
                             jQuery(this).draggable('destroy');
                         })
                         if (droppedElements === answersList.length && droppedElements === draggableList.length) {
-                            jQuery('#answerBlocks').css('height', 0)
+                            jQuery('#answerBlocks_' + quizId).css('height', 0)
                         }
-                        computeScore(correctAnswersCounter, answersList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qWORDSEARCH) {
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qWORDSEARCH) {
                         // handle the eight type of question
                         let correctAnswersCounter = 0
                         let answersList = jQuery('#knq_woswords').find('span')
@@ -601,13 +649,14 @@ function evalAnswers(corecteUser) {
                         })
                         jQuery("#kqn_wswords").hide();
                         jQuery("#knq_wscontrols").hide();
-                        computeScore(correctAnswersCounter, answersList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qMATCHING) {
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qMATCHING) {
                         // handle the eleventh type of question
-                        let answersList = jQuery('.knq_matching_answer')
-                        let rightOnes = jQuery('.knq_right_one')
-                        destroySortable()
+                        //TODO: separate results with questions for each quiz
+                        let answersList = jQuery('#quiz' + quizId).find('.knq_matching_answer')
+                        let rightOnes = jQuery('#quiz' + quizId).find('.knq_right_one')
+                        destroySortable(quizId)
                         let correctAnswersCounter = 0;
                         for (i = 1; i <= answersList.length; i++) {
                             if (jQuery(answersList[i - 1]).attr('id').split('_').at(-1) === jQuery(rightOnes[i - 1]).attr('id').split('_').at(-1)) {
@@ -619,25 +668,25 @@ function evalAnswers(corecteUser) {
                                 jQuery(rightOnes[i - 1]).css("background-color", color_nok);
                             }
                         }
-                        computeScore(correctAnswersCounter, answersList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qPUZZLE) {
+                        computeScore(correctAnswersCounter, answersList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qPUZZLE) {
                         let correctAnswersCounter = 0;
-                        destroySortable()
-                        jQuery('.piece').each(function (index) {
+                        destroySortable(quizId)
+                        jQuery('#quiz' + quizId).find('.piece_' + quizId).each(function (index) {
                             jQuery(this).css('margin', '0')
-                            resizePuzzle(0)
+                            resizePuzzle(0, quizId)
                             if (jQuery(this).attr('id').split('_')[1] - 0 !== index) {
                                 jQuery(this).css('opacity', '0.5');
                             } else {
                                 correctAnswersCounter++;
                             }
                         })
-                        computeScore(correctAnswersCounter, jQuery('.piece').toArray().length, response)
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qCATEGORY) {
+                        computeScore(correctAnswersCounter, jQuery('#quiz' + quizId).find('.piece_' + quizId).toArray().length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qCATEGORY) {
                         let correctAnswersCounter = 0;
-                        let draggableList = jQuery(".draggable");
+                        let draggableList = jQuery('#quiz' + quizId).find(".draggable");
                         draggableList.each(function () {
                             jQuery(this).draggable('destroy');
                             if (jQuery(this).attr('data-dropped') === jQuery(this).attr('data-category')) {
@@ -649,26 +698,27 @@ function evalAnswers(corecteUser) {
                                 jQuery(this).css('border', '2px solid ' + newShade(color_nok, -70))
                             }
                         })
-                        computeScore(correctAnswersCounter, draggableList.length, response)
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qPIXELATEDIMAGE) {
+                        computeScore(correctAnswersCounter, draggableList.length, response, quizId)
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qPIXELATEDIMAGE) {
+                        // TODO: check if loader is used when finishing the quiz
                         timeoutArray.forEach(function (timeout) {
                             clearTimeout(timeout);
                         })
-                        jQuery("#knq_answer").css('height', 'fit-content');
-                        jQuery('#knq_answer').find('canvas').each(function () {
+                        jQuery("#knq_answer" + quizId).css('height', 'fit-content');
+                        jQuery('#knq_answer' + quizId).find('canvas').each(function () {
                             jQuery(this).remove();
                         })
-                        jQuery('#pixelate').show();
-                        if (jQuery("#imageAnswer").val() === response[0].right_one) {
-                            computeScore(11 - parseInt(jQuery('#pixelate').attr('data-attempt')), 10, response)
-                            jQuery("#imageAnswer").css('background', color_ok + "!important")
+                        jQuery('#pixelate_' + quizId).show();
+                        if (jQuery("#imageAnswer_" + quizId).val() === response[0].right_one) {
+                            computeScore(11 - parseInt(jQuery('#pixelate_' + quizId).attr('data-attempt')), 10, response, quizId)
+                            jQuery("#imageAnswer_" + quizId).css('background', color_ok + "!important")
                         } else {
-                            computeScore(0, 10, response)
-                            jQuery("#imageAnswer").css('background', color_nok + "!important")
+                            computeScore(0, 10, response, quizId)
+                            jQuery("#imageAnswer_" + quizId).css('background', color_nok + "!important")
                         }
-                        nextOrFinish()
-                    } else if (jQuery('#type').text() === qCROSSWORDEASY) {
+                        nextOrFinish(quizId)
+                    } else if (jQuery('#type' + quizId).text() === qCROSSWORDEASY) {
                         let ro = response[0].right_one;
                         let corecte = ro.split('|');
                         corecte = corecte[0].split('\n');
@@ -679,7 +729,7 @@ function evalAnswers(corecteUser) {
                         }
                         let index = 0;
                         let correctAnswersCounter = 0;
-                        jQuery('#knq_answer').find('tr.crosswordRow').each(function () {
+                        jQuery('#knq_answer' + quizId).find('tr.crosswordRow').each(function () {
                             let answerBuilder = '';
                             jQuery(this).find('input').each(function () {
                                 answerBuilder += jQuery(this).val();
@@ -698,41 +748,41 @@ function evalAnswers(corecteUser) {
                             }
                             index++;
                         })
-                        computeScore(correctAnswersCounter, index, response)
-                        nextOrFinish()
+                        computeScore(correctAnswersCounter, index, response, quizId)
+                        nextOrFinish(quizId)
                     }
                 } else {
                     // s-a apasat butonul trec mai departe
-                    jQuery("#knq_feedback").hide();
-                    jQuery("#knq_answer").empty();
-                    jQuery("#knqList").empty();
-                    jQuery('.loader').show();
-                    loadQuestion()
+                    jQuery("#knq_feedback" + quizId).hide();
+                    jQuery("#knq_answer" + quizId).empty();
+                    jQuery("#knqList" + quizId).empty();
+                    jQuery('#loader_' + quizId).show();
+                    loadQuestion(quizId)
                 }
             } else {
                 jQuery("#").html("Ceva nu a mers bine. Ne pare rău!");
             }
-            jQuery("#knq_main_button").prop('disabled', false);
+            jQuery("#knq_main_button" + quizId).prop('disabled', false);
         }
     });
 
 }
 
 
-function nextOrFinish() {
-    if (crti == iduri.split("|").length) {
-        jQuery("#knq_main_button").val(msg_finish).blur();
+function nextOrFinish(quizId) {
+    if (crti == jQuery("#iduri" + quizId).text().split("|").length) {
+        jQuery("#knq_main_button" + quizId).val(msg_finish).blur();
     } else {
-        jQuery("#knq_main_button").val(msg_next).blur();
+        jQuery("#knq_main_button" + quizId).val(msg_next).blur();
     }
 }
 
 
-function computeScore(correctAnswersCounter, answersListLength, response) {
+function computeScore(correctAnswersCounter, answersListLength, response, quizId) {
     fd = ((response[0].feedbackp !== null) && (response[0].feedbackp + "").length > 0 ? "<br>" + response[0].feedbackp.replace(/(?:\r\n|\r|\n)/g, '<br>') : "");
     fdn = ((response[0].feedbackn != null) && (response[0].feedbackn + "").length > 0 ? "<br>" + response[0].feedbackn.replace(/(?:\r\n|\r|\n)/g, '<br>') : "");
-    let points = jQuery("#points")
-    let score = jQuery("#score")
+    let points = jQuery("#points" + quizId)
+    let score = jQuery("#score" + quizId)
     if (correctAnswersCounter === answersListLength) {
         // correct answers
         points.text(points.text() - 0 + 10)
@@ -742,10 +792,10 @@ function computeScore(correctAnswersCounter, answersListLength, response) {
         }
         partialScore = parseFloat(partialScore)
         score.text(score.text().split(": ")[0] + ": " + partialScore)
-        jQuery("#knq_feedback").html(msg_correct + fd).show();
-        rcorecte++;
+        jQuery("#knq_feedback" + quizId).html(msg_correct + fd).show();
+        jQuery('#right_answers_' + quizId).text(jQuery('#right_answers_' + quizId).text() - 0 + 1);
 
-        rtext += crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>";
+        jQuery('#feedback_end_' + quizId).text(jQuery('#feedback_end_' + quizId).text() + crti + ". <i class='fa fa-check' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>");
     } else {
         // partially correct answers
         let partialScore;
@@ -765,8 +815,8 @@ function computeScore(correctAnswersCounter, answersListLength, response) {
         }
         partialScore = parseFloat(partialScore)
         score.text(score.text().split(": ")[0] + ": " + partialScore)
-        jQuery("#knq_feedback").html(msg_wrong + (fdn == "" ? fd : fdn)).show();
-        rtext += crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>";
+        jQuery("#knq_feedback" + quizId).html(msg_wrong + (fdn == "" ? fd : fdn)).show();
+        jQuery('#feedback_end_' + quizId).text(jQuery('#feedback_end_' + quizId).text() + crti + ". <i class='fa fa-xmark' aria-hidden='true'></i>&nbsp;" + response[0].question.replace(/(?:\r\n|\r|\n)/g, '<br>').replace('***', '') + "<br>");
     }
 }
 
