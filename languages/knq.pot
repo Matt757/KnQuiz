@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1\n"
 "Report-Msgid-Bugs-To: radu@capan.ro\n"
-"POT-Creation-Date: 2023-08-12 00:25+0300\n"
+"POT-Creation-Date: 2023-09-15 18:07+0300\n"
 "PO-Revision-Date: 2023-07-20 16:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Matei & Radu Capan\n"
@@ -20,457 +20,254 @@ msgstr ""
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: knq.php:140 knq.php:142
+#: knq.php:145 knq.php:147
 msgid "Current score"
 msgstr ""
 
-#: knq.php:142
+#: knq.php:145
+msgid "You have not completed this quiz before"
+msgstr ""
+
+#: knq.php:147
 msgid "Previous score"
 msgstr ""
 
-#: knq.php:184
+#: knq.php:189
 msgid "Redo quiz"
 msgstr ""
 
-#: knq.php:191 knq.php:307
+#: knq.php:193 knq.php:271
 msgid "Done!"
 msgstr ""
 
-#: knq.php:203 knq.php:322
+#: knq.php:194 knq.php:272
 msgid "Next!"
 msgstr ""
 
-#: knq.php:215 knq.php:337
+#: knq.php:195 knq.php:273
 msgid "Finish!"
 msgstr ""
 
-#: knq.php:227 knq.php:352
+#: knq.php:196 knq.php:274
 msgid "Correct!"
 msgstr ""
 
-#: knq.php:239 knq.php:367
+#: knq.php:197 knq.php:275
 msgid "Wrong!"
 msgstr ""
 
-#: knq.php:247
+#: knq.php:203
+msgid "Type here what you see in the image"
+msgstr ""
+
+#: knq.php:203
+msgid "T"
+msgstr ""
+
+#: knq.php:203
+msgid "F"
+msgstr ""
+
+#: knq.php:203
 msgid "Find above the following words"
 msgstr ""
 
-#: knq.php:280 knq.php:282
+#: knq.php:203
+msgid "Choose the right answer"
+msgstr ""
+
+#: knq.php:253 knq.php:255
 msgid "Quizzes"
 msgstr ""
 
-#: knq.php:281
+#: knq.php:254
 msgid "Settings"
 msgstr ""
 
-#: knq.php:282 knq.php:473
+#: knq.php:255 knq.php:374
 msgid "Quizzes management"
 msgstr ""
 
-#: knq.php:283 knq.php:1001
+#: knq.php:256
 msgid "Questions management"
 msgstr ""
 
-#: knq.php:283
+#: knq.php:256
 msgid "Questions"
 msgstr ""
 
-#: knq.php:284 knq.php:1329
+#: knq.php:257
 msgid "Statistics"
 msgstr ""
 
-#: knq.php:294
+#: knq.php:267
 msgid "General options"
 msgstr ""
 
-#: knq.php:298 knq.php:313 knq.php:328 knq.php:343 knq.php:358 knq.php:428
-#: knq.php:430 knq.php:432 knq.php:434 knq.php:436 knq.php:441 knq.php:450
-#: knq.php:459
+#: knq.php:271 knq.php:272 knq.php:273 knq.php:274 knq.php:275 knq.php:279
+#: knq.php:280 knq.php:281 knq.php:282 knq.php:294 knq.php:296 knq.php:298
+#: knq.php:300 knq.php:302 knq.php:307 knq.php:316 knq.php:325 knq.php:332
+#: knq.php:335 knq.php:338 knq.php:341
 msgid "Default value"
 msgstr ""
 
-#: knq.php:419
+#: knq.php:285
 msgid "Settings updated succesfully!"
 msgstr ""
 
-#: knq.php:421
+#: knq.php:287
 msgid "Error updating the settings!"
 msgstr ""
 
-#: knq.php:428 knq.php:882
+#: knq.php:294 knq.php:532
 msgid "Text button for answering a question"
 msgstr ""
 
-#: knq.php:430
+#: knq.php:296
 msgid "Text button for next question"
 msgstr ""
 
-#: knq.php:432
+#: knq.php:298
 msgid "Text button for finishing quiz"
 msgstr ""
 
-#: knq.php:434 knq.php:909
+#: knq.php:300 knq.php:559
 msgid "Message when answered correctly"
 msgstr ""
 
-#: knq.php:436 knq.php:918
+#: knq.php:302 knq.php:568
 msgid "Message when answered wrongly"
 msgstr ""
 
-#: knq.php:439 knq.php:853
+#: knq.php:305 knq.php:503
 msgid "Difficulty level"
 msgstr ""
 
-#: knq.php:448 knq.php:862
+#: knq.php:314 knq.php:512
 msgid "Shuffle questions"
 msgstr ""
 
-#: knq.php:450 knq.php:452 knq.php:459 knq.php:461 knq.php:862 knq.php:871
+#: knq.php:316 knq.php:318 knq.php:325 knq.php:327 knq.php:512 knq.php:521
 msgid "No"
 msgstr ""
 
-#: knq.php:450 knq.php:452 knq.php:459 knq.php:461 knq.php:862 knq.php:871
+#: knq.php:316 knq.php:318 knq.php:325 knq.php:327 knq.php:512 knq.php:521
 msgid "Yes"
 msgstr ""
 
-#: knq.php:457 knq.php:871
+#: knq.php:323 knq.php:521
 msgid "Shuffle answers"
 msgstr ""
 
-#: knq.php:464
+#: knq.php:332 knq.php:577
+msgid "Correct color"
+msgstr ""
+
+#: knq.php:335 knq.php:586
+msgid "Wrong color"
+msgstr ""
+
+#: knq.php:338 knq.php:595
+msgid "Neutral color"
+msgstr ""
+
+#: knq.php:341 knq.php:606
+msgid "Main color"
+msgstr ""
+
+#: knq.php:343
 msgid "Update options"
 msgstr ""
 
-#: knq.php:495
+#: knq.php:396
 msgid "Quiz deleted succesfully"
 msgstr ""
 
-#: knq.php:497
+#: knq.php:398
 msgid "Error on deleting the quiz"
 msgstr ""
 
-#: knq.php:777
+#: knq.php:427
 msgid "Quiz updated"
 msgstr ""
 
-#: knq.php:779
+#: knq.php:429
 msgid "Error updating quiz"
 msgstr ""
 
-#: knq.php:795
+#: knq.php:445
 msgid "Demo quiz (please configure)"
 msgstr ""
 
-#: knq.php:798
+#: knq.php:448
 msgid "Demo description (please configure)"
 msgstr ""
 
-#: knq.php:816
+#: knq.php:466
 msgid "Add new quiz"
 msgstr ""
 
-#: knq.php:831 knq.php:1144
+#: knq.php:481
 msgid "Selected quiz"
 msgstr ""
 
-#: knq.php:832
+#: knq.php:482
 msgid "Title"
 msgstr ""
 
-#: knq.php:844
+#: knq.php:494
 msgid "Description"
 msgstr ""
 
-#: knq.php:853 knq.php:862 knq.php:871 knq.php:882 knq.php:891 knq.php:900
-#: knq.php:909 knq.php:918
+#: knq.php:503 knq.php:512 knq.php:521 knq.php:532 knq.php:541 knq.php:550
+#: knq.php:559 knq.php:568 knq.php:577 knq.php:586 knq.php:595 knq.php:606
 msgid "Global value"
 msgstr ""
 
-#: knq.php:873
+#: knq.php:523
 msgid "Leave following inputs empty if you wish to use the global value"
 msgstr ""
 
-#: knq.php:891
+#: knq.php:541
 msgid "Text button next question"
 msgstr ""
 
-#: knq.php:900
+#: knq.php:550
 msgid "Text button finish quiz"
 msgstr ""
 
-#: knq.php:928
+#: knq.php:610
+msgid "Update Quiz"
+msgstr ""
+
+#: knq.php:618
 msgid "Reorder questions"
 msgstr ""
 
-#: knq.php:933
+#: knq.php:623
 msgid "Update order of questions"
 msgstr ""
 
-#: knq.php:937 knq.php:1311
+#: knq.php:627
 msgid "Shortcode - just the quiz"
 msgstr ""
 
-#: knq.php:938 knq.php:1312
+#: knq.php:628
 msgid "Shortcode - the quiz with title"
 msgstr ""
 
-#: knq.php:939 knq.php:1313
+#: knq.php:629
 msgid "Shortcode - the quiz with title and the description"
 msgstr ""
 
-#: knq.php:943
+#: knq.php:633
 msgid "Be careful! When you delete a quizz, there is no undo!"
 msgstr ""
 
-#: knq.php:943
+#: knq.php:633
 msgid "Delete quizz"
 msgstr ""
 
-#: knq.php:943 knq.php:1005 knq.php:1304 knq.php:1317
+#: knq.php:633
 msgid "Are you sure? There is no undo to that!"
-msgstr ""
-
-#: knq.php:960 knq.php:991 knq.php:1204 knq.php:1290
-msgid "To add a new answer, click here"
-msgstr ""
-
-#: knq.php:966 knq.php:1221 knq.php:1223
-msgid "Extra words that are not found in the text above (leave empty if you do not wish to have such words)"
-msgstr ""
-
-#: knq.php:966 knq.php:1214
-msgid "Include between double square brackets, separated by a vertical bar (pipe), the alternative words.<br>Put the correct one to be the first in list. The list of options will be shuffled.<br>Example: <strong>We live on [[Earth|Jupiter|Saturn|Moon]].</strong>"
-msgstr ""
-
-#: knq.php:966 knq.php:1219
-msgid "The word bank will collect all the words between double square brackets.<br>Example: <strong>This is an [[example]] of such a [[question]].</strong>"
-msgstr ""
-
-#: knq.php:971 knq.php:1238
-msgid "Image width"
-msgstr ""
-
-#: knq.php:978 knq.php:1269
-msgid "To add a new word search area, click here"
-msgstr ""
-
-#: knq.php:979 knq.php:1270
-msgid "Words to be searched, separated by one space"
-msgstr ""
-
-#: knq.php:980
-msgid "If unused letters forms a message, please write it below"
-msgstr ""
-
-#: knq.php:1007
-msgid "Choose a quiz"
-msgstr ""
-
-#: knq.php:1026
-msgid "Question deleted succesfully"
-msgstr ""
-
-#: knq.php:1028
-msgid "Error on deleting the question"
-msgstr ""
-
-#: knq.php:1137
-msgid "Question updated"
-msgstr ""
-
-#: knq.php:1139
-msgid "Error updating question"
-msgstr ""
-
-#: knq.php:1149 knq.php:1157
-msgid "Demo question (please configure)."
-msgstr ""
-
-#: knq.php:1149 knq.php:1157
-msgid "option 1|option 2"
-msgstr ""
-
-#: knq.php:1159
-msgid "A new question was added. Do not forget to configure the question!"
-msgstr ""
-
-#: knq.php:1165
-msgid "ADD NEW QUESTION"
-msgstr ""
-
-#: knq.php:1171 knq.php:1182
-msgid "Question"
-msgstr ""
-
-#: knq.php:1183
-msgid "Question type"
-msgstr ""
-
-#: knq.php:1183
-msgid "Multiple choice (check box)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Single choice (radio box)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Multiple choice with images (check box)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Single choice with images (radio box)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Sort the answers (sorting)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Choose the words from lists (select box)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Word bank (drag & drop)"
-msgstr ""
-
-#: knq.php:1183
-msgid "Word search"
-msgstr ""
-
-#: knq.php:1183
-msgid "Text matching"
-msgstr ""
-
-#: knq.php:1184
-msgid "Answer(s)"
-msgstr ""
-
-#: knq.php:1193 knq.php:1200
-msgid "Correct"
-msgstr ""
-
-#: knq.php:1238
-msgid "Select images"
-msgstr ""
-
-#: knq.php:1271
-msgid "If unused letters forms a message, please write it below."
-msgstr ""
-
-#: knq.php:1296
-msgid "Positive feedback"
-msgstr ""
-
-#: knq.php:1297
-msgid "Negative feedback"
-msgstr ""
-
-#: knq.php:1302
-msgid "Associated image"
-msgstr ""
-
-#: knq.php:1304
-msgid "Load image"
-msgstr ""
-
-#: knq.php:1304
-msgid "Delete image"
-msgstr ""
-
-#: knq.php:1305
-msgid "Image position related to question text"
-msgstr ""
-
-#: knq.php:1305
-msgid "Above"
-msgstr ""
-
-#: knq.php:1305
-msgid "Below"
-msgstr ""
-
-#: knq.php:1305
-msgid "Left"
-msgstr ""
-
-#: knq.php:1305
-msgid "Right"
-msgstr ""
-
-#: knq.php:1306
-msgid "Update question"
-msgstr ""
-
-#: knq.php:1317
-msgid "Be careful! When you delete a question, there is no undo!"
-msgstr ""
-
-#: knq.php:1317
-msgid "Delete question"
-msgstr ""
-
-#: knq.php:1318
-msgid "Empty question"
-msgstr ""
-
-#: knq.php:1318
-msgid "At least 2 answers needed"
-msgstr ""
-
-#: knq.php:1318
-msgid "Empty answer"
-msgstr ""
-
-#: knq.php:1318
-msgid "No right answer selected"
-msgstr ""
-
-#: knq.php:1318
-msgid "Too many right answers selected"
-msgstr ""
-
-#: knq.php:1318
-msgid "Incorrect formatting"
-msgstr ""
-
-#: knq.php:1318
-msgid "Must be between 1 and 100"
-msgstr ""
-
-#: knq.php:1318
-msgid "Empty word search"
-msgstr ""
-
-#: knq.php:1318
-msgid "No search words provided"
-msgstr ""
-
-#: knq.php:1318
-msgid "Provide at least 3 search words"
-msgstr ""
-
-#: knq.php:1332
-msgid "Last played quizzes"
-msgstr ""
-
-#: knq.php:1334
-msgid "User"
-msgstr ""
-
-#: knq.php:1334
-msgid "Score"
-msgstr ""
-
-#: knq.php:1334
-msgid "Attempts"
-msgstr ""
-
-#: knq.php:1334
-msgid "Quiz"
-msgstr ""
-
-#: knq.php:1334
-msgid "When"
 msgstr ""

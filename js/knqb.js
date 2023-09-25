@@ -13,6 +13,8 @@ function newAnswer(type) {
         jQuery('#matching').append('<div style="height: 5vh; display: flex; align-items: center;" class="answerContainer" name="matchingContainer' + counter + '" id="matchingContainer' + counter + '"><i style="margin-right: 1vw" class="fa-solid fa-arrows-up-down"></i><input autocomplete="off" size="50" class="matchingAnswer" name="matchingAnswer' + counter + '" value=""><input autocomplete="off" size="50" class="matchingCorrect" name="matchingCorrect' + counter + '" value=""><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;" onclick="deleteAnswer(' + counter + ',11)" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>')
     } else if (type == qWORDSEARCH) {
         jQuery('<div id="spaceSearchContainer' + counter + '" class="spaceSearchContainer"><textarea style="font-family: Courier New;" rows="12" cols="12" autocomplete="off" id="spaceSearch' + counter + '" name="spaceSearch' + counter + '" class="spaceSearch"></textarea><br><button type=button class="button button-secondary" style="background-color: #dc3545; border-color: #dc3545; color: white; margin-left: auto; margin-right: auto; display: block" onclick="deleteAnswer(' + counter + ',' + type + ')" class="button button-primary"><i class="fa fa-minus-circle" aria-hidden="true"></i></button></div>').insertAfter(jQuery('.spaceSearchContainer').last())
+    } else if (type == qCATEGORY) {
+        jQuery('#categories').append("<li id='category" + counter + "' class='category'><label for='categoryName" + counter + "'>Category Name:</label><br><input type='text' id='categoryName" + counter + "' name='categoryName" + counter + "' value='Category " + counter + "'><br><label for='category" + counter + "Elements'>Elements belonging to the category:</label><br><input size='80' type='text' id='category" + counter + "Elements' name='category" + counter + "Elements' value='element 1, element 2'><button type=button class='button button-secondary' style='background-color: #dc3545; border-color: #dc3545; color: white; margin-left: 0.5vw; margin-right: 0.5vw;' onclick='deleteAnswer(" + counter + ", " + type + ")' class='button button-primary'><i class='fa fa-minus-circle' aria-hidden='true'></i></button></li>")
     }
     counter++;
     answerCounter.val(counter);
@@ -31,6 +33,10 @@ function deleteAnswer(counter, type) {
     } else if (type == qWORDSEARCH) {
         if (confirm(msg_delq)) {
             jQuery("#spaceSearchContainer" + counter).remove();
+        }
+    } else if (type == qCATEGORY) {
+        if (confirm(msg_delq)) {
+            jQuery("#category" + counter).remove();
         }
     }
 }
@@ -333,6 +339,25 @@ function checkPuzzle() {
 }
 
 
+function hideAll() {
+    jQuery("#answers").hide()
+    jQuery("#singleAnswerContainer").hide();
+    jQuery("#instructions4th").hide();
+    jQuery("#extraWordsContainer").hide();
+    jQuery("#instructions5th").hide();
+    jQuery("#addNewAnswerContainer").hide();
+    jQuery("#imagesContainer").hide();
+    jQuery("#wordSearch").hide();
+    jQuery("#matching").hide();
+    jQuery("#puzzleImageContainer").hide();
+    jQuery("#addNewWordSearchAnswerContainer").hide();
+    jQuery("#addNewMatchingAnswerContainer").hide();
+    jQuery("#matchImagesContainer").hide();
+    jQuery("#categories").hide();
+    jQuery("#addNewCategoryContainer").hide();
+    jQuery("#pixelatedImageContainer").hide();
+}
+
 jQuery(document).ready(function () {
     qCHECKBOXTEXT = '1';
     qRADIOBOXTEXT = '2';
@@ -348,6 +373,9 @@ jQuery(document).ready(function () {
     qTRUEFALSE = '12';
     qPUZZLE = '13'
     qMATCHIMAGE = '14';
+    qCATEGORY = '15';
+    qPIXELATEDIMAGE = '16';
+
 
     if (jQuery('#correctColorPicker').length) {
         jQuery('#correctColorPicker').farbtastic('#correctColor');
@@ -425,34 +453,16 @@ jQuery(document).ready(function () {
 
     jQuery("#typeSelect").on("change", function () {
         if (this.value === qSELECTBOX) {
-            jQuery("#answers").hide()
+            hideAll()
             jQuery("#answerCounter").val('1');
             jQuery("#singleAnswerContainer").show();
             jQuery("#instructions4th").show();
-            jQuery("#instructions5th").hide();
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qDRAGDROP) {
-            jQuery("#answers").hide()
+            hideAll()
             jQuery("#answerCounter").val('1');
             jQuery("#singleAnswerContainer").show();
             jQuery("#instructions5th").show();
             jQuery("#extraWordsContainer").show();
-            jQuery("#instructions4th").hide();
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qCHECKBOXTEXT || this.value === qRADIOBOXTEXT || this.value === qTRUEFALSE) {
             if (this.value === qCHECKBOXTEXT) {
                 jQuery('.correct').each(function () {
@@ -477,12 +487,10 @@ jQuery(document).ready(function () {
                     jQuery(this).text('Correct');
                 })
             }
+            hideAll()
             jQuery("#addNewAnswerContainer").show();
-            jQuery("#singleAnswerContainer").hide();
             jQuery("#answerCounter").val(jQuery(".answerContainer").length + 1);
             jQuery("#answers").show();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
             jQuery('#addNewAnswer').attr('onclick', 'newAnswer(' + this.value + '); return false');
             jQuery('.correct').each(function () {
                 jQuery(this).show()
@@ -490,12 +498,8 @@ jQuery(document).ready(function () {
             jQuery('.correct_label').each(function () {
                 jQuery(this).show()
             })
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#matchImagesContainer").hide();
         } else if (this.value === qSORTING) {
+            hideAll()
             jQuery('.correct').each(function () {
                 jQuery(this).hide()
             })
@@ -503,17 +507,9 @@ jQuery(document).ready(function () {
                 jQuery(this).hide()
             })
             jQuery("#addNewAnswerContainer").show();
-            jQuery("#singleAnswerContainer").hide();
             jQuery('#addNewAnswer').attr('onclick', 'newAnswer(' + this.value + '); return false');
             jQuery("#answerCounter").val(jQuery(".answerContainer").length + 1);
             jQuery("#answers").show();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#matchImagesContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qCHECKBOXIMG || this.value === qRADIOBOXIMG) {
             if (this.value === qCHECKBOXIMG) {
                 jQuery('.correctImage').each(function () {
@@ -525,75 +521,36 @@ jQuery(document).ready(function () {
                     this.type = 'radio'
                 })
             }
-            jQuery("#answers").hide()
-            jQuery("#singleAnswerContainer").hide();
-            jQuery("#instructions4th").hide();
-            jQuery("#instructions5th").hide();
+            hideAll();
             jQuery("#answerCounter").val(jQuery(".imageUrlContainer").length + 1);
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#wordSearch").hide();
             jQuery("#imagesContainer").show();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#matchImagesContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
         } else if (this.value === qWORDSEARCH) {
-            jQuery("#answers").hide()
-            jQuery("#singleAnswerContainer").hide();
-            jQuery("#instructions4th").hide();
-            jQuery("#instructions5th").hide();
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#imagesContainer").hide();
+            hideAll()
             jQuery("#wordSearch").show();
             jQuery("#addNewWordSearchAnswerContainer").show();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(jQuery(".spaceSearch").length + 1);
         } else if (this.value === qMATCHING) {
-            jQuery("#answers").hide()
-            jQuery("#singleAnswerContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#instructions4th").hide();
-            jQuery("#instructions5th").hide();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#addNewAnswerContainer").hide();
+            hideAll()
             jQuery("#matching").show();
-            jQuery("#puzzleImageContainer").hide();
             jQuery("#addNewMatchingAnswerContainer").show();
-            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(jQuery(".answer").length + 1);
         } else if (this.value === qPUZZLE) {
-            jQuery("#answers").hide()
-            jQuery("#singleAnswerContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#instructions4th").hide();
-            jQuery("#instructions5th").hide();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#matching").hide();
+            hideAll()
             jQuery("#puzzleImageContainer").show();
-            jQuery("#addNewMatchingAnswerContainer").hide();
-            jQuery("#matchImagesContainer").hide();
             jQuery("#answerCounter").val(1);
         } else if (this.value === qMATCHIMAGE) {
-            jQuery("#answers").hide()
-            jQuery("#singleAnswerContainer").hide();
-            jQuery("#addNewWordSearchAnswerContainer").hide();
-            jQuery("#instructions4th").hide();
-            jQuery("#instructions5th").hide();
-            jQuery("#imagesContainer").hide();
-            jQuery("#wordSearch").hide();
-            jQuery("#addNewAnswerContainer").hide();
-            jQuery("#matching").hide();
-            jQuery("#puzzleImageContainer").hide();
-            jQuery("#addNewMatchingAnswerContainer").hide();
+            hideAll()
             jQuery("#answerCounter").val(jQuery(".matchImageUrlContainer").length + 1);
             jQuery("#matchImagesContainer").show();
+        } else if (this.value === qCATEGORY) {
+            hideAll()
+            jQuery("#addNewCategoryContainer").show();
+            jQuery("#answerCounter").val(jQuery(".category").length + 1);
+            jQuery("#categories").show();
+        } else if (this.value === qPIXELATEDIMAGE) {
+            hideAll()
+            jQuery("#answerCounter").val(1);
+            jQuery("#pixelatedImageContainer").show();
         }
     })
 
@@ -750,6 +707,36 @@ jQuery(document).ready(function () {
             // console.log(attachment.url)
             // console.log(jQuery('#puzzleImageUrl')[0])
             let image_preview = jQuery('#puzzleImage');
+            image_preview.show()
+            image_preview.attr('src', attachment.url).css('width', 'auto');
+            // jQuery('#image_attachment_id').val(attachment.id);
+        });
+
+        mediaUploader.open();
+    });
+
+    jQuery('#selectPixelatedImage').on('click', function (e) {
+        e.preventDefault();
+        if (mediaUploader) {
+            mediaUploader.open();
+            return;
+        }
+
+        mediaUploader = wp.media.frames.fle_frame = wp.media({
+            title: 'Select an image',
+            button: {
+                text: 'Select an image'
+            },
+            multiple: false
+        })
+
+        mediaUploader.on('select', function () {
+            let attachment;
+            attachment = mediaUploader.state().get('selection').first().toJSON();
+            jQuery('#pixelatedImageUrl').attr('value', attachment.url);
+            // console.log(attachment.url)
+            // console.log(jQuery('#puzzleImageUrl')[0])
+            let image_preview = jQuery('#pixelatedImage');
             image_preview.show()
             image_preview.attr('src', attachment.url).css('width', 'auto');
             // jQuery('#image_attachment_id').val(attachment.id);
