@@ -129,7 +129,6 @@ function funcKNQ($atts = [], $content = null, $tag = '')
 
     $o .= 'text_partial_out_of="' . __('questions right out of', 'knq') . '"; text_partial_correct="' . __('You got', 'knq') . '"; text_all_correct="' . __('You got all the questions right.', 'knq') . '"; text_new_highscore="' . __('New highscore!', '') . '"; text_final_score="' . __('Final score') . '"; text_all_wrong="' . __('You got all the questions wrong.', 'knq') . '"; text_previous_score="' . __('Previous score', 'knq') . '"; text_obtained_now="' . __('obtained now', 'knq') . '"; text_guess="' . __('Type here what you see in the image', 'knq') . '"; text_true="' . __('T', 'knq') . '"; text_false="' . __('F', 'knq') . '"; color_hover="' . $mainColor . '"; color_neutral="' . $neutralColor . '";color_nok="' . $wrongColor . '"; color_ok ="' . $correctColor . '" ;msg_done="' . $answerQuestion . '";msg_next="' . $nextQuestion . '";msg_finish="' . $finishQuiz . '";msg_correct="' . $correctAnswerMessage . '";msg_wrong="' . $wrongAnswerMessage . '"; find_words="' . __('Find above the following words', 'knq') . '"; choose_answer_msg="' . __('Choose the right answer', 'knq') . '"';
     $o .= '</script>';
-    echo '<script type="text/javascript">window.onload="loadQuestions()";</script>';
 
 
     // enclosing tags
